@@ -37,7 +37,9 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
   const regions = LEVELS[level ?? "moderate"];
   const result = capitalList ? validateKingdom({ ...value, level: level ?? "moderate" }) : null;
 
+  const capitals = () => allTerritories().filter((t) => t.capital);
   const candidates = React.useMemo(() => {
+    if (picking === 1) return capitals().map((t) => ({ t, res: { ok: true } }));
     if (!picking || !capitalList) return [];
     return allTerritories()
       .map((t) => ({ t, res: canPlace({ capitalList, region: picking, list: t.list, name: t.name }) }))
@@ -46,26 +48,6 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
         (a.t.list === capitalList ? -1 : 0) - (b.t.list === capitalList ? -1 : 0) ||
         a.t.rarity - b.t.rarity || a.t.name.localeCompare(b.t.name));
   }, [picking, capitalList]);
-
-  const capitalPicker = (
-    <VStack gap={GAP.item}>
-      <HStack justify="center" className="om-plate"><Text type="label">Region 1</Text></HStack>
-      <HStack className="om-callout">
-        <Text>Your choice of capital determines the race of your ruler and/or royal family and has a strong influence on the make-up of any army you muster.</Text>
-      </HStack>
-      <List density={DENSITY.choice}>
-        {CAPITAL_LISTS.map((list) => {
-          const cap = allTerritories().find((t) => t.list === list && t.capital);
-          return (
-            <ListItem key={list} label={cap.name}
-              description={<Text type="supporting">{grants(list, cap.name)}</Text>}
-              startContent={<Token label="1" size="sm" color={hueOf(list)} />}
-              onClick={() => patch({ capitalList: list, territories: [{ region: 1, list, name: cap.name }] })} />
-          );
-        })}
-      </List>
-    </VStack>
-  );
 
   const regionList = regions.map((r) => {
     const mine = picks.map((p, i) => ({ p, i })).filter(({ p }) => p.region === r);
@@ -91,15 +73,18 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
                 </HStack>
               }
               startContent={<Token label={`Rarity ${territory(p.list, p.name)?.rarity ?? ""}`} size="sm" color={hueOf(p.list)} />}
-              endContent={r === 1 ? undefined : (
+              endContent={
                 <Button label="Remove" size="sm" variant="ghost" isIconOnly className="om-remove"
                         icon={<Ico name="times" />}
-                        onClick={() => patch({ territories: picks.filter((_, j) => j !== i) })} />
-              )}
+                        onClick={() => patch(r === 1
+                          ? { capitalList: null, territories: [] }
+                          : { territories: picks.filter((_, j) => j !== i) })} />
+              }
             />
           ))}
-          {!full && r > 1 && (
-            <ListItem label="Add territory" startContent={<Ico name="plus" />} onClick={() => setPicking(r)} />
+          {!full && (r > 1 || !capitalList) && (
+            <ListItem label={r === 1 ? "Choose a capital" : "Add territory"}
+                      startContent={<Ico name="plus" />} onClick={() => setPicking(r)} />
           )}
         </List>
       </VStack>
@@ -109,7 +94,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
   const map = (
     <RegionMap regions={regions} picks={picks} activeRegion={picking} litRegion={lit}
                onRegionHover={setLit}
-               onSlotClick={(r, _i, pick) => { if (capitalList && !pick && r > 1) setPicking(r); }} />
+               onSlotClick={(r, _i, pick) => { if (!pick && (r === 1 || capitalList)) setPicking(r); }} />
   );
   const access = <FigureAccess kingdom={value} onOpen={setOpenFigure} />;
 
@@ -143,7 +128,9 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
         onOpenFigure={setOpenFigure}
         onClose={() => setPicking(null)}
         onPick={(t) => {
-          patch({ territories: [...picks, { region: picking, list: t.list, name: t.name }] });
+          patch(picking === 1
+            ? { capitalList: t.list, territories: [{ region: 1, list: t.list, name: t.name }] }
+            : { territories: [...picks, { region: picking, list: t.list, name: t.name }] });
           setPicking(null);
         }}
       />
@@ -167,7 +154,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
       detailTitle="Kingdom Sheet"
       content={(
         <VStack gap={GAP.section}>
-          {capitalList ? regionList : capitalPicker}
+          {regionList}
           {result && !result.ok && (
             <VStack gap={GAP.tight} className="om-callout">
               {result.errors.map((e) => <Text key={e}>{e}</Text>)}

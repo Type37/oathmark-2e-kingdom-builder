@@ -64,23 +64,25 @@ export const CULTURES = {
   }])),
 };
 
-// The book's Zazamanc lands (KL p112) read as plainly modern, so the owner swapped
-// them for older names: Berbers, Vandals, Egypt and Araby out; Patelamunt stays.
-const ZAZAMANC_OUT = new Set(["Berbers", "Vandals", "Egypt", "Araby"]);
-const ZAZAMANC_IN = [
-  "Numidia",                    // Berbers
-  "Byzacena", "Cartago",        // Vandals
-  "Babylone", "Aegyptus",       // Egypt
-  "Floripa", "Ferumbra", "Kemetia", // Egypt: the owner's names
-  "Saba",                       // Araby
-  "Azagouc", "Tribalibot",      // kingdoms from Wolfram's Parzival
-];
+// Some homelands read as plainly modern places, so they take their older or
+// period forms. Left of the arrow is the book's name.
+const OLDER = {
+  // Zazamanc (KL p112): the owner's swap.
+  Berbers: ["Numidia"], Vandals: ["Byzacena", "Cartago"],
+  Egypt: ["Babylone", "Aegyptus", "Floripa", "Ferumbra", "Kemetia"],
+  Araby: ["Saba", "Azagouc", "Tribalibot"],
+  // Byzantine (KL p78), French (p86), Danish (p82) and Italian (p99).
+  Syria: ["Antiochia"], Constantinople: ["Miklagard"],
+  "Orléans": ["Aurelianum"], "Ile de France": ["Francia"],
+  Jutland: ["Jylland"], Zealand: ["Sjælland"], Skane: ["Skåne"],
+  Rome: ["Roma"], Venice: ["Venetia"], Milan: ["Mediolanum"], Florence: ["Florentia"],
+  Genoa: ["Genua"], Pisa: ["Pisae"], Syracuse: ["Syracusae"], Amalfi: ["Amalphia"],
+};
 
 // [homeland, culture]
 export const HOMELANDS = [
   ...book("DR")(KINGDOM).map((n) => [n, "dragon-rampant"]),
-  ...BKL_HOMELANDS.filter(([n]) => !ZAZAMANC_OUT.has(n)).map(([n, c]) => [n, c]),
-  ...ZAZAMANC_IN.map((n) => [n, "zazamanc"]),
+  ...BKL_HOMELANDS.flatMap(([n, c]) => (OLDER[n] ?? [n]).map((name) => [name, c])),
 ];
 
 export const NAMES = {

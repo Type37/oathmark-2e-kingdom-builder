@@ -17,7 +17,7 @@ test("a rolled kingdom's ruler comes from its culture", () => {
 test("known homelands resolve to the book's culture", () => {
   assert.equal(cultureOf("Salisbury"), "cymric");     // KL p22
   assert.equal(cultureOf("London"), "roman");         // KL p22
-  assert.equal(cultureOf("Jutland"), "danish");       // KL p82
+  assert.equal(cultureOf("Jylland"), "danish");       // KL p82, in its older form
   assert.equal(cultureOf("Grundeland"), null);        // Oathmark realms are not in the pools
   assert.equal(cultureOf("Nowhere"), null);
 });
@@ -34,8 +34,11 @@ test("the roll draws a culture first, so every culture comes up", () => {
   assert.equal(seen.size, Object.keys(CULTURES).length);
 });
 
-test("Zazamanc uses the older names, not the book's modern ones", () => {
+test("plainly modern places take their older forms", () => {
   assert.equal(cultureOf("Egypt"), null);
+  assert.equal(cultureOf("Syria"), null);
+  assert.equal(cultureOf("Antiochia"), "byzantine");
+  assert.equal(cultureOf("Mediolanum"), "italian");
   assert.equal(cultureOf("Azagouc"), "zazamanc");
   assert.equal(cultureOf("Patelamunt"), "zazamanc");
 });

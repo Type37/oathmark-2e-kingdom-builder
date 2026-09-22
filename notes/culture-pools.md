@@ -60,7 +60,7 @@ KL = Book of Knights & Ladies, DR = Dragon Rampant 2e. Printed page numbers.
 
 ## Byzantine (KL p78)
 
-**Homelands (3):** Syria (p78), Illyricum (p78), Constantinople (p78)
+**Homelands (3):** Illyricum (p78), Antiochia (swapped in), Miklagard (swapped in)
 
 **Male (36):** Alexander, Alexius, Anastasius, Andronicus, Arcadius, Basil, Constantius, David, Diocletian, Diocles, Galerius, George, Heraclius, Isaac, John, Jovian, Julian, Justinian, Justin, Leontius, Licinius, Manuel, Marcian, Maurice, Michael, Nicephorus, Nicholas, Philippicus, Phocas, Romanus, Stauracius, Theodore, Theodosius, Theophano, Theophilus, Valens
 
@@ -68,7 +68,7 @@ KL = Book of Knights & Ladies, DR = Dragon Rampant 2e. Printed page numbers.
 
 ## Danish (KL p82)
 
-**Homelands (3):** Jutland (p82), Skane (p82), Zealand (p82)
+**Homelands (3):** Jylland (swapped in), Skåne (swapped in), Sjælland (swapped in)
 
 **Male (95):** Ake, Anwend, Asbjorn, Aslak, Asgot, Asser, Asvald, Asved, Bjarni, Bjorn, Brand, Brandr, Cnut, Einar, Ejulf, Erik, Eirik, Eyjolf, Finnbogi, Floki, Frobjorn, Frodi, Gamli, Gardi, Geirstein, Grim, Gudmund, Gunnbjorn, Gunnvor, Hafgrim, Hakon, Halfdan, Hallad, Harald, Helgi, Herjolf, Hove, Hrafn, Hrolf, Hrollaug, Illugi, Ingjald, Ingolf, Isleif, Ivar, Jarlabanke, Ketil, Kjallakr, Kjeld, Knud, Kolbjorn, Leif, Manne, Njal, Njall, Odd, Oddketil, Olaf, Olav, Orm, Pallig, Ragnar, Rognvald, Rolf, Runolf, Sakse, Samr, Sigurd, Snorri, Solvi, Styr, Svein, Svend, Thorbjorn, Thorbrand, Thord, Thorfinn, Thorgeir, Thorgils, Thorgisl, Thorhall, Thorir, Thorkel, Thorlak, Thormod, Thorstein, Thorvald, Thorvard, Toke, Toste, Tyrkir, Ulf, Valthjof, Vifil, Wulfstan
 
@@ -76,7 +76,7 @@ KL = Book of Knights & Ladies, DR = Dragon Rampant 2e. Printed page numbers.
 
 ## French (KL p86)
 
-**Homelands (4):** Austrasia (p86), Neustria (p86), Orléans (p86), Ile de France (p86)
+**Homelands (4):** Austrasia (p86), Neustria (p86), Aurelianum (swapped in), Francia (swapped in)
 
 **Male (19):** Arbogast, Carloman, Charibert, Childebert, Chilperic, Chlodomer, Chlotar, Clovis, Dagobert, Drogo, Fredegar, Guntramm, Lothar, Odo, Pippin, Richomer, Sigibert, Theudebert, Theuderic
 
@@ -100,7 +100,7 @@ KL = Book of Knights & Ladies, DR = Dragon Rampant 2e. Printed page numbers.
 
 ## Italian (KL p99)
 
-**Homelands (11):** Verona (p99), Venice (p99), Amalfi (p99), Pisa (p99), Genoa (p99), Milan (p99), Florence (p99), Rome (p99), Apulia (p99), Ravenna (p99), Syracuse (p99)
+**Homelands (11):** Verona (p99), Apulia (p99), Ravenna (p99), Venetia (swapped in), Amalphia (swapped in), Pisae (swapped in), Genua (swapped in), Mediolanum (swapped in), Florentia (swapped in), Roma (swapped in), Syracusae (swapped in)
 
 **Male (5):** Amalaric, Athalaric, Theodehad, Theoderic, Theudis
 
