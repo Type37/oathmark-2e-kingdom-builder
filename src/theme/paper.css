@@ -35,9 +35,17 @@ body {
 .om-slot-claimed {
   animation: om-pop var(--duration-medium) var(--ease-standard) both;
 }
+/* Figures a new territory grants rise into the Kingdom Sheet's list. */
+@keyframes om-rise {
+  from { opacity: 0; transform: translateY(var(--spacing-2)); }
+  to   { opacity: 1; transform: none; }
+}
+.om-rise { animation: om-rise var(--duration-medium) var(--ease-standard) both; }
+
 @media (prefers-reduced-motion: reduce) {
   .om-slot,
-  .om-slot-claimed {
+  .om-slot-claimed,
+  .om-rise {
     animation: none;
     transition: none;
   }

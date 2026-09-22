@@ -1,27 +1,31 @@
 import React from "react";
 import {
-  VStack, HStack, Text, Heading, Button, List, ListItem,
-  Token, Badge, Dialog, DialogHeader, TextInput, Layout, LayoutContent,
+  VStack, HStack, Text, Button, List, ListItem,
+  Token, Dialog, DialogHeader, Layout, LayoutContent,
 } from "@astryxdesign/core";
 import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
 import RegionMap from "../components/RegionMap.jsx";
 import FigureCard from "../components/FigureCard.jsx";
-import Chronicle from "../screens/Chronicle.jsx";
+import FigureAccess from "../components/FigureAccess.jsx";
+import NameField from "../components/NameField.jsx";
+import Level from "../components/Level.jsx";
+import Emblem from "../components/Emblem.jsx";
+import EmblemDialog from "../components/EmblemDialog.jsx";
 import { GAP, DENSITY } from "../layout.mjs";
 import {
   LEVELS, REGION_SIZES, CAPITAL_LISTS, allTerritories, canPlace,
   validateKingdom, territory, grantList,
 } from "../rules/kingdom.mjs";
-import { EXAMPLE_KINGDOMS, loadExample } from "../rules/examples.mjs";
 import { hueOf } from "../race.mjs";
-import Emblem from "../components/Emblem.jsx";
-import EmblemDialog from "../components/EmblemDialog.jsx";
+import { NAMES } from "../names.mjs";
 
 const LIST_LABEL = {
   dwarf: "Dwarf", elf: "Elf", goblin: "Goblin", human: "Human",
   orc: "Orc", necropolis: "Necropolis", unaligned: "Unaligned",
 };
+
+const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
 
 // Every region is visible at once. No stepper, so nothing advances underfoot.
 export default function KingdomPane({ value, onChange, onEmblem, shell }) {
@@ -43,127 +47,108 @@ export default function KingdomPane({ value, onChange, onEmblem, shell }) {
         a.t.rarity - b.t.rarity || a.t.name.localeCompare(b.t.name));
   }, [picking, capitalList]);
 
-  const content = (
-    <VStack gap={GAP.section}>
-      {!capitalList && (
-          <VStack gap={GAP.group}>
-            <HStack gap={GAP.item} align="end" wrap="wrap">
-              {EXAMPLE_KINGDOMS.map((e) => (
-                <Button key={e.id} label={e.name} size="sm" variant="secondary"
-                        onClick={() => onChange(loadExample(e.id))} />
-              ))}
-            </HStack>
-
-            <VStack gap={GAP.tight}>
-              <Text type="label">Capital</Text>
-              <List density={DENSITY.choice}>
-                {CAPITAL_LISTS.map((list) => {
-                  const cap = allTerritories().find((t) => t.list === list && t.capital);
-                  return (
-                    <ListItem key={list} label={cap.name}
-                      startContent={<Token label="1" size="sm" color={hueOf(list)} />}
-                      onClick={() => patch({ capitalList: list, territories: [{ region: 1, list, name: cap.name }] })} />
-                  );
-                })}
-              </List>
-            </VStack>
-          </VStack>
-      )}
-
-      {capitalList && regions.map((r) => {
-        const mine = picks.map((p, i) => ({ p, i })).filter(({ p }) => p.region === r);
-        const full = mine.length >= REGION_SIZES[r];
-        return (
-          <VStack key={r} gap={GAP.item}>
-            <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
-              <Text type="label">Region {r}</Text>
-              <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
-            </HStack>
-            <List density={DENSITY.data}>
-              {mine.map(({ p, i }) => (
-                <ListItem
-                  key={`${p.name}-${i}`}
-                  label={p.name}
-                  description={
-                    <HStack gap={1} wrap="wrap">
-                      {grantList(p.list, p.name).map((g) => (
-                        <Button key={g.figureId} label={g.label} size="sm" variant="secondary"
-                                onClick={() => setOpenFigure(g.figureId)} />
-                      ))}
-                    </HStack>
-                  }
-                  startContent={<Token label={String(territory(p.list, p.name)?.rarity ?? "")} size="sm" color={hueOf(p.list)} />}
-                  endContent={r === 1 ? undefined : (
-                    <Button label="Remove" size="sm" variant="ghost" isIconOnly
-                            icon={<Ico name="minus" />}
-                            onClick={() => patch({ territories: picks.filter((_, j) => j !== i) })} />
-                  )}
-                />
-              ))}
-              {!full && r > 1 && (
-                <ListItem
-                  label="Add territory"
-                  startContent={<Ico name="plus" />}
-                  onClick={() => setPicking(r)}
-                />
-              )}
-            </List>
-          </VStack>
-        );
-      })}
+  const capitalPicker = (
+    <VStack gap={GAP.item}>
+      <HStack justify="center" className="om-plate"><Text type="label">Region 1</Text></HStack>
+      <List density={DENSITY.choice}>
+        {CAPITAL_LISTS.map((list) => {
+          const cap = allTerritories().find((t) => t.list === list && t.capital);
+          return (
+            <ListItem key={list} label={cap.name}
+              description={<Text type="supporting">{grants(list, cap.name)}</Text>}
+              startContent={<Token label="1" size="sm" color={hueOf(list)} />}
+              onClick={() => patch({ capitalList: list, territories: [{ region: 1, list, name: cap.name }] })} />
+          );
+        })}
+      </List>
     </VStack>
   );
+
+  const regionList = regions.map((r) => {
+    const mine = picks.map((p, i) => ({ p, i })).filter(({ p }) => p.region === r);
+    const full = mine.length >= REGION_SIZES[r];
+    return (
+      <VStack key={r} gap={GAP.item}>
+        <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
+          <Text type="label">Region {r}</Text>
+          <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
+        </HStack>
+        <List density={DENSITY.data}>
+          {mine.map(({ p, i }) => (
+            <ListItem
+              key={`${p.name}-${i}`}
+              label={p.name}
+              description={
+                <HStack gap={1} wrap="wrap">
+                  {grantList(p.list, p.name, { asCapital: r === 1 }).map((g) => (
+                    <Button key={g.figureId} label={g.label} size="sm" variant="secondary"
+                            onClick={() => setOpenFigure(g.figureId)} />
+                  ))}
+                </HStack>
+              }
+              startContent={<Token label={String(territory(p.list, p.name)?.rarity ?? "")} size="sm" color={hueOf(p.list)} />}
+              endContent={r === 1 ? undefined : (
+                <Button label="Remove" size="sm" variant="ghost" isIconOnly
+                        icon={<Ico name="minus" />}
+                        onClick={() => patch({ territories: picks.filter((_, j) => j !== i) })} />
+              )}
+            />
+          ))}
+          {!full && r > 1 && (
+            <ListItem label="Add territory" startContent={<Ico name="plus" />} onClick={() => setPicking(r)} />
+          )}
+        </List>
+      </VStack>
+    );
+  });
 
   const map = (
     <RegionMap regions={regions} picks={picks} activeRegion={picking}
                onSlotClick={(r, _i, pick) => { if (capitalList && !pick && r > 1) setPicking(r); }} />
   );
+  const access = <FigureAccess kingdom={value} onOpen={setOpenFigure} />;
 
+  // The book's Kingdom Sheet (p217): name, ruler, the rings; then what they grant.
   const detail = (
     <VStack gap={GAP.group}>
       <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
-      <HStack gap={2} justify="center" align="center">
+      <NameField label="Kingdom Name" size="sm" value={value.name} pool={NAMES.kingdom}
+                 onChange={(name) => patch({ name })} />
+      <NameField label="Current Ruler" size="sm" value={value.ruler} pool={NAMES.hero}
+                 onChange={(ruler) => patch({ ruler })} />
+      <HStack gap={2} align="center">
         <Emblem emblemKey={value.emblem} name={value.name} size="xl" />
         <Button label={value.emblem ? "Change Emblem" : "Add Emblem"} size="sm" variant="secondary"
                 onClick={() => setCropping(true)} />
         {value.emblem && <Button label="Remove" size="sm" variant="ghost" onClick={() => onEmblem(null)} />}
       </HStack>
       {map}
-      <TextInput label="Kingdom" value={value.name ?? ""} size="sm"
-                 onChange={(e) => patch({ name: e.target?.value ?? e })} />
-      <Chronicle entries={value.chronicle ?? []} ruler={value.ruler}
-                 onChange={(chronicle) => patch({ chronicle })}
-                 onRulerChange={(ruler) => patch({ ruler })} />
-      {result && !result.ok && (
-        <VStack gap={GAP.tight} className="om-callout">
-          {result.errors.map((e) => <Text key={e}>{e}</Text>)}
-        </VStack>
-      )}
+      {access}
     </VStack>
   );
 
   const dialogs = (
     <>
-      <Dialog isOpen={Boolean(picking)} onOpenChange={(o) => !o && setPicking(null)} width={560}>
+      <Dialog isOpen={Boolean(picking)} onOpenChange={(o) => !o && setPicking(null)} width={640}>
         <Layout
           header={<DialogHeader title={`Region ${picking}`} onOpenChange={(o) => !o && setPicking(null)} />}
           content={
-        <LayoutContent padding={0}>
-        <List density={DENSITY.data}>
-          {candidates.map(({ t }) => (
-            <ListItem
-              key={`${t.list}/${t.name}`}
-              label={t.name}
-              description={LIST_LABEL[t.list]}
-              startContent={<Token label={String(t.rarity)} size="sm" color={hueOf(t.list)} />}
-              onClick={() => {
-                patch({ territories: [...picks, { region: picking, list: t.list, name: t.name }] });
-                setPicking(null);
-              }}
-            />
-          ))}
-        </List>
-        </LayoutContent>
+            <LayoutContent padding={0}>
+              <List density={DENSITY.data}>
+                {candidates.map(({ t }) => (
+                  <ListItem
+                    key={`${t.list}/${t.name}`}
+                    label={t.name}
+                    description={<Text type="supporting">{`${LIST_LABEL[t.list]} · ${grants(t.list, t.name, { asCapital: false })}`}</Text>}
+                    startContent={<Token label={String(t.rarity)} size="sm" color={hueOf(t.list)} />}
+                    onClick={() => {
+                      patch({ territories: [...picks, { region: picking, list: t.list, name: t.name }] });
+                      setPicking(null);
+                    }}
+                  />
+                ))}
+              </List>
+            </LayoutContent>
           }
         />
       </Dialog>
@@ -180,15 +165,20 @@ export default function KingdomPane({ value, onChange, onEmblem, shell }) {
       {...shell}
       title={value.name || "Untitled"}
       leading={<Emblem emblemKey={value.emblem} name={value.name} size="lg" />}
-      inlineDetail={map}
-      meta={capitalList ? <Text type="label">{{ beginner: "Beginner", moderate: "Moderate", expert: "Expert" }[level ?? "moderate"]}</Text> : null}
+      inlineDetail={<VStack gap={GAP.group}>{map}{access}</VStack>}
+      meta={<Level level={level ?? "moderate"} />}
       detail={detail}
       detailTitle="Kingdom Sheet"
       content={(
-      <>
-        {content}
-        {dialogs}
-      </>
+        <VStack gap={GAP.section}>
+          {capitalList ? regionList : capitalPicker}
+          {result && !result.ok && (
+            <VStack gap={GAP.tight} className="om-callout">
+              {result.errors.map((e) => <Text key={e}>{e}</Text>)}
+            </VStack>
+          )}
+          {dialogs}
+        </VStack>
       )}
     />
   );

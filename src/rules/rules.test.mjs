@@ -226,11 +226,3 @@ test("both example kingdoms validate as the book builds them", () => {
     assert.deepEqual(r.errors, [], `${e.name}: ${r.errors.join("; ")}`);
   }
 });
-
-test("each example ships an opening chronicle entry", () => {
-  for (const e of EXAMPLE_KINGDOMS) {
-    assert.ok(e.chronicle.length >= 1);
-    assert.equal(e.chronicle[0].year, 1);
-    assert.ok(e.ruler);
-  }
-});

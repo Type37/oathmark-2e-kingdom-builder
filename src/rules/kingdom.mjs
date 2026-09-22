@@ -121,29 +121,20 @@ export function chariotUnlocked(k, race) {
   );
 }
 
-// What a territory puts in your muster pool, in plain figure names.
-export function grantSummary(list, name) {
-  const t = territory(list, name);
-  if (!t) return [];
-  return t.grants
-    .filter((g) => g.figure)
-    .map((g) => {
-      const n = g.max != null ? `${g.max} ` : "";
-      const lv = g.levels ? ` ${g.levels[0]}\u2013${g.levels.at(-1)}` : "";
-      return `${n}${g.figure}${lv}`;
-    });
+// "1 Dwarf Spellcaster Level 1\u20132", as the kingdom lists print it (p20).
+export function grantLabel(g) {
+  const n = g.max != null ? `${g.max} ` : "";
+  const lv = g.levels ? ` Level ${g.levels[0]}\u2013${g.levels.at(-1)}` : "";
+  return `${n}${g.figure}${lv}`;
 }
 
-export function grantList(list, name) {
+// Pass asCapital: false to drop the "*" grants a non-capital city does not give (p20).
+export function grantList(list, name, { asCapital = true } = {}) {
   const t = territory(list, name);
   if (!t) return [];
   return t.grants
-    .filter((g) => g.figure)
-    .map((g) => {
-      const n = g.max != null ? `${g.max} ` : "";
-      const lv = g.levels ? ` ${g.levels[0]}\u2013${g.levels.at(-1)}` : "";
-      return { figureId: g.figureId, label: `${n}${g.figure}${lv}` };
-    });
+    .filter((g) => g.figure && (asCapital || !g.capitalOnly))
+    .map((g) => ({ figureId: g.figureId, label: grantLabel(g) }));
 }
 
 export const figures = data.figures;

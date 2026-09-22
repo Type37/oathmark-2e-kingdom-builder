@@ -12,12 +12,12 @@ import { list as listOf } from "../rules/store.mjs";
 import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
 import Emblem from "../components/Emblem.jsx";
+import Level from "../components/Level.jsx";
 
 function slots(level) {
   return (LEVELS[level] ?? LEVELS.moderate).reduce((n, r) => n + REGION_SIZES[r], 0);
 }
 
-const LEVEL_LABEL = { beginner: "Beginner", moderate: "Moderate", expert: "Expert" };
 
 export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, fileActions }) {
   const rows = listOf(store, "kingdoms");
@@ -57,7 +57,7 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
                         <Heading level={2}>{k.name || "Untitled"}</Heading>
                       </HStack>
                       <HStack gap={GAP.item} align="baseline">
-                        <Text type="label">{LEVEL_LABEL[k.level] ?? "Moderate"}</Text>
+                        <Level level={k.level} />
                         {k.ruler && <Text type="supporting">{k.ruler}</Text>}
                       </HStack>
                       {!ok && <Text color="error">{total - placed} territories to place</Text>}

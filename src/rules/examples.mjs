@@ -11,16 +11,6 @@ export const EXAMPLE_KINGDOMS = [
       { region: 2, list: "human", name: "Human City" },
       { region: 2, list: "dwarf", name: "Forges" },
     ],
-    chronicle: [
-      {
-        year: 1,
-        title: "Grundeland founded",
-        body:
-          "A kingdom of dwarves and humans, ruled by Barrok IV, an old but still " +
-          "hearty dwarf. Its symbol is a shield bearing a crossed hammer and sword, " +
-          "for the unity of the two peoples who live there.",
-      },
-    ],
   },
   {
     id: "vasala",
@@ -35,16 +25,6 @@ export const EXAMPLE_KINGDOMS = [
       { region: 3, list: "elf", name: "Grasslands" },
       { region: 3, list: "elf", name: "Towers" },
       { region: 3, list: "goblin", name: "Dark Hills" },
-    ],
-    chronicle: [
-      {
-        year: 1,
-        title: "Vasala under Kelindra",
-        body:
-          "Ruled by the young elf queen Kelindra, a powerful sorceress. Most armies " +
-          "march under her younger brother, Prince Kalek. The Dark Hills bring goblin " +
-          "wolfriders into elvish service, carrying elvish shields.",
-      },
     ],
   },
 ];

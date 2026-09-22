@@ -13,7 +13,7 @@ A web app for *Oathmark: Second Edition* (Osprey Games) that builds a kingdom an
 ```
 npm install
 npm run dev      # http://localhost:5178
-npm test         # 85 tests, node:test
+npm test         # 84 tests, node:test
 npm run build    # BASE_PATH=/repo-name/ is set by the workflow
 ```
 
@@ -59,6 +59,9 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 - **Lists** (`#/kingdoms`, `#/musters`) have a docked CTA (New Kingdom / Muster a New Army) that opens a modal, plus a ⋯ menu with Import and Export All.
 - **Records** (`#/kingdom`, `#/muster`) autosave every edit into the store, so there is no Save button. Their ⋯ menu has Export, Duplicate and Delete (Delete asks through an AlertDialog).
 - **Unit Collection** is one global record (`store.collections[0].owned`), shared by every muster's shortfall check.
+- **Kingdom page:** Region 1 lists the six capitals with everything each grants; the territory picker shows race · grants. The Kingdom Sheet panel is the book's p217 sheet (name, ruler, emblem, rings) followed by `FigureAccess`, every figure the kingdom can muster, grouped by race; new rows rise in. No Chronicle.
+- **Name rolls:** `NameField` (TextInput + dice) draws from `src/names.mjs`: army and hero pools from the Dragon Rampant 2e builder, plus a realm pool. The big sci-fi pools (Infinity etc.) live in the Xenos Rampant builder's `src/factions.js`.
+- **Experience** shows game-icons rank-1/2/3 chevrons (`Level.jsx`).
 - **New kingdom modal:** name, ruler, experience and emblem. **New army modal:** the p218 roster header (Army Name, Army Commander, Total Points) plus the Kingdom, with a Roll button for the p33 Random Points table.
 
 ## Astryx gotchas (learned the hard way)
@@ -67,6 +70,7 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 - **AppShell `mobileNav` config-object drawer does not render its content in 0.6.2.** The app uses `mobileNav={false}` plus a standalone controlled `<MobileNav isOpen onOpenChange>` opened by an `.om-menu-btn` hamburger. `paper.css` hides the SideNav below 768px and the hamburger above it.
 - **AppShell breakpoints come from the theme:** `adaptations.widthBreakpoints` is declared in `marches.ts`.
 - **Page width:** `Shell` caps pages with `Layout contentWidth` (`FRAME.contentWidth` = 1200), which covers the content column and the sheet panel together.
+- **ListItem `description` as a plain string truncates to one line.** Pass a `<Text>` so it wraps.
 - **Tables bleed by the Layout padding.** Keep `Layout padding` and `LayoutContent padding` equal (both 6), and don't wrap a Table in `Section padding={0}`. Column `pixel()` widths exclude cell padding.
 
 ## Images and print

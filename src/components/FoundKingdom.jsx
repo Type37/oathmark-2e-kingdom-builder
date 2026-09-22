@@ -1,9 +1,12 @@
 import React from "react";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FormLayout, Field,
-  TextInput, RadioList, RadioListItem, HStack, Button,
+  RadioList, RadioListItem, HStack, Button,
 } from "@astryxdesign/core";
 import Emblem from "./Emblem.jsx";
+import NameField from "./NameField.jsx";
+import { LevelIcon } from "./Level.jsx";
+import { NAMES } from "../names.mjs";
 import EmblemDialog from "./EmblemDialog.jsx";
 import { saveEmblem } from "../emblem.mjs";
 
@@ -39,13 +42,12 @@ export default function FoundKingdom({ isOpen, onOpenChange, onFound }) {
           content={
             <LayoutContent>
               <FormLayout>
-                <TextInput label="Kingdom Name" value={name}
-                           onChange={(e) => setName(e.target?.value ?? e)} />
-                <TextInput label="Current Ruler" value={ruler}
-                           onChange={(e) => setRuler(e.target?.value ?? e)} />
+                <NameField label="Kingdom Name" value={name} onChange={setName} pool={NAMES.kingdom} />
+                <NameField label="Current Ruler" value={ruler} onChange={setRuler} pool={NAMES.hero} />
                 <RadioList label="Oathmark Experience" value={level} onChange={setLevel}>
                   {SIZES.map((s) => (
-                    <RadioListItem key={s.value} value={s.value} label={s.label} description={s.regions} />
+                    <RadioListItem key={s.value} value={s.value} label={s.label} description={s.regions}
+                                   endContent={<LevelIcon level={s.value} />} />
                   ))}
                 </RadioList>
                 <Field label="Emblem" isOptional>
