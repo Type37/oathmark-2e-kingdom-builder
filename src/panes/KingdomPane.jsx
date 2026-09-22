@@ -17,11 +17,12 @@ import EmblemDialog from "../components/EmblemDialog.jsx";
 import { GAP, DENSITY } from "../layout.mjs";
 import {
   LEVELS, REGION_SIZES, CAPITAL_LISTS, allTerritories, canPlace,
-  validateKingdom, territory, grantList, figurePool,
+  validateKingdom, territory, grantList, figurePool, rarityNote,
 } from "../rules/kingdom.mjs";
 import { hueOf } from "../race.mjs";
 import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
 import KingdomLore from "../components/KingdomLore.jsx";
+import Defined from "../components/Defined.jsx";
 import { hasLore } from "../lore.mjs";
 
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
@@ -72,7 +73,12 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
                   ))}
                 </HStack>
               }
-              startContent={<Token label={`Rarity ${territory(p.list, p.name)?.rarity ?? ""}`} size="sm" color={hueOf(p.list)} />}
+              startContent={
+                <Defined bare def={rarityNote({ capitalList, list: p.list, name: p.name })}
+                         label={`Rarity ${territory(p.list, p.name)?.rarity ?? ""}`}>
+                  <Token label={`Rarity ${territory(p.list, p.name)?.rarity ?? ""}`} size="sm" color={hueOf(p.list)} />
+                </Defined>
+              }
               endContent={
                 <Button label="Remove" size="sm" variant="ghost" isIconOnly className="om-remove"
                         icon={<Ico name="times" />}
@@ -124,6 +130,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
       <TerritoryPicker
         region={picking}
         candidates={candidates.map(({ t }) => t)}
+        capitalList={capitalList}
         pool={new Set(figurePool(value).keys())}
         onOpenFigure={setOpenFigure}
         onClose={() => setPicking(null)}

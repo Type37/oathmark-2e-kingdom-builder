@@ -57,6 +57,34 @@ export function canPlace({ capitalList, region, list, name }) {
   return { ok: true };
 }
 
+// The rarity rule as the book states it (p18), plus where this terrain may sit
+// in this kingdom, which is the part a player actually needs.
+export function rarityNote({ capitalList, list, name }) {
+  const t = territory(list, name);
+  if (!t) return null;
+  const text =
+    "After the name of each terrain type is a number in parenthesis. This number is the rarity of the terrain type and determines where a player can place that type of terrain in their kingdom.";
+  if (t.capital) {
+    return { title: `Rarity ${t.rarity}`, text, page: 17,
+             note: "A capital city sits in Region 1, or in a later region as a second city." };
+  }
+  if (list === "unaligned") {
+    return { title: `Rarity ${t.rarity}`, text, page: 18,
+             note: `Unaligned: this keeps rarity ${t.rarity} whatever your capital, so it needs Region ${t.rarity}.` };
+  }
+  const sameList = list === capitalList || Boolean(territory(capitalList, name));
+  const need = earliestRegion(t.rarity, sameList);
+  const lens = sameList ? "on your capital's list" : "on another list";
+  return {
+    title: `Rarity ${t.rarity}`,
+    text,
+    page: 18,
+    note: need > 4
+      ? `${need > 4 ? "Campaign only" : ""}: rarity ${t.rarity} ${lens} is beyond Region 4.`
+      : `Rarity ${t.rarity} ${lens}, so it needs Region ${need} or later.`,
+  };
+}
+
 export function placeableIn({ capitalList, region }) {
   return allTerritories().filter((t) => canPlace({ capitalList, region, list: t.list, name: t.name }).ok);
 }

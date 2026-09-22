@@ -4,7 +4,8 @@ import {
 } from "@astryxdesign/core";
 import { pixel } from "@astryxdesign/core/Table";
 import { Attributes } from "./StatLine.jsx";
-import { figureById } from "../rules/kingdom.mjs";
+import { figureById, stats } from "../rules/kingdom.mjs";
+import Defined from "./Defined.jsx";
 import { equipmentParts } from "../rules/equipment.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
 import { GAP } from "../layout.mjs";
@@ -20,7 +21,12 @@ function StatRow({ variants, extra = [] }) {
       : []),
     ...STAT_KEYS.map((k) => ({
       key: k,
-      header: letter(k),
+      header: (
+        <Defined label={stats[k]?.name ?? letter(k)}
+                 def={stats[k] && { title: stats[k].name, text: stats[k].text, note: stats[k].note, page: stats[k].page }}>
+          <Text type="label">{letter(k)}</Text>
+        </Defined>
+      ),
       width: pixel(52),
       align: "center",
       renderCell: (r) => <Text type="large">{r[k]}</Text>,

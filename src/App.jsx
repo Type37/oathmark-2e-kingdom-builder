@@ -100,6 +100,11 @@ export default function App() {
     { label: "Import", onClick: () => fileRef.current?.click() },
     { label: "Export All", onClick: exportAll },
   ];
+  const appActions = [
+    { label: "Options", onClick: () => go("options") },
+    { type: "divider" },
+    ...fileActions,
+  ];
   const recordActions = (kind, rec) => rec ? [
     { label: "Export", onClick: () => exportOne(rec) },
     { label: "Duplicate", onClick: () => setStore((s) => duplicate(s, kind, rec.id)) },
@@ -129,6 +134,7 @@ export default function App() {
   const shell = {
     onBack: () => go(PARENT[section] ?? "home"),
     onMenu: () => setMenuOpen(true),
+    appActions,
   };
 
   // The rail: three builders, then the saved records, with the rules reference last.
@@ -143,23 +149,8 @@ export default function App() {
         <SideNavItem key={b.id} label={b.label} isSelected={b.match.includes(section)}
                      onClick={() => go(b.id)} />
       ))}
-      {["kingdoms", "musters"].map((kind) => {
-        const rows = store[kind] ?? [];
-        if (!rows.length) return null;
-        return (
-          <SideNavSection key={kind} title={kind === "kingdoms" ? "Kingdoms" : "Armies"}>
-            {rows.map((r) => (
-              <SideNavItem key={r.id} label={r.name || "Untitled"}
-                           isSelected={store.active?.[kind] === r.id &&
-                             section === (kind === "kingdoms" ? "kingdom" : "muster")}
-                           onClick={() => open(kind, r.id)} />
-            ))}
-          </SideNavSection>
-        );
-      })}
       <SideNavSection title="Rules">
         <SideNavItem label="Reference" isSelected={section === "reference"} onClick={() => go("reference")} />
-        <SideNavItem label="Options" isSelected={section === "options"} onClick={() => go("options")} />
       </SideNavSection>
     </>
   );

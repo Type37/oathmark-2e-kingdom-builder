@@ -4,7 +4,8 @@ import {
   VStack, HStack, List, ListItem, Token, Text, Heading, Button, Table, Link, useMediaQuery,
 } from "@astryxdesign/core";
 import { pixel } from "@astryxdesign/core/Table";
-import { territory, figureById } from "../rules/kingdom.mjs";
+import { territory, figureById, rarityNote } from "../rules/kingdom.mjs";
+import Defined from "./Defined.jsx";
 import { STAT_KEYS } from "../rules/stats.mjs";
 import { hueOf } from "../race.mjs";
 import { BREAK, GAP } from "../layout.mjs";
@@ -22,9 +23,9 @@ const NOTE = {
 };
 
 // Each figure a territory grants, with its stat line, marked New when the kingdom lacks it.
-function Grants({ t, pool, onOpenFigure }) {
+function Grants({ t, pool, region, onOpenFigure }) {
   const rows = t.grants
-    .filter((g) => g.figure && !g.capitalOnly)
+    .filter((g) => g.figure && (region === 1 || !g.capitalOnly))
     .map((g) => {
       const fig = figureById.get(g.figureId);
       const v = fig?.variants[0] ?? {};
@@ -32,7 +33,7 @@ function Grants({ t, pool, onOpenFigure }) {
         ? `${fig.variants[0].pts}–${fig.variants.at(-1).pts}` : v.pts;
       const count = g.max != null ? `${g.max} ` : "";
       const levels = g.levels ? ` Level ${g.levels[0]}–${g.levels.at(-1)}` : "";
-      return { id: g.figureId, name: `${count}${g.figure}${levels}`, isNew: !pool.has(g.figureId), ...v, pts };
+      return { id: g.figureId, name: `${count}${g.figure}${levels}`, isNew: !pool.has(g.figureId), capitalOnly: g.capitalOnly, ...v, pts };
     });
 
   const columns = [
@@ -40,6 +41,7 @@ function Grants({ t, pool, onOpenFigure }) {
       <HStack gap={2} align="center" wrap="wrap">
         <Link isStandalone onClick={() => onOpenFigure(r.id)}>{r.name}</Link>
         {r.isNew && <Token label="New" size="sm" color={hueOf(t.list)} />}
+        {r.capitalOnly && <Token label="Capital only" size="sm" />}
       </HStack>
     ) },
     ...STAT_KEYS.map((k) => ({
@@ -50,16 +52,18 @@ function Grants({ t, pool, onOpenFigure }) {
   return <Table data={rows} columns={columns} idKey="id" density="compact" dividers="rows" />;
 }
 
-function Preview({ t, region, pool, onOpenFigure, onAdd, onBack }) {
+function Preview({ t, region, capitalList, pool, onOpenFigure, onAdd, onBack }) {
   return (
     <VStack gap={GAP.group}>
       <HStack gap={GAP.item} align="center" wrap="wrap">
         {onBack && <Button label="Back" variant="ghost" size="sm" onClick={onBack} />}
         <Heading level={3}>{t.name}</Heading>
         <Token label={RACE[t.list]} size="sm" color={hueOf(t.list)} />
-        <Token label={`Rarity ${t.rarity}`} size="sm" />
+        <Defined bare def={rarityNote({ capitalList, list: t.list, name: t.name })} label={`Rarity ${t.rarity}`}>
+          <Token label={`Rarity ${t.rarity}`} size="sm" />
+        </Defined>
       </HStack>
-      <Grants t={t} pool={pool} onOpenFigure={onOpenFigure} />
+      <Grants t={t} pool={pool} region={region} onOpenFigure={onOpenFigure} />
       <HStack justify="end">
         <Button label={`Add to Region ${region}`} variant="primary" onClick={() => onAdd(t)} />
       </HStack>
@@ -67,7 +71,7 @@ function Preview({ t, region, pool, onOpenFigure, onAdd, onBack }) {
   );
 }
 
-export default function TerritoryPicker({ region, candidates, pool, onPick, onClose, onOpenFigure }) {
+export default function TerritoryPicker({ region, candidates, capitalList, pool, onPick, onClose, onOpenFigure }) {
   const narrow = useMediaQuery(BREAK.narrow);
   const [focus, setFocus] = React.useState(null);
   const isOpen = Boolean(region);
@@ -91,7 +95,7 @@ export default function TerritoryPicker({ region, candidates, pool, onPick, onCl
     </List>
   );
   const preview = focus && (
-    <Preview t={withGrants(focus)} region={region} pool={pool} onOpenFigure={onOpenFigure}
+    <Preview t={withGrants(focus)} region={region} capitalList={capitalList} pool={pool} onOpenFigure={onOpenFigure}
              onAdd={onPick} onBack={narrow ? () => setFocus(null) : undefined} />
   );
   const close = (o) => !o && onClose();
