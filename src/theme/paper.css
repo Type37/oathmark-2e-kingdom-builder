@@ -1,0 +1,104 @@
+/* The page field is the book's own parchment scan, extracted from p217. */
+body {
+  font-family: var(--font-family-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-body);
+  background-image: url("/art/parchment-a.jpg");
+  background-size: 1000px auto;
+  background-repeat: repeat;
+  background-blend-mode: multiply;
+}
+
+/* Sword rules stand in for a Divider where the sheet needs a heavier break. */
+.om-sword-rule {
+  height: 120px;
+  background-image: url("/art/sword-plain.png");
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.75;
+}
+
+/* A newly claimed territory fills in: the wedge wipes from the capital outward. */
+@keyframes om-claim {
+  from { fill-opacity: 0; }
+  to   { fill-opacity: 1; }
+}
+@keyframes om-claim-edge {
+  0%   { stroke-width: 6; }
+  100% { stroke-width: 1; }
+}
+.om-slot {
+  transition:
+    fill-opacity var(--duration-fast) var(--ease-standard),
+    stroke-width var(--duration-fast) var(--ease-standard);
+}
+.om-slot-claimed {
+  animation:
+    om-claim var(--duration-medium) var(--ease-standard) both,
+    om-claim-edge var(--duration-medium-max) var(--ease-standard) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .om-slot,
+  .om-slot-claimed {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* One page scroll. The kingdom sheet rides along, pinned under the nav. */
+.om-sticky {
+  position: sticky;
+  top: var(--spacing-4);
+  align-self: start;
+}
+
+/* Hover should say what you are pointing at, everywhere. */
+.astryx-list-item:hover,
+.astryx-item:hover {
+  background-color: var(--color-background-muted);
+}
+.om-slot {
+  cursor: pointer;
+}
+.om-slot:hover {
+  fill-opacity: 0.9;
+  stroke-width: 3;
+}
+
+/* The book's own wording gets the serif; everything structural stays sans. */
+.om-prose,
+.om-prose * {
+  font-family: var(--font-family-prose);
+}
+
+/* Table header band: solid, square, reversed letterspaced caps. */
+.om-band {
+  background-color: var(--color-text-secondary);
+  color: var(--color-background-body);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-family: var(--font-family-heading);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Row rules sit inset from the edge, as the book draws them. */
+.om-ruled > * + * {
+  border-top: 1px solid var(--color-border);
+  margin-inline: var(--spacing-3);
+}
+
+/* Claimed territory uses Bubblegum Pink, which carries no text. */
+.om-slot-claimed { animation-name: om-claim, om-claim-edge; }
+.om-fill-highlight { fill: var(--color-highlight); }
+
+/* Card art sits on the muted field, never a dark fill behind dark text. */
+.om-card-art {
+  background-color: var(--color-background-muted);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border);
+  height: 200px;
+  justify-content: center;
+}
+.om-card { cursor: pointer; }
+.om-card:hover .om-card-art { background-color: var(--color-border); }
