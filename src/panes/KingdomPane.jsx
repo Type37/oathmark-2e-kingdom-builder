@@ -10,6 +10,7 @@ import FigureCard from "../components/FigureCard.jsx";
 import FigureAccess from "../components/FigureAccess.jsx";
 import NameField from "../components/NameField.jsx";
 import Level from "../components/Level.jsx";
+import Capital from "../components/Capital.jsx";
 import Emblem from "../components/Emblem.jsx";
 import EmblemDialog from "../components/EmblemDialog.jsx";
 import { GAP, DENSITY } from "../layout.mjs";
@@ -166,7 +167,8 @@ export default function KingdomPane({ value, onChange, onEmblem, shell }) {
       title={value.name || "Untitled"}
       leading={<Emblem emblemKey={value.emblem} name={value.name} size="lg" />}
       inlineDetail={<VStack gap={GAP.group}>{map}{access}</VStack>}
-      meta={<Level level={level ?? "moderate"} />}
+      subtitle={value.ruler ? <Text>{value.ruler}</Text> : null}
+      meta={<HStack gap={GAP.item} align="center"><Capital kingdom={value} /><Level level={level ?? "moderate"} /></HStack>}
       detail={detail}
       detailTitle="Kingdom Sheet"
       content={(

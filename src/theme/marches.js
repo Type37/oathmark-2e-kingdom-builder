@@ -284,6 +284,32 @@ export const marchesTheme = {
         "fontFamily": "var(--font-family-ui)"
       }
     },
+    "side-nav-item": {
+      "base": {
+        "fontFamily": "var(--font-family-ui)"
+      }
+    },
+    "side-nav-section": {
+      "base": {
+        "fontFamily": "var(--font-family-ui)"
+      }
+    },
+    "side-nav-heading": {
+      "base": {
+        "fontFamily": "var(--font-family-heading)"
+      }
+    },
+    "dialog-header-title-block": {
+      "base": {
+        "fontFamily": "var(--font-family-heading)"
+      }
+    },
+    "field-label": {
+      "base": {
+        "fontFamily": "var(--font-family-heading)",
+        "letterSpacing": "0.02em"
+      }
+    },
     "tab": {
       "base": {
         "fontFamily": "var(--font-family-ui)"

@@ -424,6 +424,27 @@
     font-family: var(--font-family-ui);
   }
 
+  .astryx-side-nav-item {
+    font-family: var(--font-family-ui);
+  }
+
+  .astryx-side-nav-section {
+    font-family: var(--font-family-ui);
+  }
+
+  .astryx-side-nav-heading {
+    font-family: var(--font-family-heading);
+  }
+
+  .astryx-dialog-header-title-block {
+    font-family: var(--font-family-heading);
+  }
+
+  .astryx-field-label {
+    font-family: var(--font-family-heading);
+    letter-spacing: 0.02em;
+  }
+
   .astryx-tab {
     font-family: var(--font-family-ui);
   }

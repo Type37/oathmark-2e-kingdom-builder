@@ -44,7 +44,8 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 |---|---|---|
 | All text | Berling LT Std (owner's web licence, self-hosted from `public/fonts/berling/`); Crimson Pro is the fallback | `--font-family-body` |
 | Headings, table bars, plates, docked CTA | Grenze Gotisch | `--font-family-heading` |
-| Buttons, tabs, tokens, badges | Cabin | `--font-family-ui` (local) |
+| Buttons, tabs, tokens, badges, SideNav items and section titles | Cabin | `--font-family-ui` (local) |
+| Field labels (the book's sheet labels), dialog titles, SideNav heading | Grenze Gotisch | theme `components` overrides |
 
 **Colour:** page `#FBF7EF` over the parchment scan, cards `#FFFFFF`, ink `#221F1F`, warm grey `#5C5953` (secondary text and bars), dusty rose `#D7B5A6` (borders), magenta accent `#D40B61` (`#EC0C6C` as `--color-highlight` for fills only).
 
@@ -85,6 +86,7 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 | `notes/book-style.md` | The book's fonts, sizes, colours and layout, measured from the PDF. The accent is magenta `#ec0c6c`, and the older `visual-reference.md` is wrong about the book having no accent. |
 | `notes/hobgoblin-flow.md` | Hobgoblin's routes, flow, interaction table (modal vs popover vs bottom sheet), measured sizes and colours, and the patterns to copy. Screenshots are in `notes/hobgoblin/` (git-ignored). |
 | `notes/visual-reference.md`, `notes/typography.md` | Earlier palette notes, dash and middot rules. |
+| `notes/name-pools.md` | Every roll-button name and where each pool came from. |
 
 ## Architecture
 

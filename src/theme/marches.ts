@@ -122,6 +122,12 @@ export default defineTheme({
       "variant:pink": { borderTop: "var(--spacing-1) solid var(--color-border-pink)" },
     },
     button: { base: { fontFamily: "var(--font-family-ui)" } },
+    "side-nav-item": { base: { fontFamily: "var(--font-family-ui)" } },
+    "side-nav-section": { base: { fontFamily: "var(--font-family-ui)" } },
+    "side-nav-heading": { base: { fontFamily: "var(--font-family-heading)" } },
+    "dialog-header-title-block": { base: { fontFamily: "var(--font-family-heading)" } },
+    // Field labels are the book's sheet labels: KINGDOM NAME, ARMY COMMANDER, TOTAL POINTS (p217–218).
+    "field-label": { base: { fontFamily: "var(--font-family-heading)", letterSpacing: "0.02em" } },
     tab: { base: { fontFamily: "var(--font-family-ui)" } },
     token: { base: { fontFamily: "var(--font-family-ui)" } },
     badge: { base: { fontFamily: "var(--font-family-ui)" } },

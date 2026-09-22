@@ -13,6 +13,7 @@ import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
 import Emblem from "../components/Emblem.jsx";
 import Level from "../components/Level.jsx";
+import Capital from "../components/Capital.jsx";
 
 function slots(level) {
   return (LEVELS[level] ?? LEVELS.moderate).reduce((n, r) => n + REGION_SIZES[r], 0);
@@ -56,9 +57,10 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
                         <Emblem emblemKey={k.emblem} name={k.name} size="lg" />
                         <Heading level={2}>{k.name || "Untitled"}</Heading>
                       </HStack>
-                      <HStack gap={GAP.item} align="baseline">
+                      {k.ruler && <Text>{k.ruler}</Text>}
+                      <HStack gap={GAP.item} align="center" wrap="wrap">
+                        <Capital kingdom={k} />
                         <Level level={k.level} />
-                        {k.ruler && <Text type="supporting">{k.ruler}</Text>}
                       </HStack>
                       {!ok && <Text color="error">{total - placed} territories to place</Text>}
                     </VStack>
