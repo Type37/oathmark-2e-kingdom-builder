@@ -1,18 +1,20 @@
 import React from "react";
 import {
-  VStack, HStack, Text, Button, Token, Selector, Card, CheckboxList, CheckboxListItem,
+  VStack, HStack, Text, Button, Selector, Card,
 } from "@astryxdesign/core";
 import Counter from "./Counter.jsx";
 import Ico from "./Ico.jsx";
 import Upgrades from "./Upgrades.jsx";
 import Defined from "./Defined.jsx";
 import { Attributes } from "./StatLine.jsx";
-import StatLine from "./StatLine.jsx";
+import { StatBar } from "./StatLine.jsx";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { upgradeCost, applyUpgrades } from "../rules/upgrades.mjs";
 import { unitProfile, canJoin, isCharacter, crewOf, isArtillery } from "../rules/army.mjs";
-import { spellsFor, spellsKnown, itemsFor } from "../rules/magic.mjs";
+import { spellsKnown } from "../rules/magic.mjs";
+import MagicItems, { CarriedItem } from "./MagicItems.jsx";
+import SpellPicker, { SpellList } from "./SpellPicker.jsx";
 import { attrLevel } from "../rules/stats.mjs";
 import { GAP } from "../layout.mjs";
 
@@ -34,23 +36,31 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                           && !units.some((x) => x.joinedTo === u.uid && x.uid !== unit.uid))
     : [];
 
+  const [picking, setPicking] = React.useState(false);
+  const [spelling, setSpelling] = React.useState(false);
   const patch = (next) => onChange({ ...unit, ...next });
 
   return (
     <Card padding={4} variant={charFig ? "pink" : undefined}>
       <VStack gap={GAP.item}>
         <HStack gap={GAP.item} align="baseline" justify="between" wrap="wrap">
-          <HStack gap={GAP.item} align="baseline" wrap="wrap">
-            <Button variant="ghost" size="sm" label={fig.name} onClick={() => onOpenFigure(fig.id)}>
-              <Text type="large">{fig.name}</Text>
-            </Button>
-            <Token label={`${unitCost(unit)}pts`} />
-            {p.formation && <Token label={p.formation} size="sm" />}
-            {p.unitOfOne && <Token label="Unit-of-one" size="sm" color="gray" />}
-            {crew && <Token label={`Crew ${crew}`} size="sm" />}
-            {charFig && <Token label={`Led by ${charFig.name}`} size="sm" color="pink" />}
-            {unit.joinedTo && <Token label="In a unit" size="sm" color="pink" />}
-          </HStack>
+          <VStack gap={0} align="start">
+            <HStack gap={GAP.item} align="baseline" wrap="wrap">
+              <Button variant="ghost" size="sm" label={fig.name} onClick={() => onOpenFigure(fig.id)}>
+                <Text type="large">{fig.name}</Text>
+              </Button>
+              <Text type="large">{unitCost(unit)}pts</Text>
+            </HStack>
+            <Text type="supporting">
+              {[
+                p.formation,
+                p.unitOfOne ? "unit-of-one" : null,
+                crew ? `crew of ${crew}` : null,
+                charFig ? `led by ${charFig.name}` : null,
+                unit.joinedTo ? "fighting inside a unit" : null,
+              ].filter(Boolean).join(" · ")}
+            </Text>
+          </VStack>
           <HStack gap={GAP.item} align="center">
             {!isArtillery(fig) && p.max > 1 && (
               <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
@@ -61,8 +71,8 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
           </HStack>
         </HStack>
 
-        <StatLine variant={variantAfter} interactive />
-        <Attributes variant={variantAfter} />
+        <StatBar variant={variantAfter} />
+        <Text type="supporting">{(variantAfter.attributes ?? []).join(", ")}</Text>
 
         <HStack gap={GAP.group} align="end" wrap="wrap">
           {levels?.length > 1 && (
@@ -79,13 +89,19 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                                   label: figureById.get(u.figureId)?.name ?? "Unit",
                                 }))]} />
           )}
-          {isCharacter(fig) && (
-            <Selector label="Magic Item" width={230}
-                      value={unit.magicItem?.name ?? ""}
-                      onChange={(v) => patch({ magicItem: v ? itemsFor().find((i) => i.name === v) : null })}
-                      options={[{ value: "", label: "None" },
-                                ...itemsFor().map((i) => ({ value: i.name, label: `${i.name} ${i.pts}pts` }))]} />
-          )}
+        </HStack>
+
+        {isCharacter(fig) && (
+          <>
+            <CarriedItem item={unit.magicItem} onOpen={() => setPicking(true)}
+                         onClear={() => patch({ magicItem: null })} />
+            <MagicItems isOpen={picking} onOpenChange={setPicking}
+                        chosen={unit.magicItem?.name}
+                        taken={units.map((u) => u.magicItem?.name).filter(Boolean)}
+                        onChoose={(item) => patch({ magicItem: item })} />
+          </>
+        )}
+        <HStack gap={GAP.group} align="end" wrap="wrap">
         </HStack>
 
         <Upgrades kingdom={kingdom} figureId={unit.figureId} level={unit.level}
@@ -98,21 +114,12 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                   })} />
 
         {caster > 0 && (
-          <VStack gap={GAP.tight}>
-            <HStack gap={GAP.item} align="baseline">
-              <Text type="label">Spells</Text>
-              <Token label={`${chosenSpells.length} of ${knows}`}
-                     color={chosenSpells.length === knows ? "green" : undefined} size="sm" />
-            </HStack>
-            <CheckboxList label="Spells" isLabelHidden density="compact" value={chosenSpells}
-                          onChange={(next) => patch({ spells: next.slice(0, knows) })}>
-              {spellsFor(fig.list).map((s) => (
-                <CheckboxListItem key={s.name} value={s.name} label={`${s.name} (CN${s.cn})`}
-                                  isDisabled={!chosenSpells.includes(s.name) && chosenSpells.length >= knows}
-                                  description={<Text type="supporting">{s.text}</Text>} />
-              ))}
-            </CheckboxList>
-          </VStack>
+          <>
+            <SpellList spells={chosenSpells} knows={knows} onOpen={() => setSpelling(true)} />
+            <SpellPicker isOpen={spelling} onOpenChange={setSpelling}
+                         race={fig.list} level={unit.level ?? caster} chosen={chosenSpells}
+                         onChange={(spells) => patch({ spells })} />
+          </>
         )}
       </VStack>
     </Card>

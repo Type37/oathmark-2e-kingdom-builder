@@ -1,12 +1,8 @@
-/* The page field is the book's own parchment scan, extracted from p217. */
+/* The page is the theme's plain off-white; the parchment scan stayed behind. */
 body {
   font-family: var(--font-family-body);
   color: var(--color-text-primary);
   background-color: var(--color-background-body);
-  background-image: url("/art/parchment-a.jpg");
-  background-size: 1000px auto;
-  background-repeat: repeat;
-  background-blend-mode: multiply;
 }
 
 /* Sword rules stand in for a Divider where the sheet needs a heavier break. */
@@ -337,3 +333,31 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .om-roll { animation: none; }
 }
+
+/* The roster's stat block: the book's grey bar, in fixed columns. */
+.om-statbar {
+  display: grid;
+  grid-template-columns: repeat(var(--om-cols), minmax(0, 1fr));
+  border: var(--border-width) solid var(--color-bar);
+  max-inline-size: 640px;
+}
+.om-statbar-col { display: grid; }
+.om-statbar-letter {
+  background-color: var(--color-bar);
+  color: var(--color-on-bar);
+  font-family: var(--font-family-ui);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  padding-block: var(--spacing-0-5);
+}
+.om-statbar-value {
+  text-align: center;
+  padding-block: var(--spacing-1);
+  font-size: var(--font-size-lg);
+}
+
+/* The shared WarLore footer sits on the front screens; a build is no place for it. */
+body[data-view="work"] .wlf { display: none; }

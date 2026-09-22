@@ -1,6 +1,7 @@
 import React from "react";
 import { VStack, HStack, Text, CheckboxList, CheckboxListItem } from "@astryxdesign/core";
 import { upgradesFor, upgradeCost } from "../rules/upgrades.mjs";
+import { statText, baseText } from "../rules/stats.mjs";
 
 // Old World Builder's shape: one row per option, cost right-aligned, and the
 // prerequisite stated where it blocks you.
@@ -37,8 +38,10 @@ export default function Upgrades({ kingdom, figureId, level, chosen = [], onChan
               <VStack gap={0}>
                 {u.changes && (
                   <Text>
-                    {Object.entries(u.changes).map(([k, v]) => `${k} ${v}`).join(", ")}
-                    {u.base ? `, base ${u.base}` : ""}
+                    {Object.entries(u.changes)
+                      .map(([k, v]) => `${k === "pts" ? "Pts" : k} ${statText(k, v)}`)
+                      .join(", ")}
+                    {u.base ? `, base ${baseText(u.base)}mm` : ""}
                   </Text>
                 )}
                 {u.adds && <Text>{u.adds.join(", ")}</Text>}

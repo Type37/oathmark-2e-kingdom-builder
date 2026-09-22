@@ -14,6 +14,8 @@ export default function OptionsPane({ value, onChange, shell }) {
           <VStack gap={GAP.group} align="start">
             <Switch label="Lore and Detail" isSelected={Boolean(value.lore)} isDisabled={!hasLore}
                     onChange={(lore) => onChange({ ...value, lore })} />
+            <Switch label="Muster from my collection" isSelected={Boolean(value.useCollection)}
+                    onChange={(useCollection) => onChange({ ...value, useCollection })} />
           </VStack>
         </Section>
       }

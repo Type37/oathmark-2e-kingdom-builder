@@ -55,7 +55,7 @@ export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileA
                       <VStack gap={GAP.tight} onClick={() => onOpen(m.id)}>
                         {k && <Text>Kingdom: {k.name || "Untitled"}</Text>}
                         {m.commander && <Text>Commander: {m.commander}</Text>}
-                        <Token label={`${armyPoints(m)} of ${m.points}pts`} />
+                        <Text type="label">{armyPoints(m)} of {m.points}pts</Text>
                       </VStack>
                     </VStack>
                   </Card>

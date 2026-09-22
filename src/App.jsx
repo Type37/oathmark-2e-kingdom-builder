@@ -68,6 +68,10 @@ export default function App() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch {}
   }, [store]);
 
+  React.useEffect(() => {
+    document.body.dataset.view = ["kingdom", "muster"].includes(section) ? "work" : "front";
+  }, [section]);
+
   const kingdom = activeRecord(store, "kingdoms");
   const muster = activeRecord(store, "musters");
   const musterKingdom = muster ? get(store, "kingdoms", muster.kingdomId) : null;
@@ -237,6 +241,7 @@ export default function App() {
           <MusterPane
             kingdom={musterKingdom ?? EMPTY_KINGDOM}
             collection={collection.owned}
+            settings={store.settings ?? {}}
             value={muster}
             onChange={update("musters")}
             ready={Boolean(musterKingdom?.capitalList && validateKingdom(musterKingdom).ok)}

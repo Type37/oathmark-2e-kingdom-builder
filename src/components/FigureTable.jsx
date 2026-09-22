@@ -5,9 +5,9 @@ import {
 import { pixel } from "@astryxdesign/core/Table";
 import { stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
-import Dice from "./Dice.jsx";
 import Ico from "./Ico.jsx";
-import { Attributes } from "./StatLine.jsx";
+import { Icon } from "@iconify/react";
+import { D10 } from "../icons/game.mjs";
 import { COL, BREAK, statWidth } from "../layout.mjs";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
 
@@ -31,7 +31,10 @@ function Head({ statKey }) {
       }
     >
       <Button variant="ghost" size="sm" label={def?.name ?? letter}>
-        <Text type="label">{letter}</Text>
+        <HStack gap={1} align="center">
+          {statKey === "CD" && <Icon icon={D10} width={16} height={16} />}
+          <Text type="label">{letter}</Text>
+        </HStack>
       </Button>
     </Popover>
   );
@@ -77,17 +80,32 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
       header: sortable(k, <Head statKey={k} />),
       width: pixel(statWidth(k)),
       align: "center",
-      renderCell: (r) => (k === "CD" ? <Dice count={r[k]} /> : <Text type="large">{statText(k, r[k])}</Text>),
+      renderCell: (r) => <Text type="large">{k === "CD" ? r[k] : statText(k, r[k])}</Text>,
     })),
     ...(isNarrow ? [] : [
       { key: "special", header: "Special", width: pixel(COL.special),
-        renderCell: (r) => <Attributes variant={r.fig?.variants?.[0] ?? { attributes: [] }} onOpen={onOpenAttribute} /> },
+        renderCell: (r) => {
+          const attrs = r.fig?.variants?.[0]?.attributes ?? [];
+          if (!attrs.length) return null;
+          return onOpenAttribute
+            ? (
+              <Text>
+                {attrs.map((a, i) => (
+                  <React.Fragment key={a}>
+                    {i > 0 && ", "}
+                    <Link onClick={() => onOpenAttribute(a)}>{a}</Link>
+                  </React.Fragment>
+                ))}
+              </Text>
+            )
+            : <Text>{attrs.join(", ")}</Text>;
+        } },
       { key: "base", header: (
           <Defined def={{ title: baseRule.name, text: baseRule.text, note: baseRule.note, page: baseRule.page }}>
             <Text type="label">Base</Text>
           </Defined>
         ), width: pixel(COL.base), align: "center",
-        renderCell: (r) => <Text>{baseText(r.fig?.variants?.[0]?.base)}</Text> },
+        renderCell: (r) => <Text>{baseText(r.fig?.variants?.[0]?.base)}mm</Text> },
     ]),
     actionColumn
       ? {

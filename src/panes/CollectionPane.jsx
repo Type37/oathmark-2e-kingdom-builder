@@ -79,11 +79,7 @@ export default function CollectionPane({ value, onChange, shell }) {
     <Shell
       {...shell}
       title="Collection"
-      meta={(
-      <Text type="label">
-        {totals.figures} figures in {totals.types} types, {totals.points}pts
-      </Text>
-    )}
+      meta={null}
       detail={null}
       detailTitle="Collection"
       content={(

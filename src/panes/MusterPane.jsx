@@ -17,7 +17,7 @@ import { GAP } from "../layout.mjs";
 
 // The Army Roster (p218): the units you have bought, what they cost, and what
 // the muster rules (p35) say about them.
-export default function MusterPane({ kingdom, collection = {}, value, onChange, ready, shell }) {
+export default function MusterPane({ kingdom, collection = {}, settings = {}, value, onChange, ready, shell }) {
   const [openFigure, setOpenFigure] = React.useState(null);
   const [adding, setAdding] = React.useState(false);
   const points = value.points ?? 1000;
@@ -26,7 +26,8 @@ export default function MusterPane({ kingdom, collection = {}, value, onChange, 
   const pool = React.useMemo(() => figurePool(kingdom), [kingdom]);
   const result = validateArmy(kingdom, { points, units });
   const agg = armyStats(units);
-  const short = shortfalls(collection, units);
+  // Only a player tracking their painted figures wants to hear about shortfalls.
+  const short = settings.useCollection ? shortfalls(collection, units) : [];
   const over = result.points > points;
   const battle = value.battleType ? battleTypeById.get(value.battleType) : null;
 

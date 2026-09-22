@@ -66,7 +66,7 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
                         <Capital kingdom={k} />
                         <LevelIcon level={k.level} />
                       </HStack>
-                      {!ok && <Text color="error">{total - placed} territories to place</Text>}
+                      {!ok && <Text color="error">{total - placed === 1 ? "1 territory to place" : `${total - placed} territories to place`}</Text>}
                       </VStack>
                     </VStack>
                 </Card>
