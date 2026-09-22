@@ -275,3 +275,13 @@ body {
 
 /* Regions the kingdom has not reached yet are present but set back. */
 .om-region-closed { opacity: 0.5; }
+
+/* A popover opened from a plate is its own surface: it must not inherit the
+   plate's spaced capitals. */
+.om-plate .astryx-popover,
+.om-plate .astryx-popover * {
+  font-family: var(--font-family-body);
+  font-weight: normal;
+  letter-spacing: normal;
+  text-transform: none;
+}

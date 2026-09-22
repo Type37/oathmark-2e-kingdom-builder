@@ -37,7 +37,7 @@ export default function Shell({
         </HStack>
         <HStack gap={GAP.item} align="center" wrap="wrap">
           {meta}
-          {onPrint && (
+          {onPrint && !narrow && (
             <Button label="Print" variant="secondary" size="md"
                     icon={<Ico name="printer" size={20} />} onClick={onPrint} />
           )}
@@ -49,7 +49,12 @@ export default function Shell({
             <Button label={detailTitle ?? "Details"} size="md" variant="secondary"
                     onClick={() => setDetailOpen(true)} />
           )}
-          {actions?.length > 0 && <MoreMenu items={actions} alignment="end" />}
+          {(actions?.length > 0 || (narrow && onPrint)) && (
+            <MoreMenu alignment="end" items={[
+              ...(narrow && onPrint ? [{ label: "Print", onClick: onPrint }] : []),
+              ...(actions ?? []),
+            ]} />
+          )}
         </HStack>
       </HStack>
     </LayoutHeader>
