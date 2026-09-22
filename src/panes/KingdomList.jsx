@@ -3,7 +3,8 @@ import {
   Layout, LayoutContent, LayoutHeader, VStack, HStack, Card, Text, Heading,
   Section, Button,
 } from "@astryxdesign/core";
-import Ico from "../components/Ico.jsx";
+import { Icon } from "@iconify/react";
+import { LAUREL } from "../icons/game.mjs";
 import { LEVELS, REGION_SIZES, validateKingdom } from "../rules/kingdom.mjs";
 import { list as listOf } from "../rules/store.mjs";
 import { GAP } from "../layout.mjs";
@@ -47,8 +48,8 @@ export default function KingdomList({ store, onOpen, onNew }) {
                 </Card>
               );
             })}
-            <Button label="Create Kingdom" size="lg" variant="primary" width="100%"
-                    icon={<Ico name="plus" size={22} />} onClick={onNew} />
+            <Button label="Found a Kingdom" size="lg" variant="primary" width="100%"
+                    icon={<Icon icon={LAUREL} width={26} height={26} />} onClick={onNew} />
           </VStack>
         </LayoutContent>
       }

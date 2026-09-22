@@ -13,6 +13,7 @@ import ReferencePane from "./panes/ReferencePane.jsx";
 import { validateKingdom } from "./rules/kingdom.mjs";
 import { STORE_KEY, emptyStore, normalise, save, get, setActive, activeRecord } from "./rules/store.mjs";
 import { parseImport } from "./rules/schema.mjs";
+import useSection from "./useSection.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "./rules/examples.mjs";
 
 const EMPTY_KINGDOM = {
@@ -38,7 +39,7 @@ function read() {
 
 export default function App() {
   const [store, setStore] = React.useState(read);
-  const [section, setSection] = React.useState("home");
+  const [section, setSection] = useSection();
   const [kingdom, setKingdom] = React.useState(() => activeRecord(read(), "kingdoms") ?? EMPTY_KINGDOM);
   const [muster, setMuster] = React.useState(EMPTY_MUSTER);
   const [saved, setSaved] = React.useState(false);

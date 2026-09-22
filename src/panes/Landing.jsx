@@ -2,14 +2,15 @@ import React from "react";
 import {
   Layout, LayoutContent, Grid, VStack, Card, Heading, Section,
 } from "@astryxdesign/core";
+import { Icon } from "@iconify/react";
 import Mark from "../components/Mark.jsx";
+import { LAUREL, MUSTER } from "../icons/game.mjs";
 import { GAP } from "../layout.mjs";
 
-// Titles are the book's own chapter names. No descriptions, no counts.
 const CARDS = [
-  { id: "kingdom", title: "Creating a Kingdom", mark: "siege" },
-  { id: "muster", title: "Muster an Army", mark: "melee" },
-  { id: "reference", title: "Figure Lists", mark: "skill" },
+  { id: "kingdom", title: "Found a Kingdom", icon: LAUREL },
+  { id: "muster", title: "Muster an Army", icon: MUSTER },
+  { id: "reference", title: "Unit Collections", mark: "skill" },
 ];
 
 export default function Landing({ onOpen }) {
@@ -27,7 +28,7 @@ export default function Landing({ onOpen }) {
                 <Card key={c.id} padding={0} elevation="low">
                   <VStack gap={0} onClick={() => onOpen(c.id)} className="om-card">
                     <VStack gap={0} align="center" className="om-card-art">
-                      <Mark name={c.mark} size={80} />
+                      {c.icon ? <Icon icon={c.icon} width={80} height={80} /> : <Mark name={c.mark} size={80} />}
                     </VStack>
                     <Section padding={6}>
                       <Heading level={2}>{c.title}</Heading>
