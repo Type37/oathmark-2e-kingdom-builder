@@ -1,8 +1,9 @@
 import React from "react";
-import { VStack, Text, TextInput, Section, TabList, Tab, NumberInput, HStack } from "@astryxdesign/core";
+import { VStack, Text, TextInput, Section, TabList, Tab, HStack } from "@astryxdesign/core";
 import FigureTable from "../components/FigureTable.jsx";
 import Shell from "../Shell.jsx";
 import FigureCard from "../components/FigureCard.jsx";
+import Counter from "../components/Counter.jsx";
 import { figures } from "../rules/kingdom.mjs";
 import { collectionTotals, unitsAffordable } from "../rules/collection.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
@@ -19,22 +20,35 @@ export default function CollectionPane({ value, onChange, shell }) {
   const [query, setQuery] = React.useState("");
   const [openFigure, setOpenFigure] = React.useState(null);
   const totals = collectionTotals(value);
+  const sections = React.useRef({});
 
-  const rows = React.useMemo(() => {
+  // Every figure in the book, in printed order, kept in its own list's section.
+  const groups = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    return figures
-      .filter((f) => (q ? f.name.toLowerCase().includes(q) : f.list === list))
-      .sort((a, b) => a.variants[0].pts - b.variants[0].pts)
-      .map((f) => ({
-        figureId: f.id,
-        name: f.name,
-        ...Object.fromEntries(STAT_KEYS.map((k) => [k, f.variants[0][k]])),
-        cap: `${f.unitMax} per unit`,
-        owned: value?.[f.id] ?? 0,
-        units: unitsAffordable(value, f.id),
-        fig: f,
-      }));
-  }, [list, query, value]);
+    const row = (f) => ({
+      figureId: f.id,
+      name: f.name,
+      ...Object.fromEntries(STAT_KEYS.map((k) => [k, f.variants[0][k]])),
+      cap: `${f.unitMax} per unit`,
+      owned: value?.[f.id] ?? 0,
+      units: unitsAffordable(value, f.id),
+      fig: f,
+    });
+    return LISTS
+      .map((l) => ({
+        list: l,
+        rows: figures
+          .filter((f) => f.list === l && (!q || f.name.toLowerCase().includes(q)))
+          .map(row),
+      }))
+      .filter((g) => g.rows.length);
+  }, [query, value]);
+
+  // The list names are a jump bar, not a filter.
+  const jump = (l) => {
+    setList(l);
+    sections.current[l]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const set = (id, n) => {
     const next = { ...value };
@@ -60,30 +74,33 @@ export default function CollectionPane({ value, onChange, shell }) {
           <TextInput label="Find a figure" value={query} size="sm"
                      onChange={(e) => setQuery(e.target?.value ?? e)} />
         </Section>
-        {!query && (
-          <Section paddingBlockEnd={0}>
-            <TabList value={list} onChange={setList} isFullBleed>
-              {LISTS.map((l) => <Tab key={l} value={l} label={LABEL[l]} />)}
-            </TabList>
-          </Section>
-        )}
-        <Section padding={0}>
-          <FigureTable
-            rows={rows}
-            onOpen={setOpenFigure}
-            actionColumn={{
-              header: "Owned",
-              render: (r) => (
-                <HStack gap={2} align="center" justify="end">
-                  {r.units ? <Text type="supporting">{r.units}u</Text> : null}
-                  <NumberInput label={`${r.name} owned`} isLabelHidden size="sm"
-                               value={r.owned} min={0}
-                               onChange={(n) => set(r.figureId, Math.max(0, n || 0))} />
-                </HStack>
-              ),
-            }}
-          />
+        <Section paddingBlockEnd={0} className="om-sticky-tabs">
+          <TabList value={list} onChange={jump} isFullBleed>
+            {LISTS.map((l) => <Tab key={l} value={l} label={LABEL[l]} />)}
+          </TabList>
         </Section>
+        {groups.map((g) => (
+          <Section key={g.list} padding={0}>
+            <div ref={(el) => { sections.current[g.list] = el; }}>
+              <HStack justify="center" className="om-plate"><Text type="label">{LABEL[g.list]}</Text></HStack>
+            </div>
+            <FigureTable
+              rows={g.rows}
+              onOpen={setOpenFigure}
+              actionColumn={{
+                header: "Owned",
+                width: 210,
+                render: (r) => (
+                  <HStack gap={2} align="center" justify="end">
+                    {r.units ? <Text type="supporting">{r.units}u</Text> : null}
+                    <Counter label={`${r.name} owned`} value={r.owned}
+                             onChange={(n) => set(r.figureId, n)} />
+                  </HStack>
+                ),
+              }}
+            />
+          </Section>
+        ))}
         {openFigure && (
           <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)} />
         )}

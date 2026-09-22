@@ -6,6 +6,7 @@ import { pixel } from "@astryxdesign/core/Table";
 import { stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
 import Dice from "./Dice.jsx";
+import { Attributes } from "./StatLine.jsx";
 import { COL, BREAK, statWidth } from "../layout.mjs";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
 
@@ -66,7 +67,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
     })),
     ...(isNarrow ? [] : [
       { key: "special", header: "Special", width: pixel(COL.special),
-        renderCell: (r) => <Text type="supporting">{(r.fig?.variants?.[0]?.attributes ?? []).join(", ")}</Text> },
+        renderCell: (r) => <Attributes variant={r.fig?.variants?.[0] ?? { attributes: [] }} /> },
       { key: "base", header: (
           <Defined def={{ title: baseRule.name, text: baseRule.text, note: baseRule.note, page: baseRule.page }}>
             <Text type="label">Base</Text>
@@ -78,7 +79,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
       ? {
           key: "action",
           header: actionColumn.header ?? "",
-          width: pixel(150),
+          width: pixel(actionColumn.width ?? 150),
           align: "end",
           renderCell: actionColumn.render,
         }

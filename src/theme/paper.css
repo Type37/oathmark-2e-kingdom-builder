@@ -250,3 +250,11 @@ body {
   .om-print td { text-align: center; padding: 1.5pt 2pt; border-block-end: 0.25pt solid #999; }
   .om-print tr { break-inside: avoid; }
 }
+
+/* The list names stay in reach while the whole collection scrolls past. */
+.om-sticky-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: var(--color-background-body);
+}
