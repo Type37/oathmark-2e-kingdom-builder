@@ -24,29 +24,31 @@ npm run build    # BASE_PATH=/repo-name/ is set by the workflow
 
 ## Design rules (set by the owner)
 
-1. **No rounded cards** unless Astryx requires it. Buttons keep their radius.
-2. **No horizontal dividers**: no `hasDividers`, no `<Divider />`, no row rules. Tables use `dividers="none"` with `isStriped`.
-3. **No dark text on dark backgrounds.** `.om-band` forces its children to inherit a light colour.
-4. **Buttons aren't full width.** Each screen has one primary action docked at the bottom (`.om-cta-dock`): up to 512px, 56px tall, display font, uppercase. Other buttons use Astryx's `md` size and the Cabin font.
-5. **Mobile-ready.** Check at 390px and 1280px in Edge, with no sideways scrolling. The header's file actions become icon-only at ≤768px.
+The look follows the book (`notes/book-style.md`), made colourful through race colours. Everything goes through Astryx tokens and `components` overrides in `src/theme/marches.ts`; `paper.css` holds only what no token reaches.
+
+1. **Square cards.** Buttons keep Astryx's default radius.
+2. **Tables follow the book:** a warm-grey header bar (`--color-bar`) with pale text, dusty-rose row rules, no stripes.
+3. **No dark text on dark backgrounds.**
+4. **One primary action per screen, docked at the bottom** (`.om-cta-dock`): up to 512px, Grenze Gotisch, title case. Other buttons use Astryx `md` and Cabin.
+5. **Mobile-ready.** Check at 390px and 1280px in Edge, with no sideways scrolling.
 6. **Match the Hobgoblin army builder** for flow and interaction (see `notes/hobgoblin-flow.md`).
 7. **Back goes up a level, never off the site.**
 8. **Icons are never clipped.** Book marks carry their own `box` (viewBox) in `src/icons/marks.json`.
 9. **The app writes no prose of its own.** Labels come from the book's vocabulary.
 
-**Type:** Cabin for the interface, Almendra SC for headings and CTAs, EB Garamond (`.om-prose`) for the book's own text. The landing title uses Astryx `display-1`. There is no mono font.
+**Type** (Astryx sets families only; it owns the scale, weights and line heights):
 
-**Palette:**
-
-| Name | Hex | Role |
+| Role | Face | Token |
 |---|---|---|
-| Floral White | `#FFF9EC` | page |
-| Blackberry | `#5D2A42` | text and accent |
-| Powder Blush | `#FCB1A6` | borders |
-| Almond Silk | `#FFDCCC` | muted fill |
-| Bubblegum | `#FB6376` | fill only, never used for text |
+| All text | Berling LT Std (owner's licence, self-hosted, git-ignored in `public/fonts/berling/`); Crimson Pro stands in without it | `--font-family-body` |
+| Headings, table bars, plates, docked CTA | Grenze Gotisch | `--font-family-heading` |
+| Buttons, tabs, tokens, badges | Cabin | `--font-family-ui` (local) |
 
-Corner radius is the Astryx default (4px); cards override it to 0.
+**Colour:** paper `#F7EEDD`, ink `#221F1F`, warm grey `#5C5953` (secondary text and bars), dusty rose `#D7B5A6` (borders), magenta accent `#D40B61` (`#EC0C6C` as `--color-highlight` for fills only).
+
+**Race colours** use Astryx's categorical families (`src/race.mjs`), retuned in the theme as manuscript pigments: dwarf `orange` (copper), elf `green` (verdigris), goblin `yellow` (orpiment), human `blue` (lapis), orc `red` (vermilion), necropolis `purple`, unaligned `gray`. Use them through `Card variant`, `Token color`, or `var(--color-{background,border,text}-<hue>)`.
+
+**Book shapes:** `.om-plate` is the notched, double-ruled label plate; `.om-callout` is the pale-magenta notched callout. Both use CSS `corner-shape: scoop` (Chromium), with plain radius elsewhere.
 
 ## Notes
 
@@ -65,7 +67,8 @@ src/icons/        marks.json (book glyphs with per-glyph viewBox), game.mjs (lau
 src/useSection.mjs   hash routes (#/kingdoms, #/kingdom, …) with a PARENT map, so Back goes up a level
 src/Shell.jsx     the three-region frame (library | content | detail)
 src/panes/        one per section
-src/theme/        marches.ts is the source; run `npx astryx theme build src/theme/marches.ts`. paper.css holds the app's own rules.
+src/theme/        marches.ts is the source; run `npx astryx theme build src/theme/marches.ts`. fonts.css loads Berling; paper.css holds the app's own rules.
+src/race.mjs      capital list → Astryx categorical colour
 ```
 
 Seven PDF errata are recorded in `oathmark.json` under `errata`, with reasoning.
@@ -79,7 +82,7 @@ Seven PDF errata are recorded in `oathmark.json` under `errata`, with reasoning.
 
 ## Next, in order
 
-1. **Clickable equipment, attributes and stats** (about 2 hours). Hand Weapon, Shield, Heavy Armour and the rest (15 equipment names in `figures[].equipment`), every attribute, and every stat open their explanation: a popover on desktop, a bottom sheet on phones, the same as Hobgoblin's keywords. Equipment definitions aren't in `oathmark.json` yet; extract them from the book (around p44–48).
+1. **Clickable equipment, attributes and stats** (about 2 hours). Hand Weapon, Shield, Heavy Armour and the rest (15 equipment names in `figures[].equipment`), every attribute, and every stat open their explanation: a popover on desktop, a bottom sheet on phones, the same as Hobgoblin's keywords. The book has no equipment glossary: equipment is already built into the stats (p43), and only missile weapons have ranges (p72 table).
 2. **Selectable points options per unit** (about 1 hour). Show unit options and upgrades as radio or checkbox rows with the cost on the right, like Hobgoblin's TYPE list.
 3. **Routes per record**, e.g. `#/kingdom/:id` and `#/muster/:id/u/:unitId`, so each screen can be deep-linked.
 4. **A muster list with a docked "Muster an Army" CTA.** The Muster screen is empty until a kingdom is loaded.
@@ -90,7 +93,6 @@ Seven PDF errata are recorded in `oathmark.json` under `errata`, with reasoning.
 
 - The main JS chunk is 3.3 MB (590 KB gzipped), because `Ico.jsx` loads the whole pepicons set. Import only the icons used.
 - There's no error boundary, so one crash blanks the whole app.
-- The Region map puts small "1/2" labels on Bubblegum, which conflicts with the fill-only rule.
 - The Actions workflow gets a Node 20 deprecation warning; bump `checkout`/`setup-node`/`upload-pages-artifact`/`deploy-pages` to their latest majors.
 - `src/screens/KingdomBuilder.jsx`, `Muster.jsx`, `Collection.jsx` and `Saves.jsx` are dead code and safe to delete. `Chronicle.jsx` is still used.
 - Auth and cloud save are still undecided: Supabase, a serverless function, or none. JSON export/import already works.

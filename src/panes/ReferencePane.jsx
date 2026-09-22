@@ -53,7 +53,7 @@ export default function ReferencePane({ shell }) {
                   description={
                     <VStack gap={0}>
                       {r.meta && <Text type="supporting">{r.meta}</Text>}
-                      <Text className="om-prose">{r.text}</Text>
+                      <Text>{r.text}</Text>
                     </VStack>
                   }
                   endContent={<Token label={r.badge} size="sm" />}

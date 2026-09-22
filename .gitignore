@@ -4,3 +4,7 @@ dist/
 *.pdf
 .playwright-mcp/
 notes/hobgoblin/
+notes/book/
+public/fonts/berling/
+notes/astryx/
+.claude/

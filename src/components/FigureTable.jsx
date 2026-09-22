@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Table, HStack, VStack, Text, Button, Badge, Popover, useMediaQuery,
+  Table, HStack, VStack, Text, Button, Badge, Popover, Link, useMediaQuery,
 } from "@astryxdesign/core";
 import { pixel, proportional } from "@astryxdesign/core/Table";
 import Mark from "./Mark.jsx";
@@ -27,7 +27,7 @@ function Head({ statKey }) {
         def && (
           <VStack gap={2}>
             <Text type="large">{def.name}</Text>
-            <Text className="om-prose">{def.text}</Text>
+            <Text>{def.text}</Text>
             {def.note && <Text type="label">{def.note}</Text>}
           </VStack>
         )
@@ -54,12 +54,15 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
       header: "Figure",
       width: proportional(COL.name),
       renderCell: (r) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          label={r.name}
-          onClick={() => onOpen?.(r.figureId)}
-        />
+        <VStack gap={0}>
+          <Link isStandalone onClick={() => onOpen?.(r.figureId)}>{r.name}</Link>
+          {r.cap && (
+            <HStack gap={2} align="center">
+              {r.taken ? <Badge label={String(r.taken)} /> : null}
+              <Text type="supporting" color="secondary">{r.cap}</Text>
+            </HStack>
+          )}
+        </VStack>
       ),
     },
     ...statKeys.map((k) => ({
@@ -69,19 +72,6 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
       align: "center",
       renderCell: (r) => <Text type="large">{r[k]}</Text>,
     })),
-    {
-      key: "cap",
-      header: "Limit",
-      isHidden: isNarrow,
-      width: pixel(COL.limit),
-      align: "end",
-      renderCell: (r) => (
-        <HStack gap={2} align="center" justify="end">
-          {r.taken ? <Badge label={String(r.taken)} /> : null}
-          <Text type="supporting">{r.cap}</Text>
-        </HStack>
-      ),
-    },
     actionColumn
       ? {
           key: "action",
@@ -104,8 +94,6 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
 
   return (
     <Table
-      dividers="none"
-      isStriped
       data={rows}
       columns={columns.filter((c) => !c.isHidden)}
       idKey="figureId"

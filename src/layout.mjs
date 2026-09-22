@@ -23,4 +23,4 @@ export const BREAK = {
 };
 
 // Column widths never vary by tab, so switching tabs cannot reflow the table.
-export const COL = { stat: 64, name: 4, limit: 150, action: 76 };
+export const COL = { stat: 56, name: 4, action: 76 };

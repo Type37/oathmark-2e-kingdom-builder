@@ -1,13 +1,14 @@
 import React from "react";
 import {
   Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Card, Text, Heading,
-  Section, Button,
+  Button,
 } from "@astryxdesign/core";
 import { Icon } from "@iconify/react";
 import { LAUREL } from "../icons/game.mjs";
 import { LEVELS, REGION_SIZES, validateKingdom } from "../rules/kingdom.mjs";
 import { list as listOf } from "../rules/store.mjs";
 import { GAP } from "../layout.mjs";
+import { hueOf } from "../race.mjs";
 
 function slots(level) {
   return (LEVELS[level] ?? LEVELS.moderate).reduce((n, r) => n + REGION_SIZES[r], 0);
@@ -35,8 +36,7 @@ export default function KingdomList({ store, onOpen, onNew }) {
               const placed = (k.territories ?? []).length;
               const ok = validateKingdom(k).ok;
               return (
-                <Card key={k.id} padding={0} elevation="low">
-                  <Section padding={5}>
+                <Card key={k.id} padding={5} variant={hueOf(k.capitalList)}>
                     <VStack gap={GAP.tight} onClick={() => onOpen(k.id)} className="om-card">
                       <Heading level={2}>{k.name}</Heading>
                       <HStack gap={GAP.item} align="baseline">
@@ -45,7 +45,6 @@ export default function KingdomList({ store, onOpen, onNew }) {
                         {k.ruler && <Text type="supporting">{k.ruler}</Text>}
                       </HStack>
                     </VStack>
-                  </Section>
                 </Card>
               );
             })}

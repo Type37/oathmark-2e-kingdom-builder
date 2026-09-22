@@ -36,8 +36,6 @@ function StatRow({ variants }) {
   ];
   return (
     <Table
-      dividers="none"
-      isStriped
       data={variants.map((v, i) => ({ id: i, level: v.level, ...v }))}
       columns={columns}
       idKey="id"
@@ -65,7 +63,7 @@ export default function FigureCard({ figureId, level, isOpen, onOpenChange }) {
         <StatRow variants={shown} />
         <Attributes variant={shown[0]} />
         {fig.equipment.length > 0 && (
-          <Text className="om-prose">{fig.equipment.join(", ")}</Text>
+          <Text>{fig.equipment.join(", ")}</Text>
         )}
 
 
@@ -93,7 +91,7 @@ export default function FigureCard({ figureId, level, isOpen, onOpenChange }) {
                         : u.costs.map((c) => `Level ${c.levels} +${c.pts}`).join(", ")}
                     </Text>
                   </HStack>
-                  <Text className="om-prose">{u.raw}</Text>
+                  <Text>{u.raw}</Text>
                 </VStack>
               ))}
             </VStack>

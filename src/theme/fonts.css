@@ -1,0 +1,29 @@
+/* Berling LT Std is licensed to the owner and is not in git; Crimson Pro stands in without it. */
+@font-face {
+  font-family: "Berling LT Std";
+  src: url("/fonts/berling/berling-roman.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Berling LT Std";
+  src: url("/fonts/berling/berling-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Berling LT Std";
+  src: url("/fonts/berling/berling-bold.woff2") format("woff2");
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Berling LT Std";
+  src: url("/fonts/berling/berling-bolditalic.woff2") format("woff2");
+  font-weight: 500 700;
+  font-style: italic;
+  font-display: swap;
+}

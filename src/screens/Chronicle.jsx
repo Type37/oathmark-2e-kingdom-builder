@@ -89,7 +89,7 @@ export default function Chronicle({ entries = [], ruler, onChange, onRulerChange
                     onClick={() => onChange(entries.filter((_, j) => j !== i))}
                   />
                 </HStack>
-                {e.body && <Text className="om-prose">{e.body}</Text>}
+                {e.body && <Text>{e.body}</Text>}
               </VStack>
             </Section>
           </React.Fragment>

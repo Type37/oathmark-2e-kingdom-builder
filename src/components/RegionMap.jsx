@@ -1,4 +1,5 @@
 import React from "react";
+import { hueOf } from "../race.mjs";
 
 // Radii scale to the outermost region so a small kingdom still fills the box.
 function radii(count) {
@@ -60,10 +61,11 @@ export default function RegionMap({ regions, picks, activeRegion, hoverKey, onSl
                   <path
                     className={`om-slot${key && key === claimed ? " om-slot-claimed" : ""}`}
                     d={d}
-                    fill={pick ? "var(--color-highlight)" : "var(--color-background-surface)"}
-                    fillOpacity={pick ? (isHovered ? 0.75 : 0.9) : isActive ? 0.45 : 0.2}
-                    stroke={isHovered || pick ? "var(--color-accent)" : "var(--color-border-emphasized)"}
-                    strokeWidth={isHovered ? 3 : isActive ? 2 : 1}
+                    fill={pick ? `var(--color-background-${hueOf(pick.list)})`
+                      : isActive ? "var(--color-accent-muted)" : "var(--color-background-card)"}
+                    stroke={pick ? `var(--color-border-${hueOf(pick.list)})`
+                      : isActive ? "var(--color-accent)" : "var(--color-border-emphasized)"}
+                    strokeWidth={isHovered ? 3 : isActive || pick ? 2 : 1}
                     style={{ cursor: "pointer" }}
                     onMouseEnter={() => onSlotHover?.(key)}
                     onMouseLeave={() => onSlotHover?.(null)}

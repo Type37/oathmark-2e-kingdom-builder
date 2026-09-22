@@ -17,7 +17,7 @@ function Definition({ title, text, note, page }) {
         <Text type="large">{title}</Text>
         <Text color="secondary">p{page}</Text>
       </HStack>
-      <Text className="om-prose">{text}</Text>
+      <Text>{text}</Text>
       {note && <Text type="label">{note}</Text>}
     </VStack>
   );

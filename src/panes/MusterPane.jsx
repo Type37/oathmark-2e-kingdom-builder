@@ -1,7 +1,7 @@
 import React from "react";
 import {
   VStack, HStack, Text, Section, TabList, Tab, NumberInput,
-  ProgressBar, Banner, Button,
+  ProgressBar, Button,
 } from "@astryxdesign/core";
 import FigureTable from "../components/FigureTable.jsx";
 import FigureCard from "../components/FigureCard.jsx";
@@ -109,6 +109,7 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
       detailTitle="Army Roster"
       detail={(
       <VStack gap={GAP.group}>
+        <HStack justify="center" className="om-plate"><Text type="label">Army Roster</Text></HStack>
         <ProgressBar label="Points Value" isLabelHidden
                      value={Math.min(result.points, points)} max={points || 1}
                      variant={over ? "error" : "accent"} />
@@ -147,10 +148,12 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
             </VStack>
           );
         })}
-        {result.errors.slice(0, 5).map((e) => <Banner key={e} status="error" title={e} />)}
-        {short.slice(0, 3).map((x) => (
-          <Banner key={x.figureId} status="info" title={`${x.name}: own ${x.have} of ${x.need}`} />
-        ))}
+        {(result.errors.length > 0 || short.length > 0) && (
+          <VStack gap={GAP.tight} className="om-callout">
+            {result.errors.map((e) => <Text key={e}>{e}</Text>)}
+            {short.map((x) => <Text key={x.figureId}>{`${x.name}: own ${x.have} of ${x.need}`}</Text>)}
+          </VStack>
+        )}
         {units.length > 0 && (
           <VStack gap={GAP.tight}>
             <HStack gap={GAP.group} justify="between">

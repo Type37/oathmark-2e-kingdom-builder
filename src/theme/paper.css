@@ -66,27 +66,49 @@ body {
   stroke-width: 3;
 }
 
-/* The book's own wording gets the serif; everything structural stays sans. */
-.om-prose,
-.om-prose * {
-  font-family: var(--font-family-prose);
+/* The book's header bar, for section heads that are not table headers. */
+.om-band {
+  background-color: var(--color-bar);
+  color: var(--color-on-bar);
+  padding: var(--spacing-1) var(--spacing-3);
+}
+.om-band * {
+  color: inherit;
+  font-family: var(--font-family-heading);
+  letter-spacing: 0.04em;
 }
 
-/* Table header band: solid, square, reversed letterspaced caps. */
-.om-band {
-  background-color: var(--color-text-secondary);
-  color: var(--color-background-body);
-  padding: var(--spacing-2) var(--spacing-3);
+.om-slot-claimed { animation-name: om-claim, om-claim-edge; }
+
+/* The book's label plate: scooped corners, a double rule. Plain radius where corner-shape is unsupported. */
+.om-plate {
+  border: var(--border-width) solid var(--color-text-secondary);
+  border-radius: var(--spacing-2);
+  corner-shape: scoop;
+  box-shadow:
+    inset 0 0 0 var(--spacing-0-5) var(--color-background-body),
+    inset 0 0 0 calc(var(--spacing-0-5) + var(--border-width)) var(--color-text-secondary);
+  padding: var(--spacing-1) var(--spacing-4);
+}
+.om-plate * {
   font-family: var(--font-family-heading);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.om-band * { color: inherit; }
 
+/* The book's callout: pale magenta field, notched border, magenta text. */
+.om-callout {
+  background-color: var(--color-accent-muted);
+  border: var(--border-width) solid var(--color-background-pink);
+  border-radius: var(--spacing-2);
+  corner-shape: scoop;
+  padding: var(--spacing-3) var(--spacing-4);
+}
+.om-callout * { color: var(--color-text-accent); }
 
-/* Claimed territory uses Bubblegum Pink, which carries no text. */
-.om-slot-claimed { animation-name: om-claim, om-claim-edge; }
-.om-fill-highlight { fill: var(--color-highlight); }
+/* Stat buttons sit on the dark header bar and take its pale text. */
+.astryx-table-header-cell .astryx-button,
+.astryx-table-header-cell .astryx-button * { color: inherit; }
 
 /* Card art sits on the muted field, never a dark fill behind dark text. */
 .om-card-art {
@@ -97,8 +119,6 @@ body {
 }
 .om-card { cursor: pointer; }
 .om-card:hover .om-card-art { background-color: var(--color-border); }
-
-.astryx-card { border-radius: var(--radius-none); }
 
 .om-page { padding-block-end: calc(var(--spacing-12) * 3); }
 
@@ -117,9 +137,7 @@ body {
   inline-size: min(512px, calc(100% - var(--spacing-8) * 2));
   min-block-size: calc(var(--spacing-7) * 2);
   font-family: var(--font-family-heading);
-  font-size: var(--font-size-base);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-size: var(--font-size-xl);
 }
 
 @media (max-width: 768px) {

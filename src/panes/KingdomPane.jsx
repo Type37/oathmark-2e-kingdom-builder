@@ -14,6 +14,7 @@ import {
   validateKingdom, territory, grantList,
 } from "../rules/kingdom.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "../rules/examples.mjs";
+import { hueOf } from "../race.mjs";
 
 const LIST_LABEL = {
   dwarf: "Dwarf", elf: "Elf", goblin: "Goblin", human: "Human",
@@ -65,9 +66,9 @@ export default function KingdomPane({ value, onChange, shell }) {
               <List density={DENSITY.choice}>
                 {CAPITAL_LISTS.map((list) => {
                   const cap = allTerritories().find((t) => t.list === list && t.capital);
-                  const count = allTerritories().filter((t) => t.list === list).length;
                   return (
-                    <ListItem key={list} label={cap.name} description={`${count} territories`}
+                    <ListItem key={list} label={cap.name}
+                      startContent={<Token label="1" size="sm" color={hueOf(list)} />}
                       onClick={() => patch({ capitalList: list, territories: [{ region: 1, list, name: cap.name }] })} />
                   );
                 })}
@@ -80,8 +81,8 @@ export default function KingdomPane({ value, onChange, shell }) {
         const mine = picks.map((p, i) => ({ p, i })).filter(({ p }) => p.region === r);
         const full = mine.length >= REGION_SIZES[r];
         return (
-          <VStack key={r} gap={0}>
-            <HStack gap={GAP.item} align="center" justify="between" className="om-band">
+          <VStack key={r} gap={GAP.item}>
+            <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
               <Text type="label">Region {r}</Text>
               <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
             </HStack>
@@ -98,7 +99,7 @@ export default function KingdomPane({ value, onChange, shell }) {
                       ))}
                     </HStack>
                   }
-                  startContent={<Token label={String(territory(p.list, p.name)?.rarity ?? "")} size="sm" />}
+                  startContent={<Token label={String(territory(p.list, p.name)?.rarity ?? "")} size="sm" color={hueOf(p.list)} />}
                   endContent={r === 1 ? undefined : (
                     <Button label="Remove" size="sm" variant="ghost" isIconOnly
                             icon={<Ico name="minus" />}
@@ -122,6 +123,7 @@ export default function KingdomPane({ value, onChange, shell }) {
 
   const detail = capitalList ? (
     <VStack gap={GAP.group}>
+      <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
       <RegionMap regions={regions} picks={picks} activeRegion={picking} />
       <TextInput label="Kingdom" value={value.name ?? ""} size="sm"
                  onChange={(e) => patch({ name: e.target?.value ?? e })} />
@@ -129,8 +131,8 @@ export default function KingdomPane({ value, onChange, shell }) {
                  onChange={(chronicle) => patch({ chronicle })}
                  onRulerChange={(ruler) => patch({ ruler })} />
       {result && !result.ok && (
-        <VStack gap={GAP.tight}>
-          {result.errors.slice(0, 5).map((e) => <Text key={e} type="supporting">{e}</Text>)}
+        <VStack gap={GAP.tight} className="om-callout">
+          {result.errors.map((e) => <Text key={e}>{e}</Text>)}
         </VStack>
       )}
     </VStack>
@@ -146,7 +148,7 @@ export default function KingdomPane({ value, onChange, shell }) {
               key={`${t.list}/${t.name}`}
               label={t.name}
               description={LIST_LABEL[t.list]}
-              startContent={<Token label={String(t.rarity)} size="sm" />}
+              startContent={<Token label={String(t.rarity)} size="sm" color={hueOf(t.list)} />}
               onClick={() => {
                 patch({ territories: [...picks, { region: picking, list: t.list, name: t.name }] });
                 setPicking(null);

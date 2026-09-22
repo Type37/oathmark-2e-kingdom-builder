@@ -38,7 +38,7 @@ export default function Shell({
         </HStack>
 
         {/* File actions sit beside the name they act on, not across the page. */}
-        <HStack gap={GAP.item} align="center">
+        <HStack gap={GAP.item} align="center" wrap="wrap">
           {meta}
           {saved && <Text type="label">Saved</Text>}
           <Button label="Save" size="md" isIconOnly={narrow} variant="primary"
