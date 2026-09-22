@@ -163,3 +163,14 @@ body {
 @media (max-width: 768px) {
   .om-cta-dock { bottom: var(--spacing-3); }
 }
+
+/* Removing a territory is a red X in its own ring, the same size in every row. */
+.om-remove {
+  border: var(--border-width) solid var(--color-border-red);
+  border-radius: var(--radius-full);
+  color: var(--color-text-red);
+  aspect-ratio: 1;
+}
+.om-remove:hover {
+  background-color: var(--color-background-red);
+}
