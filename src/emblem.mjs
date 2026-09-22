@@ -10,21 +10,24 @@ export async function saveEmblem(blob) {
 
 export const deleteEmblem = (key) => (key ? del(key) : Promise.resolve());
 
-export function useEmblem(key) {
+export function useObjectUrl(blob) {
   const [url, setUrl] = React.useState(null);
   React.useEffect(() => {
-    if (!key) { setUrl(null); return; }
-    let objectUrl = null;
-    let live = true;
-    get(key).then((blob) => {
-      if (!live || !blob) return;
-      objectUrl = URL.createObjectURL(blob);
-      setUrl(objectUrl);
-    });
-    return () => {
-      live = false;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-  }, [key]);
+    if (!blob) { setUrl(null); return; }
+    const u = URL.createObjectURL(blob);
+    setUrl(u);
+    return () => URL.revokeObjectURL(u);
+  }, [blob]);
   return url;
+}
+
+export function useEmblem(key) {
+  const [blob, setBlob] = React.useState(null);
+  React.useEffect(() => {
+    if (!key) { setBlob(null); return; }
+    let live = true;
+    get(key).then((b) => { if (live) setBlob(b ?? null); });
+    return () => { live = false; };
+  }, [key]);
+  return useObjectUrl(blob);
 }

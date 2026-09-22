@@ -44,7 +44,7 @@ export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileA
                   <Card key={m.id} padding={5} variant={hueOf(k?.capitalList)}>
                     <VStack gap={GAP.tight} onClick={() => onOpen(m.id)} className="om-card">
                       <HStack gap={GAP.item} align="center">
-                        <Emblem emblemKey={k?.emblem} name={k?.name} />
+                        <Emblem emblemKey={k?.emblem} name={k?.name} size="lg" />
                         <Heading level={2}>{m.name || "Untitled"}</Heading>
                       </HStack>
                       <HStack gap={GAP.item} align="baseline" wrap="wrap">

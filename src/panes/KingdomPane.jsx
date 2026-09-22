@@ -16,6 +16,7 @@ import {
 import { EXAMPLE_KINGDOMS, loadExample } from "../rules/examples.mjs";
 import { hueOf } from "../race.mjs";
 import Emblem from "../components/Emblem.jsx";
+import EmblemDialog from "../components/EmblemDialog.jsx";
 
 const LIST_LABEL = {
   dwarf: "Dwarf", elf: "Elf", goblin: "Goblin", human: "Human",
@@ -23,10 +24,11 @@ const LIST_LABEL = {
 };
 
 // Every region is visible at once. No stepper, so nothing advances underfoot.
-export default function KingdomPane({ value, onChange, shell }) {
+export default function KingdomPane({ value, onChange, onEmblem, shell }) {
   const { level, capitalList, territories: picks } = value;
   const [picking, setPicking] = React.useState(null);
   const [openFigure, setOpenFigure] = React.useState(null);
+  const [cropping, setCropping] = React.useState(false);
   const patch = (next) => onChange({ ...value, ...next });
   const regions = LEVELS[level ?? "moderate"];
   const result = capitalList ? validateKingdom({ ...value, level: level ?? "moderate" }) : null;
@@ -120,7 +122,12 @@ export default function KingdomPane({ value, onChange, shell }) {
   const detail = (
     <VStack gap={GAP.group}>
       <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
-      {value.emblem && <HStack justify="center"><Emblem emblemKey={value.emblem} name={value.name} /></HStack>}
+      <HStack gap={2} justify="center" align="center">
+        <Emblem emblemKey={value.emblem} name={value.name} size="xl" />
+        <Button label={value.emblem ? "Change Emblem" : "Add Emblem"} size="sm" variant="secondary"
+                onClick={() => setCropping(true)} />
+        {value.emblem && <Button label="Remove" size="sm" variant="ghost" onClick={() => onEmblem(null)} />}
+      </HStack>
       {map}
       <TextInput label="Kingdom" value={value.name ?? ""} size="sm"
                  onChange={(e) => patch({ name: e.target?.value ?? e })} />
@@ -163,6 +170,8 @@ export default function KingdomPane({ value, onChange, shell }) {
       {openFigure && (
         <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)} />
       )}
+      <EmblemDialog isOpen={cropping} onOpenChange={setCropping}
+                    onDone={(blob) => { onEmblem(blob); setCropping(false); }} />
     </>
   );
 
@@ -170,6 +179,7 @@ export default function KingdomPane({ value, onChange, shell }) {
     <Shell
       {...shell}
       title={value.name || "Untitled"}
+      leading={<Emblem emblemKey={value.emblem} name={value.name} size="lg" />}
       inlineDetail={map}
       meta={capitalList ? <Text type="label">{{ beginner: "Beginner", moderate: "Moderate", expert: "Expert" }[level ?? "moderate"]}</Text> : null}
       detail={detail}

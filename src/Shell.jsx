@@ -10,7 +10,7 @@ import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 // Per-page frame: title, record actions, content, and the sheet panel.
 // Navigation lives in App (SideNav / MobileNav); edits autosave.
 export default function Shell({
-  title, subtitle, meta, actions,
+  title, leading, subtitle, meta, actions,
   content, detail, detailTitle, inlineDetail,
   onBack, onMenu,
 }) {
@@ -30,6 +30,7 @@ export default function Shell({
             <Button label="Back" size="sm" variant="ghost" isIconOnly
                     icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
           )}
+          {leading}
           <Heading level={1}>{title}</Heading>
           {subtitle}
         </HStack>

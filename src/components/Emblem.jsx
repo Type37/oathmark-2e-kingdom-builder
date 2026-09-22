@@ -1,9 +1,12 @@
 import React from "react";
-import { Thumbnail } from "@astryxdesign/core";
-import { useEmblem } from "../emblem.mjs";
+import { Avatar } from "@astryxdesign/core/Avatar";
+import { useEmblem, useObjectUrl } from "../emblem.mjs";
 
-export default function Emblem({ emblemKey, name }) {
-  const url = useEmblem(emblemKey);
-  if (!url) return null;
-  return <Thumbnail src={url} alt={name ? `${name} emblem` : "Emblem"} />;
+// A kingdom's heraldry. Pass a stored key, or a draft blob not yet saved.
+export default function Emblem({ emblemKey, blob, name, size = "md" }) {
+  const stored = useEmblem(blob ? null : emblemKey);
+  const draft = useObjectUrl(blob);
+  const src = draft ?? stored;
+  if (!src) return null;
+  return <Avatar src={src} alt={name ? `${name} emblem` : "Emblem"} shape="square" size={size} />;
 }

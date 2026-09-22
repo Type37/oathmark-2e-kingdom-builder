@@ -14,6 +14,7 @@ import CollectionPane from "./panes/CollectionPane.jsx";
 import ReferencePane from "./panes/ReferencePane.jsx";
 import FoundKingdom from "./components/FoundKingdom.jsx";
 import MusterNew from "./components/MusterNew.jsx";
+import Emblem from "./components/Emblem.jsx";
 
 import { validateKingdom } from "./rules/kingdom.mjs";
 import {
@@ -22,7 +23,7 @@ import {
 import { parseImport } from "./rules/schema.mjs";
 import useSection, { PARENT } from "./useSection.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "./rules/examples.mjs";
-import { deleteEmblem } from "./emblem.mjs";
+import { saveEmblem, deleteEmblem } from "./emblem.mjs";
 import { downloadJson, fileSlug } from "./download.mjs";
 
 const EMPTY_KINGDOM = {
@@ -105,9 +106,20 @@ export default function App() {
     { label: "Delete", variant: "destructive", onClick: () => setDeleting({ kind, rec }) },
   ] : [];
 
+  // Duplicates and re-imports share an emblem key, so only drop the blob when nothing else uses it.
+  const emblemInUse = (key, exceptId) =>
+    store.kingdoms.some((k) => k.id !== exceptId && k.emblem === key);
+
+  async function setEmblem(rec, blob) {
+    const old = rec.emblem;
+    const key = blob ? await saveEmblem(blob) : null;
+    setStore((s) => save(s, "kingdoms", { ...get(s, "kingdoms", rec.id), emblem: key }));
+    if (old && !emblemInUse(old, rec.id)) deleteEmblem(old);
+  }
+
   function confirmDelete() {
     const { kind, rec } = deleting;
-    if (kind === "kingdoms") deleteEmblem(rec.emblem);
+    if (kind === "kingdoms" && rec.emblem && !emblemInUse(rec.emblem, rec.id)) deleteEmblem(rec.emblem);
     setStore((s) => remove(s, kind, rec.id));
     setDeleting(null);
     go(kind === "kingdoms" ? "kingdoms" : "musters");
@@ -210,6 +222,7 @@ export default function App() {
         )}
         {page === "kingdom" && (
           <KingdomPane value={kingdom} onChange={update("kingdoms")}
+                       onEmblem={(blob) => setEmblem(kingdom, blob)}
                        shell={{ ...shell, actions: recordActions("kingdoms", kingdom) }} />
         )}
         {page === "musters" && (
@@ -224,6 +237,7 @@ export default function App() {
             onChange={update("musters")}
             ready={Boolean(musterKingdom?.capitalList && validateKingdom(musterKingdom).ok)}
             shell={{ ...shell, actions: recordActions("musters", muster),
+                     leading: <Emblem emblemKey={musterKingdom?.emblem} name={musterKingdom?.name} size="lg" />,
                      subtitle: musterKingdom ? <Text type="label">{musterKingdom.name}</Text> : null }}
           />
         )}

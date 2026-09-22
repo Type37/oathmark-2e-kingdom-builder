@@ -71,7 +71,7 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 
 ## Images and print
 
-- **Emblems:** `cropperjs` crops to a 512px square, and `idb-keyval` stores the PNG blob in IndexedDB (`src/emblem.mjs`). The kingdom record keeps only the key. Same stack as the Billion Suns builder.
+- **Emblems:** `EmblemDialog` picks an image and crops it square with `cropperjs` on an `AspectRatio` 4:3 stage. The result is a 512px PNG, stored in IndexedDB with `idb-keyval` (`src/emblem.mjs`); the kingdom record keeps only the key. The emblem shows as a square Astryx `Avatar`: in the page header, on list cards, and in the Kingdom Sheet (Change / Remove). Duplicates share a key, so a blob is deleted only when no other kingdom uses it. Known gap: Export writes the key but not the image, so emblems don't travel to another device yet.
 - **Print (planned, Army Roster):** reuse the Dropfleet builder's CSS-only approach, not a library: a `#print-container`, `body:has(> #print-container) > *:not(#print-container) { display: none }`, `@page { margin: 12mm }`, the WebKit block-flow reset, and `print-color-adjust: exact`. See `Dropfleet-Builder/css/app.css` around line 5214.
 
 ## Notes

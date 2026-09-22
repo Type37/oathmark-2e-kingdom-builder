@@ -53,7 +53,7 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
                 <Card key={k.id} padding={5} variant={hueOf(k.capitalList)}>
                     <VStack gap={GAP.tight} onClick={() => onOpen(k.id)} className="om-card">
                       <HStack gap={GAP.item} align="center">
-                        <Emblem emblemKey={k.emblem} name={k.name} />
+                        <Emblem emblemKey={k.emblem} name={k.name} size="lg" />
                         <Heading level={2}>{k.name || "Untitled"}</Heading>
                       </HStack>
                       <HStack gap={GAP.item} align="baseline">
