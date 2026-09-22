@@ -61,6 +61,8 @@ export function rollBattleType(d10 = 1 + Math.floor(Math.random() * 10)) {
 // p29: at Beginner level, stick to Exploratory Encounters until Region 3 is full.
 export function beginnerAdvice(kingdom) {
   if (kingdom?.level !== "beginner") return null;
+  const third = (kingdom.territories ?? []).filter((t) => t.region === 3).length;
+  if (third >= 3) return null;
   return "At Beginner level it is suggested that you only play Exploratory Encounters until you have filled out all the territories in Region 3 of your kingdom.";
 }
 

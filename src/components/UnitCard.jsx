@@ -67,7 +67,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
               <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
                        max={p.max - (charFig ? 1 : 0)} onChange={(n) => patch({ count: n })} />
             )}
-            <Button label="Remove unit" size="sm" variant="ghost" isIconOnly className="om-remove"
+            <Button label="Remove unit" size="sm" variant="destructive" isIconOnly
                     icon={<Ico name="times" />} onClick={onRemove} />
           </HStack>
         </HStack>

@@ -160,16 +160,6 @@ body {
   .om-cta-dock { bottom: var(--spacing-3); }
 }
 
-/* Removing a territory is a red X in its own ring, the same size in every row. */
-.om-remove {
-  border: var(--border-width) solid var(--color-border-red);
-  border-radius: var(--radius-full);
-  color: var(--color-text-red);
-  aspect-ratio: 1;
-}
-.om-remove:hover {
-  background-color: var(--color-background-red);
-}
 
 /* Print: the page falls away and the Kingdom Sheet stands alone on paper. */
 .om-print { display: none; }
@@ -256,12 +246,6 @@ body {
   background-color: var(--color-background-body);
 }
 
-/* Battle types read as full rules, so they need room: two wide columns. */
-.om-battle-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: var(--spacing-4);
-}
 
 /* On a card the emblem is a mark, not the subject: it sits back from the name. */
 .om-card-emblem { opacity: 0.55; }
@@ -323,9 +307,12 @@ body {
 
 /* The credit line: the game on the left, this builder on the right. */
 .om-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
   border-block-start: var(--border-width) solid var(--color-border);
-  margin-block-start: var(--spacing-10);
-  padding: var(--spacing-4) var(--spacing-6);
+  background-color: var(--color-background-body);
+  padding: var(--spacing-2) var(--spacing-6);
 }
 
 /* A roll tumbles the dice once and lands with a bounce. */

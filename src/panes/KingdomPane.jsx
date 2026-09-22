@@ -100,7 +100,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
                              territories: picks.map((x, j) => (j === i ? { ...x, occupied: !x.occupied } : x)),
                            })} />
                   </Defined>
-                  <Button label="Remove" size="sm" variant="ghost" isIconOnly className="om-remove"
+                  <Button label="Remove" size="sm" variant="destructive" isIconOnly
                           icon={<Ico name="times" />}
                           onClick={() => patch(r === 1
                             ? { capitalList: null, territories: [] }

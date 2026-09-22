@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter,
-  Selector, NumberInput, HStack, VStack, Button, Text, Switch, Token, SelectableCard, Tooltip,
+  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, Grid,
+  Selector, NumberInput, HStack, VStack, Button, Text, Switch, Token, SelectableCard, Banner,
 } from "@astryxdesign/core";
 import { rollPoints, battleScale } from "../rules/muster.mjs";
 import {
@@ -13,22 +13,24 @@ import RollButton from "./RollButton.jsx";
 import { rulerPool } from "../names.mjs";
 import { GAP } from "../layout.mjs";
 
-// The campaign turn's first steps in the book's order: Battle Type (p29),
-// Points Value (p33), then the army itself (p35).
+const d10 = () => 1 + Math.floor(Math.random() * 10);
+
+// The campaign turn's opening steps, in the book's order: Battle Type (p29),
+// then Points Value (p33) and, if you want it, the uneven-battle roll (p34).
 export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingdomId, onMuster }) {
   const [name, setName] = React.useState("");
   const [commander, setCommander] = React.useState("");
   const [kingdomId, setKingdomId] = React.useState(defaultKingdomId ?? kingdoms[0]?.id ?? "");
   const [battle, setBattle] = React.useState(null);
-  const [points, setPoints] = React.useState(1000);
+  const [points, setPoints] = React.useState(2000);
+  const [pointsRoll, setPointsRoll] = React.useState(null);
   const [uneven, setUneven] = React.useState(false);
-  const [modifier, setModifier] = React.useState(null);
-  const [rolled, setRolled] = React.useState(null);
+  const [sides, setSides] = React.useState(null);
 
   React.useEffect(() => {
     if (!isOpen) return;
-    setName(""); setCommander(""); setPoints(1000);
-    setBattle(null); setUneven(false); setModifier(null); setRolled(null);
+    setName(""); setCommander(""); setPoints(2000); setPointsRoll(null);
+    setBattle(null); setUneven(false); setSides(null);
     setKingdomId(defaultKingdomId ?? kingdoms[0]?.id ?? "");
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -36,14 +38,27 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
   const advice = beginnerAdvice(kingdom);
   const chosen = battle ? battleTypeById.get(battle) : null;
   const scale = battleScale(points);
-  const attackerPoints = uneven && modifier != null ? applyModifier(points, modifier) : null;
 
-  const rollBattle = () => {
-    const d10 = 1 + Math.floor(Math.random() * 10);
-    setRolled(d10);
-    setBattle(rollBattleType(d10).id);
-  };
-  const rollSize = () => setPoints(rollPoints(1 + Math.floor(Math.random() * 10), kingdom?.level));
+  // Each side rolls its own modifier when the players want an uneven battle.
+  function rollSides(total) {
+    const side = () => {
+      const die = d10();
+      const modifier = rollPointsModifier(die);
+      return { die, modifier, points: applyModifier(total, modifier) };
+    };
+    return { attacker: side(), defender: side() };
+  }
+
+  function rollSize() {
+    const die = d10();
+    const value = rollPoints(die, kingdom?.level);
+    setPointsRoll({ die, value });
+    setPoints(value);
+    setSides(uneven ? rollSides(value) : null);
+  }
+
+  const armyName = name.trim() || (commander.trim() ? `Army of ${commander.trim()}` : "");
+  const pct = (n) => `${n > 0 ? "+" : ""}${n}%`;
 
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width="min(1100px, 94vw)" maxHeight="92dvh">
@@ -52,15 +67,13 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
         content={
           <LayoutContent>
             <VStack gap={GAP.group}>
-              <HStack gap={GAP.item} align="center" justify="between" wrap="wrap">
-                <HStack justify="center" className="om-plate"><Text type="label">Battle Type</Text></HStack>
-                <HStack gap={GAP.item} align="center">
-                  {rolled != null && <Token label={`Rolled ${rolled}`} color="pink" />}
-                  <RollButton label="Roll 1d10" onClick={rollBattle} />
-                </HStack>
+              <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
+                <Text type="label">Battle Type</Text>
+                <RollButton label="Roll for Battle Type" size="sm"
+                            onClick={() => setBattle(rollBattleType(d10()).id)} />
               </HStack>
-              {advice && <HStack className="om-callout"><Text type="supporting">{advice}</Text></HStack>}
-              <div className="om-battle-grid">
+              {advice && <Banner status="info" title={advice} />}
+              <Grid columns={{ minWidth: 320, repeat: "fill" }} gap={GAP.group}>
                 {BATTLE_TYPES.map((b) => (
                   <SelectableCard key={b.id} label={b.name} padding={3}
                                   isSelected={b.id === battle} onChange={() => setBattle(b.id)}>
@@ -68,42 +81,38 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
                       <HStack gap={GAP.tight} align="baseline" wrap="wrap">
                         <Text weight="semibold">{b.name}</Text>
                         <Token label={rollLabel(b)} size="sm" />
-                        {b.attacker && (
-                          <Tooltip content="Both players roll a die; the higher roll takes the attacker's role (p29).">
-                            <Token label="One side attacks" size="sm" color="red" />
-                          </Tooltip>
-                        )}
-                        <Text type="supporting" color="secondary">p{b.page}</Text>
                       </HStack>
                       <Text type="supporting">{b.text}</Text>
                     </VStack>
                   </SelectableCard>
                 ))}
-              </div>
+              </Grid>
 
               <HStack gap={GAP.group} align="end" wrap="wrap">
                 <Selector label="Kingdom" width={200} value={kingdomId} onChange={setKingdomId}
                           options={kingdoms.map((k) => ({ value: k.id, label: k.name || "Untitled" }))} />
-                <NameField label="Army Name" width={240} value={name} onChange={setName} />
                 <NameField label="Army Commander" width={230} value={commander} onChange={setCommander}
                            pool={rulerPool(kingdom?.culture)} />
+                <NameField label="Army Name" width={260} value={name} onChange={setName} />
               </HStack>
+
               <HStack gap={GAP.group} align="end" wrap="wrap">
                 <NumberInput label="Total Points" size="lg" width={150} value={points} min={0} step={50}
-                             onChange={(p) => setPoints(p || 0)} />
-                <RollButton label="Roll 1d10" onClick={rollSize} />
+                             onChange={(p) => { setPoints(p || 0); setPointsRoll(null); setSides(null); }} />
+                <Button label="Roll for Random Points Value" variant="secondary" onClick={rollSize} />
+                {pointsRoll && <Token label={`Rolled ${pointsRoll.die}`} color="pink" />}
                 {scale && <Token label={scale} />}
-                <Switch label="Uneven Battles, super optional" isSelected={uneven}
-                        onChange={(on) => { setUneven(on); if (!on) setModifier(null); }} />
-                {uneven && (
-                  <>
-                    <RollButton label="Roll Modifier" onClick={() => setModifier(rollPointsModifier())} />
-                    {modifier != null && (
-                      <Token color="red" label={`${modifier > 0 ? "+" : ""}${modifier}% attacker: ${attackerPoints}pts`} />
-                    )}
-                  </>
-                )}
+                <Switch label="Uneven Battles" isSelected={uneven}
+                        onChange={(on) => { setUneven(on); setSides(on ? rollSides(points) : null); }} />
               </HStack>
+
+              {uneven && sides && (
+                <HStack gap={GAP.group} align="center" wrap="wrap">
+                  <Token color="red" label={`Attacker rolled ${sides.attacker.die}: ${pct(sides.attacker.modifier)}, ${sides.attacker.points}pts`} />
+                  <Token color="blue" label={`Defender rolled ${sides.defender.die}: ${pct(sides.defender.modifier)}, ${sides.defender.points}pts`} />
+                  <Button label="Reroll sides" size="sm" variant="ghost" onClick={() => setSides(rollSides(points))} />
+                </HStack>
+              )}
             </VStack>
           </LayoutContent>
         }
@@ -113,12 +122,12 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
               <Button label="Cancel" variant="secondary" onClick={() => onOpenChange(false)} />
               <Button label="Muster an Army" variant="primary" isDisabled={!kingdomId}
                       onClick={() => onMuster({
-                        name: name.trim(),
+                        name: armyName,
                         commander: commander.trim(),
                         kingdomId,
                         points,
                         battleType: chosen?.id ?? null,
-                        uneven: uneven ? { modifier, attackerPoints } : null,
+                        uneven: uneven ? sides : null,
                       })} />
             </HStack>
           </LayoutFooter>
