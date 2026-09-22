@@ -179,6 +179,7 @@ export default function App() {
 
   return (
     <Theme theme={marchesTheme} mode="light">
+      <>
       <AppShell height="auto" contentPadding={0} variant="wash" sideNav={sideNav} mobileNav={false}>
         <MobileNav isOpen={menuOpen} onOpenChange={setMenuOpen} header="Oathmark">
           {navItems}
@@ -263,8 +264,9 @@ export default function App() {
         </React.Suspense>
         <OptionsDialog isOpen={options} onOpenChange={setOptions} value={store.settings ?? {}}
                        onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
-        <Footer />
       </AppShell>
+      <Footer />
+      </>
     </Theme>
   );
 }

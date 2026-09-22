@@ -1,9 +1,9 @@
 import React from "react";
 import {
-  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Card, Text, Heading,
-  Button,
+  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Text, Heading, Button,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
+import { ClickableCard } from "@astryxdesign/core/ClickableCard";
 import { Icon } from "@iconify/react";
 import Ico from "../components/Ico.jsx";
 import { LAUREL } from "../icons/game.mjs";
@@ -12,7 +12,7 @@ import { list as listOf } from "../rules/store.mjs";
 import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
 import Emblem from "../components/Emblem.jsx";
-import Capital from "../components/Capital.jsx";
+const capitalOf = (k) => k?.territories?.find((t) => t.region === 1)?.name ?? null;
 
 function slots(level) {
   return (LEVELS[level] ?? LEVELS.moderate).reduce((n, r) => n + REGION_SIZES[r], 0);
@@ -50,22 +50,27 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
               const placed = (k.territories ?? []).length;
               const ok = validateKingdom(k).ok;
               return (
-                <Card key={k.id} padding={5} variant={hueOf(k.capitalList)}>
-                    <VStack gap={GAP.tight} className="om-card">
-                      <HStack gap={GAP.item} align="center" justify="between">
-                        <HStack gap={GAP.item} align="center" onClick={() => onOpen(k.id)}>
-                          <span className="om-card-emblem"><Emblem emblemKey={k.emblem} name={k.name} size="lg" /></span>
-                          <Heading level={2}>{k.name || "Untitled"}</Heading>
-                        </HStack>
-                        {recordActions && <MoreMenu items={recordActions("kingdoms", k)} alignment="end" />}
+                <ClickableCard key={k.id} label={k.name || "Untitled"} padding={5}
+                               variant={hueOf(k.capitalList)} onClick={() => onOpen(k.id)}>
+                  <VStack gap={GAP.item}>
+                    <HStack gap={GAP.item} align="center" justify="between">
+                      <HStack gap={GAP.item} align="center">
+                        <span className="om-card-emblem"><Emblem emblemKey={k.emblem} name={k.name} size="lg" /></span>
+                        <Heading level={2}>{k.name || "Untitled"}</Heading>
                       </HStack>
-                      <VStack gap={GAP.tight} onClick={() => onOpen(k.id)}>
+                      {recordActions && <MoreMenu items={recordActions("kingdoms", k)} alignment="end" />}
+                    </HStack>
+                    <VStack gap={0}>
                       {k.ruler && <Text>Ruler: {k.ruler}</Text>}
-                      <Capital kingdom={k} />
-                      {!ok && <Text color="error">{total - placed === 1 ? "1 territory to place" : `${total - placed} territories to place`}</Text>}
-                      </VStack>
+                      {capitalOf(k) && <Text>Capital: {capitalOf(k)}</Text>}
+                      {!ok && (
+                        <Text color="error">
+                          {total - placed === 1 ? "1 territory to place" : `${total - placed} territories to place`}
+                        </Text>
+                      )}
                     </VStack>
-                </Card>
+                  </VStack>
+                </ClickableCard>
               );
             })}
             </Grid>

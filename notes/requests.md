@@ -70,6 +70,16 @@
 - "Optional" no longer printed beside fields, so there is nothing there to click
 - Emblem cropping rebuilt on react-avatar-editor, with the source downscaled to 1600px first so the canvas keeps up
 
+## Done, latest round
+
+- Credit footer moved out of the shell's scroller: the shared footer was sitting on top of it
+- The page's one action is sticky, so it stops at the content instead of floating over both footers
+- Kingdom and army cards use Astryx's ClickableCard, with the menu nested; two faces, not three, and the capital reads as a line, not a chip
+- Capital chip taken off the kingdom header
+- Attributes read in the text colour with a dotted underline, instead of accent-coloured pseudo-links
+- Figure cards draw the same stat bar as the roster, so the table's own header bar cannot collide with the dialog's
+- Territory preview columns are proportional, so nothing scrolls sideways
+
 ## Open
 
 1. **Print rebuild** — map beside the region ledger, occupied boxes, The Realm block, figures grouped by race. Audited, half-written.
@@ -81,3 +91,7 @@
 7. **Campaign additions must share a border** with an unoccupied territory (p37).
 8. **Legendary Heroes** (Appendix D).
 9. **"We had a good thing before"** on unit cards — say which version and I'll restore it.
+10. **Contrast pass** across the tinted cards and supporting text, measured against WCAG, not eyeballed.
+11. **Top menu** — still not right: back arrow, app menu, title, then Print, gear and record menu all queued at the ends.
+12. **Options switches** — Lore is disabled in builds without the tables, which reads as broken; hide it there instead.
+13. **Muster modal polish** and the army header saying the points twice.

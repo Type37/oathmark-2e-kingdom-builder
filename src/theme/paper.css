@@ -137,10 +137,11 @@ body {
 
 .om-page { padding-block-end: calc(var(--spacing-12) * 3); }
 
+/* The page's one action rides with the content instead of floating over the
+   footers at the end of the page. */
 .om-cta-dock {
-  position: fixed;
-  inset-inline: 0;
-  bottom: var(--spacing-10);
+  position: sticky;
+  bottom: var(--spacing-6);
   z-index: 10;
   display: flex;
   justify-content: center;
@@ -268,6 +269,15 @@ body {
 
 /* A chip that carries a definition still needs a box the popover can measure. */
 .om-defined { display: inline-flex; }
+
+/* An attribute opens its rule, but it is prose first: it keeps the text colour
+   and says so with an underline. */
+.om-attr-link, .om-attr-link * {
+  color: var(--color-text-primary);
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
 
 /* Regions the kingdom has not reached yet are present but set back. */
 .om-region-closed { opacity: 0.5; }

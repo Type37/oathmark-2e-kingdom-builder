@@ -1,8 +1,9 @@
 import React from "react";
 import {
-  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Card, Text, Heading, Button, Token,
+  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Text, Heading, Button,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
+import { ClickableCard } from "@astryxdesign/core/ClickableCard";
 import { Icon } from "@iconify/react";
 import Ico from "../components/Ico.jsx";
 import Emblem from "../components/Emblem.jsx";
@@ -41,10 +42,11 @@ export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileA
               {rows.map((m) => {
                 const k = get(store, "kingdoms", m.kingdomId);
                 return (
-                  <Card key={m.id} padding={5} variant={hueOf(k?.capitalList)}>
-                    <VStack gap={GAP.tight} className="om-card">
+                  <ClickableCard key={m.id} label={m.name || "Untitled"} padding={5}
+                                 variant={hueOf(k?.capitalList)} onClick={() => onOpen(m.id)}>
+                    <VStack gap={GAP.item}>
                       <HStack gap={GAP.item} align="center" justify="between">
-                        <HStack gap={GAP.item} align="center" onClick={() => onOpen(m.id)}>
+                        <HStack gap={GAP.item} align="center">
                           <span className="om-card-emblem">
                             <Emblem emblemKey={k?.emblem} name={k?.name} size="lg" />
                           </span>
@@ -52,13 +54,13 @@ export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileA
                         </HStack>
                         {recordActions && <MoreMenu items={recordActions("musters", m)} alignment="end" />}
                       </HStack>
-                      <VStack gap={GAP.tight} onClick={() => onOpen(m.id)}>
+                      <VStack gap={0}>
                         {k && <Text>Kingdom: {k.name || "Untitled"}</Text>}
                         {m.commander && <Text>Commander: {m.commander}</Text>}
-                        <Text type="label">{armyPoints(m)} of {m.points}pts</Text>
+                        <Text>{armyPoints(m)} of {m.points}pts</Text>
                       </VStack>
                     </VStack>
-                  </Card>
+                  </ClickableCard>
                 );
               })}
             </Grid>

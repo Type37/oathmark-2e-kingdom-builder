@@ -93,7 +93,7 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
                 {attrs.map((a, i) => (
                   <React.Fragment key={a}>
                     {i > 0 && ", "}
-                    <Link onClick={() => onOpenAttribute(a)}>{a}</Link>
+                    <Link className="om-attr-link" onClick={() => onOpenAttribute(a)}>{a}</Link>
                   </React.Fragment>
                 ))}
               </Text>

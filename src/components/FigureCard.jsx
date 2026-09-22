@@ -3,7 +3,7 @@ import {
   Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, Text, Table, Popover, Button,
 } from "@astryxdesign/core";
 import { pixel } from "@astryxdesign/core/Table";
-import { Attributes } from "./StatLine.jsx";
+import { Attributes, StatBar } from "./StatLine.jsx";
 import { figureById, stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
 import { Icon } from "@iconify/react";
@@ -147,7 +147,14 @@ export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange
         content={
           <LayoutContent>
             <VStack gap={GAP.group}>
-              <StatRow variants={shown} />
+              <VStack gap={GAP.item}>
+                {shown.map((v, i) => (
+                  <VStack key={i} gap={0}>
+                    {shown.length > 1 && <Text type="label">Level {v.level}</Text>}
+                    <StatBar variant={v} />
+                  </VStack>
+                ))}
+              </VStack>
               <Ranged fig={fig} />
               <Attributes variant={shown[0]} />
               {fig.equipment.length > 0 && <Equipment lines={fig.equipment} />}

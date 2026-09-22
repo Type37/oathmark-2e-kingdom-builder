@@ -3,7 +3,7 @@ import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutPanel,
   VStack, HStack, List, ListItem, Token, Text, Heading, Button, Table, Link, useMediaQuery,
 } from "@astryxdesign/core";
-import { pixel } from "@astryxdesign/core/Table";
+import { proportional } from "@astryxdesign/core/Table";
 import { territory, figureById, rarityNote } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
 import { STAT_KEYS } from "../rules/stats.mjs";
@@ -37,7 +37,7 @@ function Grants({ t, pool, region, onOpenFigure }) {
     });
 
   const columns = [
-    { key: "name", header: "Figure", width: pixel(220), renderCell: (r) => (
+    { key: "name", header: "Figure", width: proportional(3), renderCell: (r) => (
       <HStack gap={2} align="center" wrap="wrap">
         <Link isStandalone onClick={() => onOpenFigure(r.id)}>{r.name}</Link>
         {r.isNew && <Token label="New" size="sm" color={hueOf(t.list)} />}
@@ -45,7 +45,7 @@ function Grants({ t, pool, region, onOpenFigure }) {
       </HStack>
     ) },
     ...STAT_KEYS.map((k) => ({
-      key: k, header: letter(k), width: pixel(44), align: "center",
+      key: k, header: letter(k), width: proportional(1), align: "center",
       renderCell: (r) => <Text>{r[k]}</Text>,
     })),
   ];

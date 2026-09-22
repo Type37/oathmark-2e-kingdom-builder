@@ -77,7 +77,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
           {(variantAfter.attributes ?? []).map((a, i) => (
             <React.Fragment key={a}>
               {i > 0 && ", "}
-              <Link onClick={() => setAttr(a)}>{a}</Link>
+              <Link className="om-attr-link" onClick={() => setAttr(a)}>{a}</Link>
             </React.Fragment>
           ))}
         </Text>
