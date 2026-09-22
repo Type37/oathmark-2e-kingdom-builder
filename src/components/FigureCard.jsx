@@ -6,9 +6,11 @@ import { pixel } from "@astryxdesign/core/Table";
 import { Attributes } from "./StatLine.jsx";
 import { figureById, stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
-import Dice from "./Dice.jsx";
+import { Icon } from "@iconify/react";
+import { D10 } from "../icons/game.mjs";
 import { equipmentParts } from "../rules/equipment.mjs";
 import { STAT_KEYS, statText, baseText, carriesRule, weaponsOf, rangeText } from "../rules/stats.mjs";
+import { costLabel } from "../rules/upgrades.mjs";
 import { GAP, statWidth } from "../layout.mjs";
 
 const letter = (k) => (k === "pts" ? "Pts" : k);
@@ -17,7 +19,7 @@ const letter = (k) => (k === "pts" ? "Pts" : k);
 function StatRow({ variants, extra = [] }) {
   const columns = [
     ...(variants.length > 1
-      ? [{ key: "level", header: "Lvl", width: pixel(44), align: "center",
+      ? [{ key: "level", header: "Level", width: pixel(64), align: "center",
            renderCell: (r) => <Text type="label">{r.level}</Text> }]
       : []),
     ...STAT_KEYS.map((k) => ({
@@ -25,12 +27,15 @@ function StatRow({ variants, extra = [] }) {
       header: (
         <Defined label={stats[k]?.name ?? letter(k)}
                  def={stats[k] && { title: stats[k].name, text: stats[k].text, note: stats[k].note, page: stats[k].page }}>
-          <Text type="label">{letter(k)}</Text>
+          <HStack gap={1} align="center">
+            {k === "CD" && <Icon icon={D10} width={16} height={16} />}
+            <Text type="label">{letter(k)}</Text>
+          </HStack>
         </Defined>
       ),
       width: pixel(statWidth(k)),
       align: "center",
-      renderCell: (r) => (k === "CD" ? <Dice count={r[k]} /> : <Text type="large">{statText(k, r[k])}</Text>),
+      renderCell: (r) => <Text type="large">{k === "CD" ? r[k] : statText(k, r[k])}</Text>,
     })),
     { key: "base", width: pixel(72), align: "center",
       header: (
@@ -84,10 +89,8 @@ function Equipment({ lines }) {
 }
 
 function Option({ u, owns }) {
-  const cost = u.pts != null
-    ? `+${u.pts}pts`
-    : u.costs?.map((c) => `Level ${c.levels} +${c.pts}pts`).join(", ");
-  const changes = Object.entries(u.changes ?? {}).map(([k, v]) => `${letter(k)}${v}`);
+  const cost = costLabel(u);
+  const changes = Object.entries(u.changes ?? {}).map(([k, v]) => `${letter(k)} ${statText(k, v)}`);
   return (
     <VStack gap={GAP.tight}>
       <HStack gap={GAP.item} align="baseline" justify="between" wrap="wrap"
@@ -101,7 +104,7 @@ function Option({ u, owns }) {
       {(changes.length > 0 || u.base) && (
         <HStack gap={GAP.group} wrap="wrap">
           {changes.map((c) => <Text key={c}>{c}</Text>)}
-          {u.base && <Text>Base {u.base}</Text>}
+          {u.base && <Text>Base {baseText(u.base)}mm</Text>}
         </HStack>
       )}
       {u.adds?.length > 0 && <Attributes variant={{ attributes: u.adds }} />}
@@ -140,11 +143,10 @@ export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={720}>
       <Layout
-        header={<DialogHeader title={fig.name} onOpenChange={onOpenChange} />}
+        header={<DialogHeader title={fig.name} subtitle={`Unlocked from ${fig.terrain}`} onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
             <VStack gap={GAP.group}>
-              <Text><i>Unlocked from: {fig.terrain}</i></Text>
               <StatRow variants={shown} />
               <Ranged fig={fig} />
               <Attributes variant={shown[0]} />

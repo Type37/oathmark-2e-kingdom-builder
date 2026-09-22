@@ -3,7 +3,9 @@ import {
   HStack, VStack, Text, Section, Popover, Button,
   Dialog, DialogHeader, Layout, LayoutContent,
 } from "@astryxdesign/core";
-import { STAT_KEYS, statText } from "../rules/stats.mjs";
+import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
+import { Icon } from "@iconify/react";
+import { D10 } from "../icons/game.mjs";
 import { stats, lookupAttribute } from "../rules/kingdom.mjs";
 import Mark from "./Mark.jsx";
 
@@ -177,12 +179,18 @@ export function ArmySummary({ a }) {
 // The book's stat block in miniature (p218): one bar of letters, values beneath,
 // in fixed columns so it never wraps into a ragged stack.
 export function StatBar({ variant, keys = STAT_KEYS }) {
+  const cols = [...keys, "base"];
   return (
-    <div className="om-statbar" style={{ "--om-cols": keys.length }}>
-      {keys.map((k) => (
+    <div className="om-statbar" style={{ "--om-cols": cols.length }}>
+      {cols.map((k) => (
         <div key={k} className="om-statbar-col">
-          <span className="om-statbar-letter">{k === "pts" ? "Pts" : k}</span>
-          <span className="om-statbar-value">{statText(k, variant[k])}</span>
+          <span className="om-statbar-letter">
+            {k === "CD" && <Icon icon={D10} width={13} height={13} />}
+            {k === "pts" ? "Pts" : k === "base" ? "Base" : k}
+          </span>
+          <span className="om-statbar-value">
+            {k === "base" ? `${baseText(variant.base)}mm` : k === "CD" ? variant[k] : statText(k, variant[k])}
+          </span>
         </div>
       ))}
     </div>

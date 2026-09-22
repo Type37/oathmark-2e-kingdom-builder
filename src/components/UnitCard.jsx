@@ -1,12 +1,12 @@
 import React from "react";
 import {
-  VStack, HStack, Text, Button, Selector, Card,
+  VStack, HStack, Text, Button, Selector, Card, Link,
 } from "@astryxdesign/core";
 import Counter from "./Counter.jsx";
 import Ico from "./Ico.jsx";
 import Upgrades from "./Upgrades.jsx";
 import Defined from "./Defined.jsx";
-import { Attributes } from "./StatLine.jsx";
+import { AttributeCard } from "./StatLine.jsx";
 import { StatBar } from "./StatLine.jsx";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
@@ -38,6 +38,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
 
   const [picking, setPicking] = React.useState(false);
   const [spelling, setSpelling] = React.useState(false);
+  const [attr, setAttr] = React.useState(null);
   const patch = (next) => onChange({ ...unit, ...next });
 
   return (
@@ -72,7 +73,15 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
         </HStack>
 
         <StatBar variant={variantAfter} />
-        <Text type="supporting">{(variantAfter.attributes ?? []).join(", ")}</Text>
+        <Text type="supporting">
+          {(variantAfter.attributes ?? []).map((a, i) => (
+            <React.Fragment key={a}>
+              {i > 0 && ", "}
+              <Link onClick={() => setAttr(a)}>{a}</Link>
+            </React.Fragment>
+          ))}
+        </Text>
+        <AttributeCard name={attr} isOpen={Boolean(attr)} onOpenChange={(o) => !o && setAttr(null)} />
 
         <HStack gap={GAP.group} align="end" wrap="wrap">
           {levels?.length > 1 && (
