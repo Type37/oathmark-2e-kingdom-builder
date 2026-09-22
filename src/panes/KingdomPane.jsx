@@ -17,7 +17,7 @@ import EmblemDialog from "../components/EmblemDialog.jsx";
 import { GAP, DENSITY } from "../layout.mjs";
 import {
   LEVELS, REGION_SIZES, CAPITAL_LISTS, allTerritories, canPlace,
-  validateKingdom, territory, grantList, figurePool, rarityNote,
+  validateKingdom, territory, grantList, figurePool, rarityNote, openBorderRegion, borderNote,
 } from "../rules/kingdom.mjs";
 import { hueOf } from "../race.mjs";
 import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
@@ -59,7 +59,12 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
               onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}>
         <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
           <Text type="label">Region {r}</Text>
-          <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
+          <HStack gap={GAP.item} align="center">
+            {r === openBorderRegion(value) && (
+              <Defined bare def={borderNote}><Token label="Open borders" size="sm" /></Defined>
+            )}
+            <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
+          </HStack>
         </HStack>
         <List density={DENSITY.data}>
           {mine.map(({ p, i }) => (

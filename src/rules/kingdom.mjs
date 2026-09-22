@@ -59,6 +59,20 @@ export function canPlace({ capitalList, region, list, name }) {
 
 // The rarity rule as the book states it (p18), plus where this terrain may sit
 // in this kingdom, which is the part a player actually needs.
+// "A territory has open borders if any part of that territory on the kingdom
+// sheet is not bordered by another territory in the kingdom" (p32), so the
+// outermost region a kingdom fills is the one with open borders.
+export function openBorderRegion(kingdom) {
+  const regions = LEVELS[kingdom?.level ?? "moderate"] ?? [];
+  return regions.length ? regions.at(-1) : null;
+}
+
+export const borderNote = {
+  title: "Open Borders",
+  text: "A territory has open borders if any part of that territory on the kingdom sheet is not bordered by another territory in the kingdom. So, for a starting Beginner-level kingdom, all the territories in Region 2 have open borders. In a starting Moderate-level kingdom, all the territories in Region 3 have open borders. If more territories are added to the kingdom, they will start closing off the borders of the inner Regions.",
+  page: 32,
+};
+
 export function rarityNote({ capitalList, list, name }) {
   const t = territory(list, name);
   if (!t) return null;

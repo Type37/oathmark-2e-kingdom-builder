@@ -31,7 +31,7 @@ const EMPTY_KINGDOM = {
   name: "", ruler: "", level: "moderate", capitalList: null,
   territories: [], collection: {}, emblem: null, culture: null,
 };
-const EMPTY_MUSTER = { name: "", commander: "", points: 1000, units: [] };
+const EMPTY_MUSTER = { name: "", commander: "", points: 1000, units: [], battleType: null, uneven: null };
 
 function read() {
   let store;
@@ -211,7 +211,7 @@ export default function App() {
 
         {page === "home" && <Landing onOpen={go} />}
         {page === "kingdoms" && (
-          <KingdomList store={store} fileActions={fileActions} {...shell}
+          <KingdomList store={store} fileActions={fileActions} recordActions={recordActions} {...shell}
                        onOpen={(id) => open("kingdoms", id)} onNew={() => setFounding(true)} />
         )}
         {page === "kingdom" && (

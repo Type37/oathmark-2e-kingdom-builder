@@ -10,6 +10,16 @@ import { STAT_KEYS } from "../rules/stats.mjs";
 import { GAP } from "../layout.mjs";
 
 const LISTS = ["dwarf", "elf", "goblin", "human", "orc", "necropolis", "unaligned"];
+
+// Sorting is by column; names sort as text, everything else as numbers.
+function sorted(rows, { key, dir }) {
+  const sign = dir === "asc" ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    if (key === "name") return sign * a.name.localeCompare(b.name);
+    if (key === "owned") return sign * ((a.owned ?? 0) - (b.owned ?? 0));
+    return sign * ((Number(a[key]) || 0) - (Number(b[key]) || 0));
+  });
+}
 const LABEL = {
   dwarf: "Dwarf", elf: "Elf", goblin: "Goblin", human: "Human",
   orc: "Orc", necropolis: "Necropolis", unaligned: "Unaligned",
@@ -21,6 +31,7 @@ export default function CollectionPane({ value, onChange, shell }) {
   const [openFigure, setOpenFigure] = React.useState(null);
   const totals = collectionTotals(value);
   const sections = React.useRef({});
+  const [sort, setSort] = React.useState(null);
 
   // Every figure in the book, in printed order, kept in its own list's section.
   const groups = React.useMemo(() => {
@@ -41,8 +52,13 @@ export default function CollectionPane({ value, onChange, shell }) {
           .filter((f) => f.list === l && (!q || f.name.toLowerCase().includes(q)))
           .map(row),
       }))
-      .filter((g) => g.rows.length);
-  }, [query, value]);
+      .filter((g) => g.rows.length)
+      .map((g) => (sort ? { ...g, rows: sorted(g.rows, sort) } : g));
+  }, [query, value, sort]);
+
+  // Clicking a column sorts every list section by it, ascending then descending.
+  const onSort = (key) =>
+    setSort((s) => (s?.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }));
 
   // The list names are a jump bar, not a filter.
   const jump = (l) => {
@@ -86,6 +102,8 @@ export default function CollectionPane({ value, onChange, shell }) {
             </div>
             <FigureTable
               rows={g.rows}
+              sort={sort}
+              onSort={onSort}
               onOpen={setOpenFigure}
               actionColumn={{
                 header: "Owned",

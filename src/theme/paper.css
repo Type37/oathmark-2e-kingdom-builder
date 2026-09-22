@@ -258,3 +258,10 @@ body {
   z-index: 5;
   background-color: var(--color-background-body);
 }
+
+/* Battle types read as full rules, so they need room: two wide columns. */
+.om-battle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--spacing-4);
+}

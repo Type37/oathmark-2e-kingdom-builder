@@ -6,6 +6,7 @@ import { pixel } from "@astryxdesign/core/Table";
 import { stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
 import Dice from "./Dice.jsx";
+import Ico from "./Ico.jsx";
 import { Attributes } from "./StatLine.jsx";
 import { COL, BREAK, statWidth } from "../layout.mjs";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
@@ -36,7 +37,20 @@ function Head({ statKey }) {
   );
 }
 
-export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
+export default function FigureTable({ rows, onAdd, onOpen, actionColumn, sort, onSort }) {
+  // The letter keeps its definition; a caret beside it sorts the table.
+  const sortable = (key, node) => {
+    if (!onSort) return node;
+    const active = sort?.key === key;
+    return (
+      <HStack gap={0} align="center" justify="center">
+        {node}
+        <Button variant="ghost" size="sm" isIconOnly label={`Sort by ${key}`}
+                onClick={() => onSort(key)}
+                icon={<Ico name={active && sort.dir === "asc" ? "arrow-up" : "arrow-down"} size={14} />} />
+      </HStack>
+    );
+  };
   // Below 768 the stat grid cannot fit, so it drops to name, points and action.
   const isNarrow = useMediaQuery(BREAK.narrow);
   const statKeys = isNarrow ? ["pts"] : STAT_KEYS;
@@ -44,7 +58,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
   const columns = [
     {
       key: "name",
-      header: "Figure",
+      header: sortable("name", <Text type="label">Figure</Text>),
       width: pixel(COL.name),
       renderCell: (r) => (
         <VStack gap={0}>
@@ -60,7 +74,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
     },
     ...statKeys.map((k) => ({
       key: k,
-      header: <Head statKey={k} />,
+      header: sortable(k, <Head statKey={k} />),
       width: pixel(statWidth(k)),
       align: "center",
       renderCell: (r) => (k === "CD" ? <Dice count={r[k]} /> : <Text type="large">{statText(k, r[k])}</Text>),

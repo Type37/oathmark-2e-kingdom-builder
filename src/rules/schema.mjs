@@ -34,6 +34,8 @@ export const MusterSchema = z.object({
   commander: z.string().optional().default(""),
   points: z.number().int().min(0).optional().default(1000),
   kingdomId: z.string().optional(),
+  battleType: z.string().nullable().optional(),
+  uneven: z.object({}).passthrough().nullable().optional(),
   units: z
     .array(
       z.object({

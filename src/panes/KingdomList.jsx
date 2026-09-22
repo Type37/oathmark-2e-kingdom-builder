@@ -20,7 +20,7 @@ function slots(level) {
 }
 
 
-export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, fileActions }) {
+export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, fileActions, recordActions }) {
   const rows = listOf(store, "kingdoms");
 
   return (
@@ -52,17 +52,22 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
               const ok = validateKingdom(k).ok;
               return (
                 <Card key={k.id} padding={5} variant={hueOf(k.capitalList)}>
-                    <VStack gap={GAP.tight} onClick={() => onOpen(k.id)} className="om-card">
-                      <HStack gap={GAP.item} align="center">
-                        <Emblem emblemKey={k.emblem} name={k.name} size="lg" />
-                        <Heading level={2}>{k.name || "Untitled"}</Heading>
+                    <VStack gap={GAP.tight} className="om-card">
+                      <HStack gap={GAP.item} align="center" justify="between">
+                        <HStack gap={GAP.item} align="center" onClick={() => onOpen(k.id)}>
+                          <Emblem emblemKey={k.emblem} name={k.name} size="lg" />
+                          <Heading level={2}>{k.name || "Untitled"}</Heading>
+                        </HStack>
+                        {recordActions && <MoreMenu items={recordActions("kingdoms", k)} alignment="end" />}
                       </HStack>
-                      {k.ruler && <Text>{k.ruler}</Text>}
+                      <VStack gap={GAP.tight} onClick={() => onOpen(k.id)}>
+                      {k.ruler && <Text>Ruler: {k.ruler}</Text>}
                       <HStack gap={GAP.item} align="center" wrap="wrap">
                         <Capital kingdom={k} />
                         <LevelIcon level={k.level} />
                       </HStack>
                       {!ok && <Text color="error">{total - placed} territories to place</Text>}
+                      </VStack>
                     </VStack>
                 </Card>
               );
