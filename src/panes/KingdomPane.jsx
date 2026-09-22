@@ -92,7 +92,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
               }
               startContent={<Token label={`Rarity ${territory(p.list, p.name)?.rarity ?? ""}`} size="sm" color={hueOf(p.list)} />}
               endContent={r === 1 ? undefined : (
-                <Button label="Remove" size="sm" variant="ghost" isIconOnly
+                <Button label="Remove" size="sm" variant="ghost"
                         icon={<Ico name="minus" />}
                         onClick={() => patch({ territories: picks.filter((_, j) => j !== i) })} />
               )}
