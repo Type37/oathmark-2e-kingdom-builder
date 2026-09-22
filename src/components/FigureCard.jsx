@@ -54,10 +54,12 @@ function StatRow({ variants, extra = [] }) {
 
 // Every weapon, shield and piece of armour opens its rule, like the stats do.
 function Equipment({ lines }) {
+  const parts = lines.flatMap((line) => equipmentParts(line)).filter(({ label }) => carriesRule(label));
+  if (!parts.length) return null;
   return (
     <HStack gap={GAP.item} align="center" wrap="wrap">
       <Text type="label">Equipment</Text>
-      {lines.flatMap((line) => equipmentParts(line)).filter(({ label }) => carriesRule(label)).map(({ part, label, entry }, i) => (
+      {parts.map(({ part, label, entry }, i) => (
         entry ? (
           <Popover key={`${label}-${i}`} width={340} label={entry.name} placement="below"
                    content={

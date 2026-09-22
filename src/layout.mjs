@@ -25,4 +25,4 @@ export const BREAK = {
 // Column widths never vary by tab, so switching tabs cannot reflow the table.
 export const COL = { stat: 52, name: 168, special: 220, base: 64, action: 76 };
 // "3d10" and "10+" need more room than a bare digit.
-export const statWidth = (key) => (key === "CD" ? 88 : key === "D" || key === "A" || key === "M" || key === "pts" ? 58 : COL.stat);
+export const statWidth = (key) => (key === "CD" ? 124 : key === "D" || key === "A" || key === "M" || key === "pts" ? 58 : COL.stat);

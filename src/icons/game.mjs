@@ -14,4 +14,4 @@ export const RANK = { beginner: fromSvg(rank1), moderate: fromSvg(rank2), expert
 // Font Awesome's two dice are 640 wide.
 export const DICE = { ...fromSvg(dice), width: 640 };
 // Oathmark rolls ten-siders only (p14).
-export const D10 = { ...fromSvg(d10), width: 24, height: 24 };
+export const D10 = { ...fromSvg(d10), width: 512, height: 512 };
