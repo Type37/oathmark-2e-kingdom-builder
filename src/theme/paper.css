@@ -47,6 +47,20 @@ body {
   }
 }
 
+/* The page's bar stays put: Back, Print and the menu are always reachable. */
+.om-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: var(--color-background-body);
+}
+
+/* Back is the same target on every page, and big enough to hit. */
+.om-back button,
+.om-back {
+  min-block-size: 44px;
+}
+
 /* One page scroll. The kingdom sheet rides along, pinned under the nav. */
 .om-sticky {
   position: sticky;
@@ -407,6 +421,9 @@ body {
 }
 .om-statbar-col { display: grid; }
 .om-statbar-letter {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
   background-color: var(--color-bar);
   color: var(--color-on-bar);
   font-family: var(--font-family-ui);
@@ -415,7 +432,11 @@ body {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-align: center;
-  padding-block: var(--spacing-0-5);
+  padding-block: var(--spacing-1);
+}
+.om-statbar-letter:hover,
+.om-statbar-letter:focus-visible {
+  background-color: var(--color-text-primary);
 }
 .om-statbar-value {
   text-align: center;

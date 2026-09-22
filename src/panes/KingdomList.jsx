@@ -1,14 +1,14 @@
 import React from "react";
 import {
-  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Text, Heading, Button,
+  VStack, HStack, Grid, Text, Heading, Button,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { ClickableCard } from "@astryxdesign/core/ClickableCard";
 import { Icon } from "@iconify/react";
-import Ico from "../components/Ico.jsx";
 import { LAUREL } from "../icons/game.mjs";
 import { LEVELS, REGION_SIZES, validateKingdom } from "../rules/kingdom.mjs";
 import { list as listOf } from "../rules/store.mjs";
+import Shell from "../Shell.jsx";
 import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
 import Emblem from "../components/Emblem.jsx";
@@ -19,34 +19,19 @@ function slots(level) {
 }
 
 
-export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, fileActions, recordActions }) {
+export default function KingdomList({ store, onOpen, onNew, recordActions, shell }) {
   const rows = listOf(store, "kingdoms");
 
   return (
-    <Layout
-      height="auto"
-      padding={8}
-      contentWidth={1040}
-      header={
-        <LayoutHeader>
-          <HStack gap={GAP.item} align="center" justify="between">
-            <HStack gap={GAP.item} align="center">
-              <Button className="om-menu-btn" label="Menu" size="sm" variant="ghost" isIconOnly
-                      icon={<Ico name="menu" size={20} />} onClick={onMenu} />
-              <Button label="Back" size="sm" variant="ghost" isIconOnly
-                      icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
-              <Heading level={1}>Kingdom Builder</Heading>
-            </HStack>
-            <HStack gap={GAP.item} align="center">
-              <Button label="New Kingdom" variant="primary"
-                      icon={<Icon icon={LAUREL} width={20} height={20} />} onClick={onNew} />
-              <MoreMenu items={fileActions} alignment="end" />
-            </HStack>
-          </HStack>
-        </LayoutHeader>
-      }
+    <Shell
+      {...shell}
+      width={1040}
+      title="Kingdom Builder"
+      meta={(
+        <Button label="New Kingdom" variant="primary"
+                icon={<Icon icon={LAUREL} width={20} height={20} />} onClick={onNew} />
+      )}
       content={
-        <LayoutContent>
           <VStack gap={GAP.section} className="om-page">
             <Grid columns={{ minWidth: 260, max: 3, repeat: "fill" }} gap={GAP.group}>
             {rows.map((k) => {
@@ -79,7 +64,6 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
             })}
             </Grid>
           </VStack>
-        </LayoutContent>
       }
     />
   );

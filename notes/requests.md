@@ -91,6 +91,18 @@
 - Record names are edited in the header; the points budget is stated once
 - Army summary drops total Health and the activation spread
 
+## Done, one-header round
+
+- Every page draws the same bar: the two list pages had hand-rolled headers of their own and now use Shell like the rest
+- One menu, not two: record actions, then a divider, then Options, Import and Export everything
+- The gear is gone; Options lives in that menu. Print is a button and nothing else
+- The two Exports are named for what they act on: "Export this kingdom" against "Export everything"
+- Back is always first in the bar, says where it goes, and is 44px tall
+- The bar is sticky, so Back, Print and the menu never scroll away
+- The kingdom's name is typed in the bar, like the army's; the ruler is the sheet's labelled field and is no longer repeated unlabelled beside the title
+- Five stat-block styles down to two: StatLine, Derived, RosterRow and ArmySummary were dead exports
+- Stat-bar letters open their rule, the way the table's letters always did
+
 ## Open
 
 1. **Nekoweb copy** — whether to publish a second copy there.
@@ -98,6 +110,6 @@
 3. **Legendary Heroes** (Appendix D).
 9. **"We had a good thing before"** on unit cards — say which version and I'll restore it.
 10. **Contrast pass** across the tinted cards and supporting text, measured against WCAG, not eyeballed.
-11. **Top menu** — still not right: back arrow, app menu, title, then Print, gear and record menu all queued at the ends.
 12. **Options switches** — Lore is disabled in builds without the tables, which reads as broken; hide it there instead.
-13. **Muster modal polish** and the army header saying the points twice.
+13. **Muster modal polish.**
+14. **Unit cards still differ between roster and Add Units** — the table has a Special column and cap text the roster card states differently.

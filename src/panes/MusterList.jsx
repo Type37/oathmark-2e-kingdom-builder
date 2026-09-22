@@ -1,46 +1,31 @@
 import React from "react";
 import {
-  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Text, Heading, Button,
+  VStack, HStack, Grid, Text, Heading, Button,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { ClickableCard } from "@astryxdesign/core/ClickableCard";
 import { Icon } from "@iconify/react";
-import Ico from "../components/Ico.jsx";
 import Emblem from "../components/Emblem.jsx";
 import { MUSTER } from "../icons/game.mjs";
 import { list as listOf, get } from "../rules/store.mjs";
 import { armyPoints } from "../rules/muster.mjs";
+import Shell from "../Shell.jsx";
 import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
 
-export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileActions, recordActions }) {
+export default function MusterList({ store, onOpen, onNew, recordActions, shell }) {
   const rows = listOf(store, "musters");
 
   return (
-    <Layout
-      height="auto"
-      padding={8}
-      contentWidth={1040}
-      header={
-        <LayoutHeader>
-          <HStack gap={GAP.item} align="center" justify="between">
-            <HStack gap={GAP.item} align="center">
-              <Button className="om-menu-btn" label="Menu" size="sm" variant="ghost" isIconOnly
-                      icon={<Ico name="menu" size={20} />} onClick={onMenu} />
-              <Button label="Back" size="sm" variant="ghost" isIconOnly
-                      icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
-              <Heading level={1}>Army Builder</Heading>
-            </HStack>
-            <HStack gap={GAP.item} align="center">
-              <Button label="Muster a New Army" variant="primary"
-                      icon={<Icon icon={MUSTER} width={20} height={20} />} onClick={onNew} />
-              <MoreMenu items={fileActions} alignment="end" />
-            </HStack>
-          </HStack>
-        </LayoutHeader>
-      }
+    <Shell
+      {...shell}
+      width={1040}
+      title="Army Builder"
+      meta={(
+        <Button label="Muster a New Army" variant="primary"
+                icon={<Icon icon={MUSTER} width={20} height={20} />} onClick={onNew} />
+      )}
       content={
-        <LayoutContent>
           <VStack gap={GAP.section} className="om-page">
             <Grid columns={{ minWidth: 260, max: 3, repeat: "fill" }} gap={GAP.group}>
               {rows.map((m) => {
@@ -69,7 +54,6 @@ export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileA
               })}
             </Grid>
           </VStack>
-        </LayoutContent>
       }
     />
   );

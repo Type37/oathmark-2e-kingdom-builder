@@ -178,6 +178,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       {...shell}
       onPrint={onPrint}
       title={value.name || "Untitled"}
+      onRename={(name) => patch({ name })}
       leading={
         <Button label={value.emblem ? "Change emblem" : "Add an emblem"} variant="ghost" size="sm" isIconOnly
                 onClick={() => setCropping(true)}>
@@ -185,7 +186,6 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
         </Button>
       }
       inlineDetail={<VStack gap={GAP.group}>{map}{access}</VStack>}
-      subtitle={value.ruler ? <Text>{value.ruler}</Text> : null}
       meta={null}
       detail={detail}
       detailTitle="Kingdom Sheet"

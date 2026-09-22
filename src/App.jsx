@@ -106,17 +106,13 @@ export default function App() {
   }
 
   const fileActions = [
-    { label: "Import", onClick: () => fileRef.current?.click() },
-    { label: "Export All", onClick: exportAll },
+    { label: "Import a file", onClick: () => fileRef.current?.click() },
+    { label: "Export everything", onClick: exportAll },
   ];
-  const appActions = [
-    { label: "Options", onClick: () => setOptions(true) },
-    { type: "divider" },
-    ...fileActions,
-  ];
+  const appActions = fileActions;
+  // Named for what they act on, so they cannot be confused with the file actions.
   const recordActions = (kind, rec) => rec ? [
-    ...(kind === "kingdoms" ? [{ label: "Print", onClick: () => window.print() }] : []),
-    { label: "Export", onClick: () => exportOne(rec) },
+    { label: kind === "kingdoms" ? "Export this kingdom" : "Export this army", onClick: () => exportOne(rec) },
     { label: "Duplicate", onClick: () => setStore((s) => duplicate(s, kind, rec.id)) },
     { type: "divider" },
     { label: "Delete", variant: "destructive", onClick: () => setDeleting({ kind, rec }) },
@@ -141,8 +137,14 @@ export default function App() {
     go(kind === "kingdoms" ? "kingdoms" : "musters");
   }
 
+  // Back says where it goes, so the bar reads the same on every page.
+  const BACK_LABEL = {
+    home: "Home", kingdoms: "Kingdoms", musters: "Armies", collection: "Collection",
+  };
+  const parent = PARENT[section] ?? "home";
   const shell = {
-    onBack: () => go(PARENT[section] ?? "home"),
+    onBack: () => go(parent),
+    backLabel: BACK_LABEL[parent] ?? "Back",
     onMenu: () => setMenuOpen(true),
     appActions,
     onOptions: () => setOptions(true),
@@ -227,7 +229,7 @@ export default function App() {
 
         {page === "home" && <Landing onOpen={go} />}
         {page === "kingdoms" && (
-          <KingdomList store={store} fileActions={fileActions} recordActions={recordActions} {...shell}
+          <KingdomList store={store} recordActions={recordActions} shell={shell}
                        onOpen={(id) => open("kingdoms", id)} onNew={() => setFounding(true)} />
         )}
         {page === "kingdom" && (
@@ -237,7 +239,7 @@ export default function App() {
                        shell={{ ...shell, actions: recordActions("kingdoms", kingdom) }} />
         )}
         {page === "musters" && (
-          <MusterList store={store} fileActions={fileActions} recordActions={recordActions} {...shell}
+          <MusterList store={store} recordActions={recordActions} shell={shell}
                       onOpen={(id) => open("musters", id)} onNew={() => setMustering(true)} />
         )}
         {page === "muster" && (
