@@ -1,7 +1,7 @@
 import React from "react";
 import {
   VStack, HStack, Text, Heading, Button, Section, Divider, List, ListItem,
-  Token, Badge, Dialog, DialogHeader, Selector, SelectorOption, TextInput,
+  Token, Badge, Dialog, DialogHeader, Selector, TextInput,
 } from "@astryxdesign/core";
 import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
@@ -49,11 +49,12 @@ export default function KingdomPane({ value, onChange, shell }) {
                 label="Experience"
                 value={level ?? "moderate"}
                 onChange={(l) => patch({ level: l, capitalList: null, territories: [] })}
-              >
-                <SelectorOption value="beginner" label="Beginner, Regions 1 & 2" />
-                <SelectorOption value="moderate" label="Moderate, Regions 1, 2 & 3" />
-                <SelectorOption value="expert" label="Expert, Regions 1, 2, 3 & 4" />
-              </Selector>
+                options={[
+                  { value: "beginner", label: "Beginner, Regions 1 & 2" },
+                  { value: "moderate", label: "Moderate, Regions 1, 2 & 3" },
+                  { value: "expert", label: "Expert, Regions 1, 2, 3 & 4" },
+                ]}
+              />
               {EXAMPLE_KINGDOMS.map((e) => (
                 <Button key={e.id} label={e.name} size="sm" variant="secondary"
                         onClick={() => onChange(loadExample(e.id))} />
