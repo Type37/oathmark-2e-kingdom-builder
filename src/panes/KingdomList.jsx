@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Layout, LayoutContent, LayoutHeader, VStack, HStack, Card, Text, Heading,
+  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Card, Text, Heading,
   Section, Button,
 } from "@astryxdesign/core";
 import { Icon } from "@iconify/react";
@@ -28,7 +28,8 @@ export default function KingdomList({ store, onOpen, onNew }) {
       }
       content={
         <LayoutContent>
-          <VStack gap={GAP.group}>
+          <VStack gap={GAP.section} className="om-page">
+            <Grid columns={{ minWidth: 260, max: 3, repeat: "fill" }} gap={GAP.group}>
             {rows.map((k) => {
               const total = slots(k.level);
               const placed = (k.territories ?? []).length;
@@ -48,8 +49,11 @@ export default function KingdomList({ store, onOpen, onNew }) {
                 </Card>
               );
             })}
-            <Button label="Found a Kingdom" size="lg" variant="primary" width="100%"
-                    icon={<Icon icon={LAUREL} width={26} height={26} />} onClick={onNew} />
+            </Grid>
+            <HStack className="om-cta-dock">
+              <Button label="Found a Kingdom" size="lg" variant="primary"
+                      icon={<Icon icon={LAUREL} width={24} height={24} />} onClick={onNew} />
+            </HStack>
           </VStack>
         </LayoutContent>
       }

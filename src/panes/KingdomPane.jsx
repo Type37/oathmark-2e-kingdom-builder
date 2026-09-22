@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  VStack, HStack, Text, Heading, Button, Section, Divider, List, ListItem,
+  VStack, HStack, Text, Heading, Button, List, ListItem,
   Token, Badge, Dialog, DialogHeader, Selector, TextInput,
 } from "@astryxdesign/core";
 import Ico from "../components/Ico.jsx";
@@ -42,7 +42,6 @@ export default function KingdomPane({ value, onChange, shell }) {
   const content = (
     <VStack gap={GAP.section}>
       {!capitalList && (
-        <Section padding={0}>
           <VStack gap={GAP.group}>
             <HStack gap={GAP.item} align="end" wrap="wrap">
               <Selector
@@ -63,7 +62,7 @@ export default function KingdomPane({ value, onChange, shell }) {
 
             <VStack gap={GAP.tight}>
               <Text type="label">Capital</Text>
-              <List hasDividers density={DENSITY.choice}>
+              <List density={DENSITY.choice}>
                 {CAPITAL_LISTS.map((list) => {
                   const cap = allTerritories().find((t) => t.list === list && t.capital);
                   const count = allTerritories().filter((t) => t.list === list).length;
@@ -75,7 +74,6 @@ export default function KingdomPane({ value, onChange, shell }) {
               </List>
             </VStack>
           </VStack>
-        </Section>
       )}
 
       {capitalList && regions.map((r) => {
@@ -87,7 +85,7 @@ export default function KingdomPane({ value, onChange, shell }) {
               <Text type="label">Region {r}</Text>
               <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
             </HStack>
-            <List hasDividers density={DENSITY.data}>
+            <List density={DENSITY.data}>
               {mine.map(({ p, i }) => (
                 <ListItem
                   key={`${p.name}-${i}`}
@@ -127,7 +125,6 @@ export default function KingdomPane({ value, onChange, shell }) {
       <RegionMap regions={regions} picks={picks} activeRegion={picking} />
       <TextInput label="Kingdom" value={value.name ?? ""} size="sm"
                  onChange={(e) => patch({ name: e.target?.value ?? e })} />
-      <Divider />
       <Chronicle entries={value.chronicle ?? []} ruler={value.ruler}
                  onChange={(chronicle) => patch({ chronicle })}
                  onRulerChange={(ruler) => patch({ ruler })} />
@@ -143,7 +140,7 @@ export default function KingdomPane({ value, onChange, shell }) {
     <>
       <Dialog isOpen={Boolean(picking)} onOpenChange={(o) => !o && setPicking(null)} width={560}
               header={<DialogHeader title={`Region ${picking}`} />}>
-        <List hasDividers density={DENSITY.data}>
+        <List density={DENSITY.data}>
           {candidates.map(({ t }) => (
             <ListItem
               key={`${t.list}/${t.name}`}

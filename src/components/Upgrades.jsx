@@ -16,7 +16,6 @@ export default function Upgrades({ kingdom, figureId, level, chosen = [], onChan
     <CheckboxList
       label="Options"
       value={names}
-      hasDividers
       density="compact"
       onChange={(next) => onChange(ups.filter((u) => next.includes(u.name)))}
     >

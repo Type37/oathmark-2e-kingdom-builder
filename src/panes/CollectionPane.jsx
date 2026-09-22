@@ -62,7 +62,7 @@ export default function CollectionPane({ value, onChange, shell }) {
         </Section>
         {!query && (
           <Section paddingBlockEnd={0}>
-            <TabList value={list} onChange={setList} hasDivider isFullBleed>
+            <TabList value={list} onChange={setList} isFullBleed>
               {LISTS.map((l) => <Tab key={l} value={l} label={LABEL[l]} />)}
             </TabList>
           </Section>

@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Dialog, DialogHeader, VStack, HStack, Text, Divider, Table,
+  Dialog, DialogHeader, VStack, HStack, Text, Table,
 } from "@astryxdesign/core";
 import { pixel, proportional } from "@astryxdesign/core/Table";
 import { Attributes } from "./StatLine.jsx";
@@ -36,6 +36,8 @@ function StatRow({ variants }) {
   ];
   return (
     <Table
+      dividers="none"
+      isStriped
       data={variants.map((v, i) => ({ id: i, level: v.level, ...v }))}
       columns={columns}
       idKey="id"
@@ -66,7 +68,6 @@ export default function FigureCard({ figureId, level, isOpen, onOpenChange }) {
           <Text className="om-prose">{fig.equipment.join(", ")}</Text>
         )}
 
-        <Divider />
 
         <VStack gap={GAP.tight}>
           <Text type="label">At full strength, {fig.unitMax} figures</Text>
@@ -80,7 +81,6 @@ export default function FigureCard({ figureId, level, isOpen, onOpenChange }) {
 
         {fig.upgrades?.length > 0 && (
           <>
-            <Divider />
             <VStack gap={GAP.item}>
               <Text type="label">Options</Text>
               {fig.upgrades.map((u) => (

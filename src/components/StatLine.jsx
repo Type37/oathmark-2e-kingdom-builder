@@ -1,5 +1,5 @@
 import React from "react";
-import { HStack, VStack, Text, Section, Divider, Popover, Button } from "@astryxdesign/core";
+import { HStack, VStack, Text, Section, Popover, Button } from "@astryxdesign/core";
 import { STAT_KEYS } from "../rules/stats.mjs";
 import { stats, lookupAttribute } from "../rules/kingdom.mjs";
 import Mark from "./Mark.jsx";

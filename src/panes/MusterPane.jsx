@@ -1,7 +1,7 @@
 import React from "react";
 import {
   VStack, HStack, Text, Section, TabList, Tab, NumberInput,
-  ProgressBar, Banner, Divider, Button,
+  ProgressBar, Banner, Button,
 } from "@astryxdesign/core";
 import FigureTable from "../components/FigureTable.jsx";
 import FigureCard from "../components/FigureCard.jsx";
@@ -117,7 +117,6 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
           const st = unitStats(u);
           return (
             <VStack key={u.uid} gap={GAP.item}>
-              {i > 0 && <Divider />}
               <HStack gap={GAP.item} align="center" justify="between" wrap="wrap">
                 <Text type="large">{fig.name}</Text>
                 <HStack gap={1} align="center">
@@ -154,7 +153,6 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
         ))}
         {units.length > 0 && (
           <VStack gap={GAP.tight}>
-            <Divider />
             <HStack gap={GAP.group} justify="between">
               <Text type="label">Activation</Text>
               <Text type="large">
@@ -178,7 +176,7 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
       content={(
       <VStack gap={0}>
         <Section paddingBlockEnd={0}>
-          <TabList value={activeRole} onChange={setRole} hasDivider isFullBleed>
+          <TabList value={activeRole} onChange={setRole} isFullBleed>
             {roles.map((r) => <Tab key={r} value={r} label={ROLE_LABEL[r]} />)}
           </TabList>
         </Section>

@@ -28,7 +28,7 @@ export default function Landing({ onOpen }) {
                 <Card key={c.id} padding={0} elevation="low">
                   <VStack gap={0} onClick={() => onOpen(c.id)} className="om-card">
                     <VStack gap={0} align="center" className="om-card-art">
-                      {c.icon ? <Icon icon={c.icon} width={80} height={80} /> : <Mark name={c.mark} size={80} />}
+                      {c.icon ? <Icon icon={c.icon} width={140} height={140} /> : <Mark name={c.mark} size={140} />}
                     </VStack>
                     <Section padding={6}>
                       <Heading level={2}>{c.title}</Heading>

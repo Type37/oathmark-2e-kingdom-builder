@@ -38,14 +38,14 @@ export default function ReferencePane({ shell }) {
                        onChange={(e) => setQuery(e.target?.value ?? e)} />
           </Section>
           <Section paddingBlockEnd={0}>
-            <TabList value={kind} onChange={setKind} hasDivider isFullBleed>
+            <TabList value={kind} onChange={setKind} isFullBleed>
               <Tab value="attributes" label="Attributes" />
               <Tab value="spells" label="Spells" />
               <Tab value="items" label="Magic Items" />
             </TabList>
           </Section>
           <Section padding={0}>
-            <List hasDividers density={DENSITY.data}>
+            <List density={DENSITY.data}>
               {rows.map((r) => (
                 <ListItem
                   key={r.key}

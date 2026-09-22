@@ -104,6 +104,8 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
 
   return (
     <Table
+      dividers="none"
+      isStriped
       data={rows}
       columns={columns.filter((c) => !c.isHidden)}
       idKey="figureId"

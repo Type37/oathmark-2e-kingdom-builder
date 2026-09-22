@@ -1,8 +1,7 @@
 import React from "react";
 import {
   Layout, LayoutHeader, LayoutContent, LayoutPanel,
-  VStack, HStack, Text, Heading, Button, List, ListItem, Divider,
-  useMediaQuery, Dialog, DialogHeader,
+  VStack, HStack, Text, Heading, Button, List, ListItem, useMediaQuery, Dialog, DialogHeader,
 } from "@astryxdesign/core";
 import Ico from "./components/Ico.jsx";
 import { BREAK, FRAME, PANEL, GAP, DENSITY } from "./layout.mjs";
@@ -16,11 +15,12 @@ export default function Shell({
   onNew, onImport, onSave, saved,
 }) {
   const noPanels = useMediaQuery(BREAK.panel);
+  const narrow = useMediaQuery(BREAK.narrow);
   const [libOpen, setLibOpen] = React.useState(false);
   const [detailOpen, setDetailOpen] = React.useState(false);
 
   const header = (
-    <LayoutHeader hasDivider>
+    <LayoutHeader>
       <HStack gap={GAP.group} align="center" justify="between" wrap="wrap">
         <HStack gap={GAP.item} align="center">
           {noPanels && (
@@ -41,14 +41,14 @@ export default function Shell({
         <HStack gap={GAP.item} align="center">
           {meta}
           {saved && <Text type="label">Saved</Text>}
-          <Button label="Save" size="lg" variant="primary"
-                  icon={<Ico name="floppy-disk" size={22} />} onClick={onSave} />
-          <Button label="New" size="lg" variant="secondary"
-                  icon={<Ico name="plus" size={22} />} onClick={onNew} />
-          <Button label="Import" size="lg" variant="secondary"
-                  icon={<Ico name="arrow-up" size={22} />} onClick={onImport} />
+          <Button label="Save" size="md" isIconOnly={narrow} variant="primary"
+                  icon={<Ico name="floppy-disk" size={18} />} onClick={onSave} />
+          <Button label="New" size="md" isIconOnly={narrow} variant="secondary"
+                  icon={<Ico name="plus" size={18} />} onClick={onNew} />
+          <Button label="Import" size="md" isIconOnly={narrow} variant="secondary"
+                  icon={<Ico name="arrow-up" size={18} />} onClick={onImport} />
           {noPanels && detail && (
-            <Button label={detailTitle ?? "Details"} size="lg" variant="secondary"
+            <Button label={detailTitle ?? "Details"} size="md" variant="secondary"
                     onClick={() => setDetailOpen(true)} />
           )}
         </HStack>
@@ -63,7 +63,7 @@ export default function Shell({
         height="auto"
         header={header}
         start={noPanels ? undefined : <LayoutPanel width={PANEL.library} hasDivider>{library}</LayoutPanel>}
-        content={<LayoutContent>{content}</LayoutContent>}
+        content={<LayoutContent padding={narrow ? 4 : undefined}>{content}</LayoutContent>}
         end={noPanels || !detail ? undefined : <LayoutPanel width={PANEL.detail} hasDivider className="om-sticky">{detail}</LayoutPanel>}
       />
 
@@ -106,7 +106,6 @@ export function Library({ section, onSection, store, activeIds, onLoad, counts }
         ))}
       </List>
 
-      <Divider />
 
       {["kingdoms", "musters"].map((kind) => {
         const rows = store[kind] ?? [];

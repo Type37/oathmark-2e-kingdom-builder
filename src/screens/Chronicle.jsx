@@ -1,7 +1,7 @@
 import React from "react";
 import {
   VStack, HStack, Text, Heading, Button, TextInput, TextArea,
-  Section, Divider, NumberInput,
+  Section, NumberInput,
 } from "@astryxdesign/core";
 import Ico from "../components/Ico.jsx";
 
@@ -73,7 +73,6 @@ export default function Chronicle({ entries = [], ruler, onChange, onRulerChange
       <VStack gap={0}>
         {entries.map((e, i) => (
           <React.Fragment key={`${e.year}-${i}`}>
-            {i > 0 && <Divider />}
             <Section padding={0} paddingBlock={3}>
               <VStack gap={1}>
                 <HStack gap={3} align="baseline" justify="between">
