@@ -15,6 +15,12 @@ const RACE = {
 };
 const letter = (k) => (k === "pts" ? "Pts" : k);
 
+// The book's words for the choice in front of you, p17 (capital) and p18 (terrain).
+const NOTE = {
+  capital: "Your choice of capital determines the race of your ruler and/or royal family and has a strong influence on the make-up of any army you muster.",
+  terrain: "Each terrain type states which figures that terrain type grants the kingdom access to when mustering an army.",
+};
+
 // Each figure a territory grants, with its stat line, marked New when the kingdom lacks it.
 function Grants({ t, pool, onOpenFigure }) {
   const rows = t.grants
@@ -95,7 +101,16 @@ export default function TerritoryPicker({ region, candidates, pool, onPick, onCl
       <Layout
         header={<DialogHeader title={`Region ${region}`} onOpenChange={close} />}
         start={narrow ? undefined : <LayoutPanel width={300} hasDivider isScrollable>{list}</LayoutPanel>}
-        content={<LayoutContent>{narrow ? (preview ?? list) : preview}</LayoutContent>}
+        content={
+          <LayoutContent>
+            <VStack gap={GAP.group}>
+              <HStack className="om-callout">
+                <Text>{region === 1 ? NOTE.capital : NOTE.terrain}</Text>
+              </HStack>
+              {narrow ? (preview ?? list) : preview}
+            </VStack>
+          </LayoutContent>
+        }
       />
     </Dialog>
   );

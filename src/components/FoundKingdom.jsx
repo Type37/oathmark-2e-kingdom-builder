@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FormLayout, Field,
-  RadioList, RadioListItem, HStack, Button,
+  RadioList, RadioListItem, HStack, Button, Tooltip,
 } from "@astryxdesign/core";
 import Emblem from "./Emblem.jsx";
 import NameField from "./NameField.jsx";
@@ -10,10 +10,14 @@ import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
 import EmblemDialog from "./EmblemDialog.jsx";
 import { saveEmblem } from "../emblem.mjs";
 
+// The book's advice on where to start, p17.
 const SIZES = [
-  { value: "beginner", label: "Beginner", regions: "Regions 1 & 2" },
-  { value: "moderate", label: "Moderate", regions: "Regions 1, 2 & 3" },
-  { value: "expert", label: "Expert", regions: "Regions 1, 2, 3 & 4" },
+  { value: "beginner", label: "Beginner", regions: "Regions 1 & 2",
+    help: "If you are completely new to the game, and just starting out with collecting miniature armies, you should probably only fill in the territories in Regions 1 and 2." },
+  { value: "moderate", label: "Moderate", regions: "Regions 1, 2 & 3",
+    help: "If you have a bit more experience, and have an army ready to go, then fill out Regions 1–3." },
+  { value: "expert", label: "Expert", regions: "Regions 1, 2, 3 & 4",
+    help: "If you are a long-time player and more interested in one-off games with large armies than you are chronicling you kingdom, fill out Regions 1–4." },
 ];
 
 export default function FoundKingdom({ isOpen, onOpenChange, onFound }) {
@@ -49,8 +53,10 @@ export default function FoundKingdom({ isOpen, onOpenChange, onFound }) {
                 <NameField label="Current Ruler" value={ruler} onChange={setRuler} pool={rulerPool(culture)} />
                 <RadioList label="Oathmark Experience" value={level} onChange={setLevel}>
                   {SIZES.map((s) => (
-                    <RadioListItem key={s.value} value={s.value} label={s.label} description={s.regions}
-                                   endContent={<LevelIcon level={s.value} />} />
+                    <Tooltip key={s.value} content={s.help}>
+                      <RadioListItem value={s.value} label={s.label} description={s.regions}
+                                     endContent={<LevelIcon level={s.value} />} />
+                    </Tooltip>
                   ))}
                 </RadioList>
                 <Field label="Emblem" isOptional>

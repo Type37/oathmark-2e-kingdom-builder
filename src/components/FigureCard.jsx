@@ -76,7 +76,7 @@ export default function FigureCard({ figureId, level, isOpen, onOpenChange }) {
         content={
           <LayoutContent>
             <VStack gap={GAP.group}>
-              <Text><i>Terrain: {fig.terrain}</i></Text>
+              <Text><i>Unlocked from: {fig.terrain}</i></Text>
               <StatRow variants={shown} />
               <Attributes variant={shown[0]} />
               {fig.equipment.length > 0 && <Text>Equipment: {fig.equipment.join(", ")}</Text>}

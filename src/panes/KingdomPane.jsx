@@ -50,6 +50,9 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
   const capitalPicker = (
     <VStack gap={GAP.item}>
       <HStack justify="center" className="om-plate"><Text type="label">Region 1</Text></HStack>
+      <HStack className="om-callout">
+        <Text>Your choice of capital determines the race of your ruler and/or royal family and has a strong influence on the make-up of any army you muster.</Text>
+      </HStack>
       <List density={DENSITY.choice}>
         {CAPITAL_LISTS.map((list) => {
           const cap = allTerritories().find((t) => t.list === list && t.capital);
