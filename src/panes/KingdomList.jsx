@@ -15,6 +15,8 @@ function slots(level) {
   return (LEVELS[level] ?? LEVELS.moderate).reduce((n, r) => n + REGION_SIZES[r], 0);
 }
 
+const LEVEL_LABEL = { beginner: "Beginner", moderate: "Moderate", expert: "Expert" };
+
 export default function KingdomList({ store, onOpen, onNew, onBack }) {
   const rows = listOf(store, "kingdoms");
 
@@ -47,10 +49,10 @@ export default function KingdomList({ store, onOpen, onNew, onBack }) {
                     <VStack gap={GAP.tight} onClick={() => onOpen(k.id)} className="om-card">
                       <Heading level={2}>{k.name}</Heading>
                       <HStack gap={GAP.item} align="baseline">
-                        {!ok && <Text color="error">{placed} of {total}</Text>}
-                        {ok && <Text type="label">{placed} of {total}</Text>}
+                        <Text type="label">{LEVEL_LABEL[k.level] ?? "Moderate"}</Text>
                         {k.ruler && <Text type="supporting">{k.ruler}</Text>}
                       </HStack>
+                      {!ok && <Text color="error">{total - placed} territories to place</Text>}
                     </VStack>
                 </Card>
               );

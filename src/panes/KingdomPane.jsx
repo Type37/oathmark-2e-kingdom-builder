@@ -167,7 +167,7 @@ export default function KingdomPane({ value, onChange, shell }) {
     <Shell
       {...shell}
       title="Kingdom"
-      meta={result ? <Text type="label">{result.placed}/{result.slots}</Text> : null}
+      meta={capitalList ? <Text type="label">{{ beginner: "Beginner", moderate: "Moderate", expert: "Expert" }[level ?? "moderate"]}</Text> : null}
       detail={detail}
       detailTitle="Kingdom Sheet"
       content={(

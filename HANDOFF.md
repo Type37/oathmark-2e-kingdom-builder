@@ -2,6 +2,8 @@
 
 A web app for *Oathmark: Second Edition* (Osprey Games) that builds a kingdom and musters an army from it, enforcing the book's rules. It's one of the WarLore builders.
 
+**Why this exists:** a personal experiment with the **Astryx Design System** (`@astryxdesign/*`, https://astryx.atmeta.com). The point is to build a real tool inside Astryx's frame, tokens and components rather than hand-rolled CSS — so prefer Astryx components and `defineTheme` overrides over bespoke markup, and treat any drift back into raw CSS as a smell.
+
 - **Live:** https://type37.github.io/oathmark-2e-kingdom-builder/
 - **Repo:** https://github.com/Type37/oathmark-2e-kingdom-builder (public, branch `main`)
 - **Deploy:** every push to `main` runs the tests, builds and deploys to Pages via `.github/workflows/pages.yml`, in about 30 seconds.
