@@ -17,6 +17,26 @@ export const REFERENCE_DEFENCE = 10;
 
 export const STAT_KEYS = ["A", "M", "F", "S", "D", "CD", "H", "pts"];
 
+// Fight and Shoot come off the enemy's Defence, so they read as subtractions;
+// Defence is the number the enemy works down from; Combat Dice are ten-siders (p14).
+export function statText(key, value) {
+  if (value == null || value === "") return "";
+  if (key === "F" || key === "S") return Number(value) > 0 ? `−${value}` : "0";
+  if (key === "D") return `${value}+`;
+  if (key === "CD") return `${value}d10`;
+  return String(value);
+}
+
+// "25 x 25" is a square base, so one number says it.
+export function baseText(base) {
+  const [w, d] = String(base ?? "").split(/\s*[x×]\s*/i);
+  return d && d !== w ? `${w} x ${d}` : (w ?? "");
+}
+
+// Equipment already inside the stats: the card lists what actually does something.
+const BAKED_IN = new Set(["Hand Weapon", "Two-Handed Weapon", "Two-handed Weapon", "Light Armour", "Heavy Armour"]);
+export const carriesRule = (label) => !BAKED_IN.has(String(label).trim());
+
 export function variantFor(fig, unit = {}) {
   if (fig.variants.length === 1) return fig.variants[0];
   return fig.variants.find((v) => v.level === unit.level) ?? fig.variants[0];

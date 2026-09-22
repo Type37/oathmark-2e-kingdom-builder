@@ -3,9 +3,10 @@ import {
   Table, HStack, VStack, Text, Button, Badge, Popover, Link, useMediaQuery,
 } from "@astryxdesign/core";
 import { pixel } from "@astryxdesign/core/Table";
-import { stats } from "../rules/kingdom.mjs";
-import { COL, BREAK } from "../layout.mjs";
-import { STAT_KEYS } from "../rules/stats.mjs";
+import { stats, baseRule } from "../rules/kingdom.mjs";
+import Defined from "./Defined.jsx";
+import { COL, BREAK, statWidth } from "../layout.mjs";
+import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
 
 // The stat letters belong in one header row, as the book prints them.
 function Head({ statKey }) {
@@ -58,10 +59,20 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
     ...statKeys.map((k) => ({
       key: k,
       header: <Head statKey={k} />,
-      width: pixel(COL.stat),
+      width: pixel(statWidth(k)),
       align: "center",
-      renderCell: (r) => <Text type="large">{r[k]}</Text>,
+      renderCell: (r) => <Text type="large">{statText(k, r[k])}</Text>,
     })),
+    ...(isNarrow ? [] : [
+      { key: "special", header: "Special", width: pixel(COL.special),
+        renderCell: (r) => <Text type="supporting">{(r.fig?.variants?.[0]?.attributes ?? []).join(", ")}</Text> },
+      { key: "base", header: (
+          <Defined def={{ title: baseRule.name, text: baseRule.text, note: baseRule.note, page: baseRule.page }}>
+            <Text type="label">Base</Text>
+          </Defined>
+        ), width: pixel(COL.base), align: "center",
+        renderCell: (r) => <Text>{baseText(r.fig?.variants?.[0]?.base)}</Text> },
+    ]),
     actionColumn
       ? {
           key: "action",

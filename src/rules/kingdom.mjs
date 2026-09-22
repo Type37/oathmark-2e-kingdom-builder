@@ -178,6 +178,12 @@ export const figureById = new Map(data.figures.map((f) => [f.id, f]));
 export const errata = data.errata;
 export const attributes = data.attributes;
 export const stats = data.stats;
+export const baseRule = {
+  name: "Base",
+  text: "The figure's base size in millimetres (mm). The first number is the width of the base across the front of the figure, the second number is the depth of the base on the sides.",
+  note: "Editor's note: the game doesn't really care about base sizes from a mathematical perspective. It's not that big a deal. Don't rebase anything.",
+  page: 43,
+};
 
 // "Command (2)" -> the Appendix A entry for Command, with its level.
 export function lookupAttribute(label) {

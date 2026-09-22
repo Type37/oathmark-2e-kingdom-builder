@@ -1,47 +1,57 @@
 import React from "react";
 import {
-  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FileInput, HStack, Button,
+  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FileInput,
+  HStack, Button, Slider, Text,
 } from "@astryxdesign/core";
 import { AspectRatio } from "@astryxdesign/core/AspectRatio";
-import Cropper from "cropperjs";
-import "cropperjs/dist/cropper.css";
+import Cropper from "react-easy-crop";
 
-// Pick an image, crop it square, hand back a 512px PNG blob.
+// Draw the chosen crop onto a 512px square.
+async function cropToBlob(src, area) {
+  const img = await new Promise((resolve, reject) => {
+    const el = new Image();
+    el.crossOrigin = "anonymous";
+    el.onload = () => resolve(el);
+    el.onerror = reject;
+    el.src = src;
+  });
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, area.x, area.y, area.width, area.height, 0, 0, 512, 512);
+  return new Promise((r) => canvas.toBlob(r, "image/png"));
+}
+
+// Pick an image, drag to move, scroll or pinch to zoom, hand back a 512px PNG.
 export default function EmblemDialog({ isOpen, onOpenChange, onDone }) {
   const [file, setFile] = React.useState(null);
   const [src, setSrc] = React.useState(null);
+  const [crop, setCrop] = React.useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = React.useState(1);
+  const [rotation, setRotation] = React.useState(0);
+  const [area, setArea] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
-  const imgRef = React.useRef(null);
-  const cropperRef = React.useRef(null);
 
   React.useEffect(() => {
     if (!isOpen) { setFile(null); setBusy(false); }
   }, [isOpen]);
 
   React.useEffect(() => {
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setRotation(0);
     if (!file) { setSrc(null); return; }
     const url = URL.createObjectURL(file);
     setSrc(url);
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  React.useEffect(() => {
-    if (!src || !imgRef.current) return;
-    const cropper = new Cropper(imgRef.current, {
-      aspectRatio: 1, viewMode: 1, dragMode: "move", autoCropArea: 0.9,
-      background: false, guides: false, toggleDragModeOnDblclick: false,
-    });
-    cropperRef.current = cropper;
-    return () => { cropper.destroy(); cropperRef.current = null; };
-  }, [src]);
-
   async function done() {
-    const cropper = cropperRef.current;
-    if (!cropper) return;
+    if (!src || !area) return;
     setBusy(true);
-    const blob = await new Promise((r) =>
-      cropper.getCroppedCanvas({ width: 512, height: 512, imageSmoothingQuality: "high" })
-        .toBlob(r, "image/png"));
+    const blob = await cropToBlob(src, area);
     setBusy(false);
     if (blob) onDone(blob);
   }
@@ -53,11 +63,35 @@ export default function EmblemDialog({ isOpen, onOpenChange, onDone }) {
         content={
           <LayoutContent>
             {src ? (
-              <AspectRatio ratio={4 / 3}>
-                <div className="om-crop-stage">
-                  <img ref={imgRef} src={src} alt="Emblem source" />
-                </div>
-              </AspectRatio>
+              <>
+                <AspectRatio ratio={4 / 3}>
+                  <div className="om-crop-stage">
+                    <Cropper
+                      image={src}
+                      crop={crop}
+                      zoom={zoom}
+                      rotation={rotation}
+                      aspect={1}
+                      minZoom={0.5}
+                      maxZoom={8}
+                      restrictPosition={false}
+                      zoomSpeed={0.25}
+                      showGrid={false}
+                      onCropChange={setCrop}
+                      onZoomChange={setZoom}
+                      onRotationChange={setRotation}
+                      onCropComplete={(_, pixels) => setArea(pixels)}
+                    />
+                  </div>
+                </AspectRatio>
+                <HStack gap={4} align="center">
+                  <Text type="label">Zoom</Text>
+                  <Slider label="Zoom" isLabelHidden value={zoom} min={0.5} max={8} step={0.05}
+                          onChange={setZoom} />
+                  <Button label="Rotate" size="sm" variant="secondary"
+                          onClick={() => setRotation((r) => (r + 90) % 360)} />
+                </HStack>
+              </>
             ) : (
               <FileInput label="Emblem" isLabelHidden accept="image/*" mode="dropzone"
                          value={file} onChange={(f) => setFile(Array.isArray(f) ? f[0] ?? null : f)} />

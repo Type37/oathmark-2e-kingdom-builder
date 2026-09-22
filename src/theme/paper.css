@@ -117,13 +117,12 @@ body {
   .astryx-side-nav { display: none; }
 }
 
-/* cropperjs sizes itself to its parent, so the stage must have a definite size. */
+/* react-easy-crop fills its parent, so the stage must have a definite size. */
 .om-crop-stage { position: absolute; inset: 0; background-color: var(--color-background-muted); }
-.om-crop-stage img { display: block; max-inline-size: 100%; }
-.om-crop-stage .cropper-view-box { outline-color: var(--color-accent); }
-.om-crop-stage .cropper-line,
-.om-crop-stage .cropper-point { background-color: var(--color-accent); }
-.om-crop-stage .cropper-modal { background-color: var(--color-text-primary); }
+.om-crop-stage .reactEasyCrop_CropArea {
+  border: var(--border-width) solid var(--color-accent);
+  color: color-mix(in srgb, var(--color-text-primary) 62%, transparent);
+}
 
 /* Stat buttons sit on the dark header bar and take its pale text. */
 .astryx-table-header-cell .astryx-button,

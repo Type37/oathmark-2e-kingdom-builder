@@ -4,11 +4,11 @@ import {
 } from "@astryxdesign/core";
 import { pixel } from "@astryxdesign/core/Table";
 import { Attributes } from "./StatLine.jsx";
-import { figureById, stats } from "../rules/kingdom.mjs";
+import { figureById, stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
 import { equipmentParts } from "../rules/equipment.mjs";
-import { STAT_KEYS } from "../rules/stats.mjs";
-import { GAP } from "../layout.mjs";
+import { STAT_KEYS, statText, baseText, carriesRule, weaponsOf, RANGES } from "../rules/stats.mjs";
+import { GAP, statWidth } from "../layout.mjs";
 
 const letter = (k) => (k === "pts" ? "Pts" : k);
 
@@ -27,12 +27,17 @@ function StatRow({ variants, extra = [] }) {
           <Text type="label">{letter(k)}</Text>
         </Defined>
       ),
-      width: pixel(52),
+      width: pixel(statWidth(k)),
       align: "center",
-      renderCell: (r) => <Text type="large">{r[k]}</Text>,
+      renderCell: (r) => <Text type="large">{statText(k, r[k])}</Text>,
     })),
-    { key: "base", header: "Base", width: pixel(88), align: "center",
-      renderCell: (r) => <Text>{r.base}</Text> },
+    { key: "base", width: pixel(72), align: "center",
+      header: (
+        <Defined def={{ title: baseRule.name, text: baseRule.text, note: baseRule.note, page: baseRule.page }}>
+          <Text type="label">Base</Text>
+        </Defined>
+      ),
+      renderCell: (r) => <Text>{baseText(r.base)}</Text> },
     ...extra,
   ];
   return (
@@ -51,7 +56,7 @@ function Equipment({ lines }) {
   return (
     <HStack gap={GAP.item} align="center" wrap="wrap">
       <Text type="label">Equipment</Text>
-      {lines.flatMap((line) => equipmentParts(line)).map(({ part, label, entry }, i) => (
+      {lines.flatMap((line) => equipmentParts(line)).filter(({ label }) => carriesRule(label)).map(({ part, label, entry }, i) => (
         entry ? (
           <Popover key={`${label}-${i}`} width={340} label={entry.name} placement="below"
                    content={
@@ -102,6 +107,34 @@ function Option({ u, owns }) {
   );
 }
 
+// Missile weapons and artillery, with the ranges from p72.
+function Ranged({ fig }) {
+  const carried = weaponsOf(fig);
+  const attrs = fig.variants[0]?.attributes ?? [];
+  const artillery = attrs.some((a) => a.startsWith("Artillery")) ;
+  const breath = attrs.filter((a) => a.startsWith("Fire Breath")).map(() => "Fire Breath");
+  const named = [...new Set([...carried, ...breath, ...(artillery && !carried.length ? weaponsFromName(fig.name) : [])])];
+  if (!named.length) return null;
+  return (
+    <HStack gap={GAP.item} align="center" wrap="wrap">
+      <Text type="label">Ranged</Text>
+      {named.map((w) => {
+        const [min, max] = RANGES[w] ?? [];
+        return (
+          <Text key={w}>
+            {w} {min ? `${min}" to ` : "up to "}{max}"
+          </Text>
+        );
+      })}
+    </HStack>
+  );
+}
+
+// A catapult or ballista carries its weapon in its name, not its equipment line.
+function weaponsFromName(name) {
+  return Object.keys(RANGES).filter((w) => name.includes(w));
+}
+
 export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange }) {
   const fig = figureById.get(figureId);
   if (!fig) return null;
@@ -117,6 +150,7 @@ export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange
             <VStack gap={GAP.group}>
               <Text><i>Unlocked from: {fig.terrain}</i></Text>
               <StatRow variants={shown} />
+              <Ranged fig={fig} />
               <Attributes variant={shown[0]} />
               {fig.equipment.length > 0 && <Equipment lines={fig.equipment} />}
               {fig.upgrades?.length > 0 && (
