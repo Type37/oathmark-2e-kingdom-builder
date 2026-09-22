@@ -36,11 +36,11 @@ function Grants({ t, pool, onOpenFigure }) {
     });
 
   const columns = [
-    { key: "name", header: "Figure", width: pixel(200), renderCell: (r) => (
-      <VStack gap={0} align="start">
+    { key: "name", header: "Figure", width: pixel(220), renderCell: (r) => (
+      <HStack gap={2} align="center" wrap="wrap">
         <Link isStandalone onClick={() => onOpenFigure(r.id)}>{r.name}</Link>
         {r.isNew && <Token label="New" size="sm" color={hueOf(t.list)} />}
-      </VStack>
+      </HStack>
     ) },
     ...STAT_KEYS.map((k) => ({
       key: k, header: letter(k), width: pixel(44), align: "center",
