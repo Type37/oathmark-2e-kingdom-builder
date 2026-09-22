@@ -96,9 +96,16 @@ export const cultureOf = (name) => byName.get(String(name ?? "").trim().toLowerC
 export const rulerPool = (culture) => CULTURES[culture]?.rulers ?? NAMES.hero;
 
 // The kingdom-name roll: a culture first, then one of its homelands, then a ruler of that culture.
+// Cultures weigh the same, except more Cymric (the heart of the book) and fewer Faerie children.
+const WEIGHT = { cymric: 2, faerie: 0.25 };
 const CULTURE_IDS = Object.keys(CULTURES).filter((c) => HOMELANDS.some(([, h]) => h === c));
+function rollCulture() {
+  const total = CULTURE_IDS.reduce((t, c) => t + (WEIGHT[c] ?? 1), 0);
+  let r = Math.random() * total;
+  return CULTURE_IDS.find((c) => (r -= WEIGHT[c] ?? 1) < 0) ?? CULTURE_IDS.at(-1);
+}
 export function rollKingdom(avoid) {
-  const culture = CULTURE_IDS[Math.floor(Math.random() * CULTURE_IDS.length)];
+  const culture = rollCulture();
   const homes = HOMELANDS.filter(([, c]) => c === culture).map(([n]) => n);
   return { name: randomName(homes, avoid), culture, ruler: randomName(rulerPool(culture)) };
 }
