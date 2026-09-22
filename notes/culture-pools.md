@@ -116,7 +116,7 @@ KL = Book of Knights & Ladies, DR = Dragon Rampant 2e. Printed page numbers.
 
 ## Zazamanc (KL p112)
 
-**Homelands (5):** Berbers (p112), Vandals (p112), Egypt (p112), Araby (p112), Patelamunt (p112)
+**Homelands (12):** Patelamunt (p112), Numidia (swapped in), Byzacena (swapped in), Cartago (swapped in), Babylone (swapped in), Aegyptus (swapped in), Floripa (swapped in), Ferumbra (swapped in), Kemetia (swapped in), Saba (swapped in), Azagouc (swapped in), Tribalibot (swapped in)
 
 **Male (6):** Agalofure, Estragot, Ferumbras, Laban, Lukafere, Mapyne
 

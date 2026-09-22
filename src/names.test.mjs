@@ -33,3 +33,9 @@ test("the roll draws a culture first, so every culture comes up", () => {
   for (let i = 0; i < 2000; i++) seen.add(rollKingdom().culture);
   assert.equal(seen.size, Object.keys(CULTURES).length);
 });
+
+test("Zazamanc uses the older names, not the book's modern ones", () => {
+  assert.equal(cultureOf("Egypt"), null);
+  assert.equal(cultureOf("Azagouc"), "zazamanc");
+  assert.equal(cultureOf("Patelamunt"), "zazamanc");
+});

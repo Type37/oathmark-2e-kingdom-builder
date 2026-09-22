@@ -64,10 +64,23 @@ export const CULTURES = {
   }])),
 };
 
+// The book's Zazamanc lands (KL p112) read as plainly modern, so the owner swapped
+// them for older names: Berbers, Vandals, Egypt and Araby out; Patelamunt stays.
+const ZAZAMANC_OUT = new Set(["Berbers", "Vandals", "Egypt", "Araby"]);
+const ZAZAMANC_IN = [
+  "Numidia",                    // Berbers
+  "Byzacena", "Cartago",        // Vandals
+  "Babylone", "Aegyptus",       // Egypt
+  "Floripa", "Ferumbra", "Kemetia", // Egypt: the owner's names
+  "Saba",                       // Araby
+  "Azagouc", "Tribalibot",      // kingdoms from Wolfram's Parzival
+];
+
 // [homeland, culture]
 export const HOMELANDS = [
   ...book("DR")(KINGDOM).map((n) => [n, "dragon-rampant"]),
-  ...BKL_HOMELANDS.map(([n, c]) => [n, c]),
+  ...BKL_HOMELANDS.filter(([n]) => !ZAZAMANC_OUT.has(n)).map(([n, c]) => [n, c]),
+  ...ZAZAMANC_IN.map((n) => [n, "zazamanc"]),
 ];
 
 export const NAMES = {
