@@ -13,7 +13,7 @@ import ReferencePane from "./panes/ReferencePane.jsx";
 import { validateKingdom } from "./rules/kingdom.mjs";
 import { STORE_KEY, emptyStore, normalise, save, get, setActive, activeRecord } from "./rules/store.mjs";
 import { parseImport } from "./rules/schema.mjs";
-import useSection from "./useSection.mjs";
+import useSection, { PARENT } from "./useSection.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "./rules/examples.mjs";
 
 const EMPTY_KINGDOM = {
@@ -61,6 +61,7 @@ export default function App() {
   // Everything the frame needs, identical for every section.
   const shell = {
     subtitle: kingdom.name ? <Text type="label">{kingdom.name}</Text> : null,
+    onBack: () => setSection(PARENT[section] ?? "home"),
     library: (
       <Library
         section={section}
@@ -127,6 +128,7 @@ export default function App() {
             store={store}
             onOpen={(id) => load("kingdoms", id)}
             onNew={() => { setKingdom(EMPTY_KINGDOM); setSection("kingdom"); }}
+            onBack={() => setSection("home")}
           />
         )}
         {section === "kingdom" && (

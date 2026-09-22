@@ -4,6 +4,7 @@ import {
   Button,
 } from "@astryxdesign/core";
 import { Icon } from "@iconify/react";
+import Ico from "../components/Ico.jsx";
 import { LAUREL } from "../icons/game.mjs";
 import { LEVELS, REGION_SIZES, validateKingdom } from "../rules/kingdom.mjs";
 import { list as listOf } from "../rules/store.mjs";
@@ -14,7 +15,7 @@ function slots(level) {
   return (LEVELS[level] ?? LEVELS.moderate).reduce((n, r) => n + REGION_SIZES[r], 0);
 }
 
-export default function KingdomList({ store, onOpen, onNew }) {
+export default function KingdomList({ store, onOpen, onNew, onBack }) {
   const rows = listOf(store, "kingdoms");
 
   return (
@@ -24,7 +25,13 @@ export default function KingdomList({ store, onOpen, onNew }) {
       contentWidth={1040}
       header={
         <LayoutHeader>
-          <Heading level={1}>Kingdoms</Heading>
+          <HStack gap={GAP.item} align="center">
+            {onBack && (
+              <Button label="Back" size="sm" variant="ghost" isIconOnly
+                      icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
+            )}
+            <Heading level={1}>Kingdoms</Heading>
+          </HStack>
         </LayoutHeader>
       }
       content={

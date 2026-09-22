@@ -12,7 +12,7 @@ import { BREAK, FRAME, PANEL, GAP, DENSITY } from "./layout.mjs";
 export default function Shell({
   title, subtitle, meta,
   library, content, detail, detailTitle,
-  onNew, onImport, onSave, saved,
+  onNew, onImport, onSave, saved, onBack,
 }) {
   const noPanels = useMediaQuery(BREAK.panel);
   const narrow = useMediaQuery(BREAK.narrow);
@@ -23,9 +23,19 @@ export default function Shell({
     <LayoutHeader>
       <HStack gap={GAP.group} align="center" justify="between" wrap="wrap">
         <HStack gap={GAP.item} align="center">
+          {onBack && (
+            <Button
+              label="Back"
+              size="sm"
+              variant="ghost"
+              isIconOnly
+              icon={<Ico name="arrow-left" size={20} />}
+              onClick={onBack}
+            />
+          )}
           {noPanels && (
             <Button
-              label="Library"
+              label="Menu"
               size="sm"
               variant="ghost"
               isIconOnly
