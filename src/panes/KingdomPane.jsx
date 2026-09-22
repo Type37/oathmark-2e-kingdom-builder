@@ -23,6 +23,7 @@ import { hueOf } from "../race.mjs";
 import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
 import KingdomLore from "../components/KingdomLore.jsx";
 import Defined from "../components/Defined.jsx";
+import KingdomPrint from "../components/KingdomPrint.jsx";
 import { hasLore } from "../lore.mjs";
 
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
@@ -162,6 +163,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
       detailTitle="Kingdom Sheet"
       content={(
         <VStack gap={GAP.section}>
+          <KingdomPrint value={value} />
           {regionList}
           {result && !result.ok && (
             <VStack gap={GAP.tight} className="om-callout">

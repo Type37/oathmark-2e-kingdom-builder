@@ -106,6 +106,7 @@ export default function App() {
     ...fileActions,
   ];
   const recordActions = (kind, rec) => rec ? [
+    ...(kind === "kingdoms" ? [{ label: "Print", onClick: () => window.print() }] : []),
     { label: "Export", onClick: () => exportOne(rec) },
     { label: "Duplicate", onClick: () => setStore((s) => duplicate(s, kind, rec.id)) },
     { type: "divider" },
