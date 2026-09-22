@@ -56,12 +56,13 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
     <Shell
       {...shell}
       title={value.name || "Untitled"}
+      onRename={(name) => onChange({ ...value, name })}
       meta={(
         <HStack gap={GAP.item} align="center" wrap="wrap">
           {battle && <Token label={battle.name} color="pink" />}
-          <NumberInput label="Points" size="lg" width={130} value={points} min={0} step={50}
+          <Text type="large" color={over ? "error" : undefined}>{result.points} of</Text>
+          <NumberInput label="Total Points" isLabelHidden size="lg" width={110} value={points} min={0} step={50}
                        onChange={(p) => onChange({ ...value, points: p || 0 })} />
-          <Text type="large" color={over ? "error" : undefined}>{result.points}/{points}</Text>
         </HStack>
       )}
       detailTitle="Army Roster"
@@ -75,7 +76,6 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
             <MetadataListItem label="Points">{result.points} of {points}</MetadataListItem>
             <MetadataListItem label="Units">{units.length}</MetadataListItem>
             <MetadataListItem label="Figures">{figureCount}</MetadataListItem>
-            <MetadataListItem label="Health">{agg.health}</MetadataListItem>
             {agg.command > 0 && (
               <MetadataListItem label="Command">{agg.command}, {agg.extraActivations} extra activations</MetadataListItem>
             )}
@@ -83,11 +83,6 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
             {agg.shootingDice > 0 && <MetadataListItem label="Shooting dice">{agg.shootingDice}</MetadataListItem>}
             {agg.ranges.length > 0 && (
               <MetadataListItem label="Ranges">{agg.ranges.map((r) => `${r}"`).join(", ")}</MetadataListItem>
-            )}
-            {Object.keys(agg.activation).length > 0 && (
-              <MetadataListItem label="Activation">
-                {Object.entries(agg.activation).map(([n, c]) => `${c} on ${n}+`).join(", ")}
-              </MetadataListItem>
             )}
             {agg.casters.length > 0 && (
               <MetadataListItem label="Spells">{agg.spellsKnown} known across {agg.casters.length}</MetadataListItem>

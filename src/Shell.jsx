@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Layout, LayoutHeader, LayoutContent, LayoutPanel,
-  HStack, Heading, Button, useMediaQuery, Dialog, DialogHeader,
+  HStack, Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import Ico from "./components/Ico.jsx";
@@ -10,7 +10,7 @@ import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 // Per-page frame: title, record actions, content, and the sheet panel.
 // Navigation lives in App (SideNav / MobileNav); edits autosave.
 export default function Shell({
-  title, leading, subtitle, meta, actions, appActions, onOptions, onPrint,
+  title, leading, subtitle, meta, actions, appActions, onOptions, onPrint, onRename,
   content, detail, detailTitle, inlineDetail,
   onBack, onMenu,
 }) {
@@ -32,7 +32,13 @@ export default function Shell({
           )}
           {appActions?.length > 0 && <MoreMenu items={appActions} label="Oathmark" alignment="start" />}
           {leading}
-          <Heading level={1}>{title}</Heading>
+          {onRename ? (
+            <TextInput label="Name" isLabelHidden value={title === "Untitled" ? "" : title}
+                       placeholder="Untitled" width={260} className="om-title-input"
+                       onChange={(e) => onRename(e.target?.value ?? e)} />
+          ) : (
+            <Heading level={1}>{title}</Heading>
+          )}
           {subtitle}
         </HStack>
         <HStack gap={GAP.item} align="center" wrap="wrap">

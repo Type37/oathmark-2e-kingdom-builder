@@ -19,8 +19,8 @@ const ROLE_LABEL = {
 export function roleOf(fig) {
   const v = fig.variants[0];
   if (v.attributes.includes("Artillery") || /catapult|ballista/i.test(fig.name)) return "artillery";
-  if (v.attributes.some((a) => /^(Command|Champion|Spellcaster)/.test(a)) || v.attributes.includes("Magic Items"))
-    return "character";
+  const leads = (a) => a === "Champion" || /^Command \(/.test(a) || /^Spellcaster \(/.test(a);
+  if (v.attributes.some(leads) || v.attributes.includes("Magic Items")) return "character";
   if (v.attributes.includes("Monster")) return "monster";
   if (v.base === "25 x 50") return "cavalry";
   if (v.base === "50 x 50" || v.base === "50 x 100") return "monster";

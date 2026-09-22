@@ -37,7 +37,11 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
                       icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
               <Heading level={1}>Kingdom Builder</Heading>
             </HStack>
-            <MoreMenu items={fileActions} alignment="end" />
+            <HStack gap={GAP.item} align="center">
+              <Button label="New Kingdom" variant="primary"
+                      icon={<Icon icon={LAUREL} width={20} height={20} />} onClick={onNew} />
+              <MoreMenu items={fileActions} alignment="end" />
+            </HStack>
           </HStack>
         </LayoutHeader>
       }
@@ -74,10 +78,6 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
               );
             })}
             </Grid>
-            <HStack className="om-cta-dock">
-              <Button label="New Kingdom" size="lg" variant="primary"
-                      icon={<Icon icon={LAUREL} width={24} height={24} />} onClick={onNew} />
-            </HStack>
           </VStack>
         </LayoutContent>
       }

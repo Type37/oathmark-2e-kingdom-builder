@@ -31,7 +31,11 @@ export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileA
                       icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
               <Heading level={1}>Army Builder</Heading>
             </HStack>
-            <MoreMenu items={fileActions} alignment="end" />
+            <HStack gap={GAP.item} align="center">
+              <Button label="Muster a New Army" variant="primary"
+                      icon={<Icon icon={MUSTER} width={20} height={20} />} onClick={onNew} />
+              <MoreMenu items={fileActions} alignment="end" />
+            </HStack>
           </HStack>
         </LayoutHeader>
       }
@@ -64,10 +68,6 @@ export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileA
                 );
               })}
             </Grid>
-            <HStack className="om-cta-dock">
-              <Button label="Muster a New Army" size="lg" variant="primary"
-                      icon={<Icon icon={MUSTER} width={24} height={24} />} onClick={onNew} />
-            </HStack>
           </VStack>
         </LayoutContent>
       }

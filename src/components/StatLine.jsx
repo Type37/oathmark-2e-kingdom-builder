@@ -122,7 +122,14 @@ export function AttributeCard({ name, isOpen, onOpenChange }) {
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={520}>
       <Layout
         header={<DialogHeader title={name} onOpenChange={onOpenChange} />}
-        content={<LayoutContent><Definition title={name} text={def.text} page={def.page} /></LayoutContent>}
+        content={
+          <LayoutContent>
+            <VStack gap={2}>
+              <Text>{def.text}</Text>
+              <Text color="secondary">p{def.page}</Text>
+            </VStack>
+          </LayoutContent>
+        }
       />
     </Dialog>
   );
