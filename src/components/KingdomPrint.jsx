@@ -1,5 +1,6 @@
 import React from "react";
 import RegionMap from "./RegionMap.jsx";
+import { useEmblem } from "../emblem.mjs";
 import { LEVELS, REGION_SIZES, territory, grantList, figurePool, figureById } from "../rules/kingdom.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
 
@@ -11,6 +12,7 @@ const RACE = {
 // The Kingdom Sheet as paper: the rings, the territories they hold, and every
 // figure the kingdom may muster. Screen hides it; print shows only this.
 export default function KingdomPrint({ value }) {
+  const emblem = useEmblem(value.emblem);
   const level = value.level ?? "moderate";
   const regions = LEVELS[level];
   const picks = value.territories ?? [];
@@ -21,12 +23,15 @@ export default function KingdomPrint({ value }) {
   return (
     <div className="om-print" aria-hidden="true">
       <header className="om-print-head">
-        <h1>{value.name || "Untitled Kingdom"}</h1>
+        <div>
+          <h1>{value.name || "Untitled Kingdom"}</h1>
+        </div>
         <dl>
           <dt>Ruler</dt><dd>{value.ruler || "—"}</dd>
           <dt>Capital</dt><dd>{picks.find((p) => p.region === 1)?.name ?? "—"}</dd>
           <dt>Regions</dt><dd>{regions.join(", ")}</dd>
         </dl>
+        {emblem && <img className="om-print-emblem" src={emblem} alt="" />}
       </header>
 
       <div className="om-print-map">

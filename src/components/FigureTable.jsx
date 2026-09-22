@@ -37,7 +37,7 @@ function Head({ statKey }) {
   );
 }
 
-export default function FigureTable({ rows, onAdd, onOpen, actionColumn, sort, onSort }) {
+export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, actionColumn, sort, onSort }) {
   // The letter keeps its definition; a caret beside it sorts the table.
   const sortable = (key, node) => {
     if (!onSort) return node;
@@ -81,7 +81,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn, sort, o
     })),
     ...(isNarrow ? [] : [
       { key: "special", header: "Special", width: pixel(COL.special),
-        renderCell: (r) => <Attributes variant={r.fig?.variants?.[0] ?? { attributes: [] }} /> },
+        renderCell: (r) => <Attributes variant={r.fig?.variants?.[0] ?? { attributes: [] }} onOpen={onOpenAttribute} /> },
       { key: "base", header: (
           <Defined def={{ title: baseRule.name, text: baseRule.text, note: baseRule.note, page: baseRule.page }}>
             <Text type="label">Base</Text>

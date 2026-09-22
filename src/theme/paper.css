@@ -285,3 +285,13 @@ body {
   letter-spacing: normal;
   text-transform: none;
 }
+
+@media print {
+  /* The emblem is the sheet's crest: top right, opposite the kingdom's name. */
+  .om-print-emblem {
+    inline-size: 26mm;
+    block-size: 26mm;
+    object-fit: contain;
+    border: 0.5pt solid #000;
+  }
+}

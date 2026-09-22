@@ -3,6 +3,7 @@ import { VStack, Text, TextInput, Section, TabList, Tab, HStack } from "@astryxd
 import FigureTable from "../components/FigureTable.jsx";
 import Shell from "../Shell.jsx";
 import FigureCard from "../components/FigureCard.jsx";
+import { AttributeCard } from "../components/StatLine.jsx";
 import Counter from "../components/Counter.jsx";
 import { figures } from "../rules/kingdom.mjs";
 import { collectionTotals, unitsAffordable } from "../rules/collection.mjs";
@@ -29,6 +30,7 @@ export default function CollectionPane({ value, onChange, shell }) {
   const [list, setList] = React.useState("dwarf");
   const [query, setQuery] = React.useState("");
   const [openFigure, setOpenFigure] = React.useState(null);
+  const [openAttr, setOpenAttr] = React.useState(null);
   const totals = collectionTotals(value);
   const sections = React.useRef({});
   const [sort, setSort] = React.useState(null);
@@ -105,6 +107,7 @@ export default function CollectionPane({ value, onChange, shell }) {
               sort={sort}
               onSort={onSort}
               onOpen={setOpenFigure}
+              onOpenAttribute={setOpenAttr}
               actionColumn={{
                 header: "Owned",
                 width: 210,
@@ -119,6 +122,7 @@ export default function CollectionPane({ value, onChange, shell }) {
             />
           </Section>
         ))}
+        <AttributeCard name={openAttr} isOpen={Boolean(openAttr)} onOpenChange={(o) => !o && setOpenAttr(null)} />
         {openFigure && (
           <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)} />
         )}

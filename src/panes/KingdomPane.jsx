@@ -1,7 +1,7 @@
 import React from "react";
 import {
   VStack, HStack, Text, Button, List, ListItem,
-  Token,
+  Token, Tooltip,
 } from "@astryxdesign/core";
 import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
@@ -110,10 +110,15 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
             />
           ))}
           {!full && live && (r > 1 || !capitalList) && (
-            <ListItem label={r === 1 ? "Choose a capital" : "Add territory"}
-                      isDisabled={r > 1 && !capitalList}
-                      startContent={<Ico name="plus" />}
-                      onClick={() => (r === 1 || capitalList) && setPicking(r)} />
+            r > 1 && !capitalList ? (
+              <Tooltip content="Establish your capital first.">
+                <ListItem label="Add territory" isDisabled startContent={<Ico name="plus" />} />
+              </Tooltip>
+            ) : (
+              <ListItem label={r === 1 ? "Choose a capital" : "Add territory"}
+                        startContent={<Ico name="plus" />}
+                        onClick={() => setPicking(r)} />
+            )
           )}
         </List>
       </VStack>

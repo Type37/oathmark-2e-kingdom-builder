@@ -1,5 +1,8 @@
 import React from "react";
-import { HStack, VStack, Text, Section, Popover, Button } from "@astryxdesign/core";
+import {
+  HStack, VStack, Text, Section, Popover, Button,
+  Dialog, DialogHeader, Layout, LayoutContent,
+} from "@astryxdesign/core";
 import { STAT_KEYS } from "../rules/stats.mjs";
 import { stats, lookupAttribute } from "../rules/kingdom.mjs";
 import Mark from "./Mark.jsx";
@@ -90,25 +93,38 @@ export function Derived({ s }) {
   );
 }
 
-export function Attributes({ variant }) {
+export function Attributes({ variant, onOpen }) {
   if (!variant.attributes.length) return null;
   return (
     <HStack gap={2} wrap="wrap">
-      {variant.attributes.map((a) => {
-        const def = lookupAttribute(a);
-        return (
-          <Popover
-            key={a}
-            width={340}
-            label={def?.name ?? a}
-            placement="below"
-            content={def && <Definition title={a} text={def.text} page={def.page} />}
-          >
-            <Button label={a} size="sm" variant="secondary" />
-          </Popover>
-        );
-      })}
+      {variant.attributes.map((a) => (
+        onOpen
+          ? <Button key={a} label={a} size="sm" variant="secondary" onClick={() => onOpen(a)} />
+          : (
+            <Popover key={a} width={340} placement="below"
+                     label={lookupAttribute(a)?.name ?? a}
+                     content={lookupAttribute(a) && (
+                       <Definition title={a} text={lookupAttribute(a).text} page={lookupAttribute(a).page} />
+                     )}>
+              <Button label={a} size="sm" variant="secondary" />
+            </Popover>
+          )
+      ))}
     </HStack>
+  );
+}
+
+// The one dialog those chips open.
+export function AttributeCard({ name, isOpen, onOpenChange }) {
+  const def = name ? lookupAttribute(name) : null;
+  if (!def) return null;
+  return (
+    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={520}>
+      <Layout
+        header={<DialogHeader title={name} onOpenChange={onOpenChange} />}
+        content={<LayoutContent><Definition title={name} text={def.text} page={def.page} /></LayoutContent>}
+      />
+    </Dialog>
   );
 }
 

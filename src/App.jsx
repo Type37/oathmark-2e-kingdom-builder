@@ -6,15 +6,6 @@ import { AlertDialog } from "@astryxdesign/core/AlertDialog";
 import { marchesTheme } from "./theme/marches.js";
 
 import Landing from "./panes/Landing.jsx";
-import KingdomList from "./panes/KingdomList.jsx";
-import KingdomPane from "./panes/KingdomPane.jsx";
-import MusterList from "./panes/MusterList.jsx";
-import MusterPane from "./panes/MusterPane.jsx";
-import CollectionPane from "./panes/CollectionPane.jsx";
-import OptionsPane from "./panes/OptionsPane.jsx";
-import ReferencePane from "./panes/ReferencePane.jsx";
-import FoundKingdom from "./components/FoundKingdom.jsx";
-import MusterNew from "./components/MusterNew.jsx";
 import Emblem from "./components/Emblem.jsx";
 
 import { validateKingdom } from "./rules/kingdom.mjs";
@@ -26,6 +17,17 @@ import useSection, { PARENT } from "./useSection.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "./rules/examples.mjs";
 import { saveEmblem, deleteEmblem } from "./emblem.mjs";
 import { downloadJson, fileSlug } from "./download.mjs";
+
+// Each page is its own chunk, so the landing screen loads only itself.
+const KingdomList = React.lazy(() => import("./panes/KingdomList.jsx"));
+const KingdomPane = React.lazy(() => import("./panes/KingdomPane.jsx"));
+const MusterList = React.lazy(() => import("./panes/MusterList.jsx"));
+const MusterPane = React.lazy(() => import("./panes/MusterPane.jsx"));
+const CollectionPane = React.lazy(() => import("./panes/CollectionPane.jsx"));
+const ReferencePane = React.lazy(() => import("./panes/ReferencePane.jsx"));
+const OptionsPane = React.lazy(() => import("./panes/OptionsPane.jsx"));
+const FoundKingdom = React.lazy(() => import("./components/FoundKingdom.jsx"));
+const MusterNew = React.lazy(() => import("./components/MusterNew.jsx"));
 
 const EMPTY_KINGDOM = {
   name: "", ruler: "", level: "moderate", capitalList: null,
@@ -171,6 +173,7 @@ export default function App() {
         <MobileNav isOpen={menuOpen} onOpenChange={setMenuOpen} header="Oathmark">
           {navItems}
         </MobileNav>
+        <React.Suspense fallback={null}>
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
 
         <FoundKingdom
@@ -249,6 +252,7 @@ export default function App() {
           <OptionsPane value={store.settings ?? {}} shell={shell}
                        onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
         )}
+        </React.Suspense>
       </AppShell>
     </Theme>
   );
