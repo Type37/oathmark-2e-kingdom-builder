@@ -7,6 +7,7 @@ import Emblem from "./Emblem.jsx";
 import NameField from "./NameField.jsx";
 import { LevelIcon } from "./Level.jsx";
 import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
+import { knaveRealm } from "../knave-names.mjs";
 import EmblemDialog from "./EmblemDialog.jsx";
 import { saveEmblem } from "../emblem.mjs";
 
@@ -36,7 +37,9 @@ export default function FoundKingdom({ isOpen, onOpenChange, onFound }) {
   async function found() {
     setBusy(true);
     const key = emblem ? await saveEmblem(emblem) : null;
-    onFound({ name: name.trim(), ruler: ruler.trim(), culture, level, emblem: key });
+    // An unnamed kingdom falls back to a Knave 2e roll (pp60-61).
+    const filled = name.trim() || ruler.trim() ? { name: name.trim(), ruler: ruler.trim() } : knaveRealm();
+    onFound({ name: filled.name, ruler: filled.ruler || ruler.trim(), culture, level, emblem: key });
   }
 
   return (

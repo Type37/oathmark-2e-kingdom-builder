@@ -135,7 +135,8 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
         }}
       />
       {openFigure && (
-        <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)} />
+        <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)}
+                    owns={(name) => picks.some((p) => p.name === name)} />
       )}
       <EmblemDialog isOpen={cropping} onOpenChange={setCropping}
                     onDone={(blob) => { onEmblem(blob); setCropping(false); }} />

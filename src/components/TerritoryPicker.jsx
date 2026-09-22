@@ -97,14 +97,14 @@ export default function TerritoryPicker({ region, candidates, pool, onPick, onCl
   const close = (o) => !o && onClose();
 
   return (
-    <Dialog isOpen={isOpen} onOpenChange={close} width={1000} maxHeight="80dvh">
+    <Dialog isOpen={isOpen} onOpenChange={close} width="min(1280px, 94vw)" maxHeight="92dvh">
       <Layout
         header={<DialogHeader title={`Region ${region}`} onOpenChange={close} />}
-        start={narrow ? undefined : <LayoutPanel width={300} hasDivider isScrollable>{list}</LayoutPanel>}
+        start={narrow ? undefined : <LayoutPanel width={340} hasDivider isScrollable>{list}</LayoutPanel>}
         isScrollable
         content={
           <LayoutContent>
-            <VStack gap={GAP.group} style={{ blockSize: "64dvh", overflowY: "auto" }}>
+            <VStack gap={GAP.group} style={{ blockSize: "78dvh", overflowY: "auto" }}>
               <HStack className="om-callout">
                 <Text>{region === 1 ? NOTE.capital : NOTE.terrain}</Text>
               </HStack>
