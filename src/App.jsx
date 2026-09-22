@@ -1,8 +1,9 @@
 import React from "react";
-import { Theme, AppShell, VStack, Text, Banner, Section } from "@astryxdesign/core";
+import { Theme, AppShell, Text, Banner, Section } from "@astryxdesign/core";
+import { SideNav, SideNavHeading, SideNavItem, SideNavSection } from "@astryxdesign/core/SideNav";
+import { MobileNav } from "@astryxdesign/core/MobileNav";
 import { marchesTheme } from "./theme/marches.js";
 
-import { Library } from "./Shell.jsx";
 import Landing from "./panes/Landing.jsx";
 import KingdomList from "./panes/KingdomList.jsx";
 import KingdomPane from "./panes/KingdomPane.jsx";
@@ -44,6 +45,7 @@ export default function App() {
   const [muster, setMuster] = React.useState(EMPTY_MUSTER);
   const [saved, setSaved] = React.useState(false);
   const [error, setError] = React.useState(null);
+  const [menuOpen, setMenuOpen] = React.useState(false);
   const fileRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -62,20 +64,54 @@ export default function App() {
   const shell = {
     subtitle: kingdom.name ? <Text type="label">{kingdom.name}</Text> : null,
     onBack: () => setSection(PARENT[section] ?? "home"),
-    library: (
-      <Library
-        section={section}
-        onSection={setSection}
-        store={store}
-        activeIds={store.active}
-        onLoad={load}
-      />
-    ),
+    onMenu: () => setMenuOpen(true),
     onNew: () => { setKingdom(EMPTY_KINGDOM); setMuster(EMPTY_MUSTER); setSection("kingdom"); },
     onImport: () => fileRef.current?.click(),
     onSave: saveAll,
     saved,
   };
+
+  // One nav tree, rendered by SideNav on desktop and MobileNav on phones.
+  const SECTIONS = [
+    { id: "home", label: "Home" },
+    { id: "kingdom", label: "Kingdom" },
+    { id: "collection", label: "Collection" },
+    { id: "muster", label: "Muster" },
+    { id: "reference", label: "Reference" },
+  ];
+  const navItems = (
+    <>
+      {SECTIONS.map((s) => (
+        <SideNavItem
+          key={s.id}
+          label={s.label}
+          isSelected={section === s.id || (s.id === "kingdom" && section === "kingdoms")}
+          onClick={() => { setSection(s.id); setMenuOpen(false); }}
+        />
+      ))}
+      {["kingdoms", "musters"].map((kind) => {
+        const rows = store[kind] ?? [];
+        if (!rows.length) return null;
+        return (
+          <SideNavSection key={kind} title={kind === "kingdoms" ? "Kingdoms" : "Musters"}>
+            {rows.map((r) => (
+              <SideNavItem
+                key={r.id}
+                label={r.name || "Untitled"}
+                isSelected={store.active?.[kind] === r.id}
+                onClick={() => { load(kind, r.id); setMenuOpen(false); }}
+              />
+            ))}
+          </SideNavSection>
+        );
+      })}
+    </>
+  );
+  const sideNav = (
+    <SideNav header={<SideNavHeading heading="Oathmark" headingHref="#/" />}>
+      {navItems}
+    </SideNav>
+  );
 
   function saveAll() {
     setStore((s) => {
@@ -113,7 +149,16 @@ export default function App() {
 
   return (
     <Theme theme={marchesTheme} mode="light">
-      <AppShell height="auto" contentPadding={0} variant="wash">
+      <AppShell
+        height="auto"
+        contentPadding={0}
+        variant="wash"
+        sideNav={sideNav}
+        mobileNav={false}
+      >
+        <MobileNav isOpen={menuOpen} onOpenChange={setMenuOpen} header="Oathmark">
+          {navItems}
+        </MobileNav>
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
         {error && (
           <Section paddingBlockEnd={0}>
@@ -121,7 +166,7 @@ export default function App() {
           </Section>
         )}
         {section === "home" && (
-          <Landing onOpen={(id) => setSection(id === "kingdom" ? "kingdoms" : id)} />
+          <Landing onOpen={(id) => setSection(id === "kingdom" ? "kingdoms" : id)} onMenu={() => setMenuOpen(true)} />
         )}
         {section === "kingdoms" && (
           <KingdomList
@@ -129,6 +174,7 @@ export default function App() {
             onOpen={(id) => load("kingdoms", id)}
             onNew={() => { setKingdom(EMPTY_KINGDOM); setSection("kingdom"); }}
             onBack={() => setSection("home")}
+            onMenu={() => setMenuOpen(true)}
           />
         )}
         {section === "kingdom" && (

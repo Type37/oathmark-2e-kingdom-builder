@@ -17,7 +17,7 @@ function slots(level) {
 
 const LEVEL_LABEL = { beginner: "Beginner", moderate: "Moderate", expert: "Expert" };
 
-export default function KingdomList({ store, onOpen, onNew, onBack }) {
+export default function KingdomList({ store, onOpen, onNew, onBack, onMenu }) {
   const rows = listOf(store, "kingdoms");
 
   return (
@@ -28,6 +28,10 @@ export default function KingdomList({ store, onOpen, onNew, onBack }) {
       header={
         <LayoutHeader>
           <HStack gap={GAP.item} align="center">
+            {onMenu && (
+              <Button className="om-menu-btn" label="Menu" size="sm" variant="ghost" isIconOnly
+                      icon={<Ico name="menu" size={20} />} onClick={onMenu} />
+            )}
             {onBack && (
               <Button label="Back" size="sm" variant="ghost" isIconOnly
                       icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />

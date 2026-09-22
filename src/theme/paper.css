@@ -106,6 +106,15 @@ body {
 }
 .om-callout * { color: var(--color-text-accent); }
 
+/* The SideNav rail is the desktop menu; the MobileNav drawer + hamburger take over below md. */
+.om-menu-btn { display: inline-flex; }
+@media (min-width: 768px) {
+  .om-menu-btn { display: none; }
+}
+@media (max-width: 767px) {
+  .astryx-side-nav { display: none; }
+}
+
 /* Stat buttons sit on the dark header bar and take its pale text. */
 .astryx-table-header-cell .astryx-button,
 .astryx-table-header-cell .astryx-button * { color: inherit; }

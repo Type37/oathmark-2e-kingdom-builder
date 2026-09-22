@@ -1,9 +1,10 @@
 import React from "react";
 import {
-  Layout, LayoutContent, Grid, VStack, Card, Heading, Section,
+  Layout, LayoutContent, LayoutHeader, HStack, Grid, VStack, Card, Heading, Section, Button,
 } from "@astryxdesign/core";
 import { Icon } from "@iconify/react";
 import Mark from "../components/Mark.jsx";
+import Ico from "../components/Ico.jsx";
 import { LAUREL, MUSTER } from "../icons/game.mjs";
 import { GAP } from "../layout.mjs";
 
@@ -13,12 +14,22 @@ const CARDS = [
   { id: "reference", title: "Unit Collections", mark: "skill" },
 ];
 
-export default function Landing({ onOpen }) {
+export default function Landing({ onOpen, onMenu }) {
   return (
     <Layout
       height="auto"
       padding={8}
       contentWidth={1040}
+      header={
+        onMenu && (
+          <LayoutHeader>
+            <HStack>
+              <Button className="om-menu-btn" label="Menu" size="sm" variant="ghost" isIconOnly
+                      icon={<Ico name="menu" size={20} />} onClick={onMenu} />
+            </HStack>
+          </LayoutHeader>
+        )
+      }
       content={
         <LayoutContent>
           <VStack gap={8}>

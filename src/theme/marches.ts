@@ -39,11 +39,11 @@ export default defineTheme({
     "--color-icon-accent": "#D40B61",
     "--focus-outline-color": "#D40B61",
 
-    "--color-background-body": "#F7EEDD",
-    "--color-background-surface": "#FBF5EA",
-    "--color-background-card": "#FFFDF8",
-    "--color-background-popover": "#FFFDF8",
-    "--color-background-muted": "#EFE3CC",
+    "--color-background-body": "#FBF7EF",
+    "--color-background-surface": "#FEFCF8",
+    "--color-background-card": "#FFFFFF",
+    "--color-background-popover": "#FFFFFF",
+    "--color-background-muted": "#F1E9DA",
     "--color-background-inverted": "#5C5953",
 
     "--color-text-primary": "#221F1F",
@@ -101,6 +101,11 @@ export default defineTheme({
     "--color-border-pink": "#D40B61",
     "--color-icon-pink": "#D40B61",
     "--color-text-pink": "#78063A",
+  },
+
+  // AppShell's mobileNav breakpoint ('md') resolves through these.
+  adaptations: {
+    widthBreakpoints: { sm: 640, md: 768, lg: 1024, xl: 1280, "2xl": 1536 },
   },
 
   components: {
