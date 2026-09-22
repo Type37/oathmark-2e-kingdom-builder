@@ -6,4 +6,4 @@ Laurel crown, muster and rank icons from [game-icons.net](https://game-icons.net
 
 Kingdom and ruler fallback names from *Knave: Second Edition* (Ben Milton, Questing Beast LLC, 2024), pp60–61. The game mechanics of Knave 2e may be reused freely.
 
-Dice icon from [Font Awesome Free](https://fontawesome.com) by Fonticons, Inc., [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Dice icons from [Font Awesome Free](https://fontawesome.com) by Fonticons, Inc., [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), and [Material Design Icons](https://pictogrammers.com/library/mdi/), [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).

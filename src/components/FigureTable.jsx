@@ -5,6 +5,7 @@ import {
 import { pixel } from "@astryxdesign/core/Table";
 import { stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
+import Dice from "./Dice.jsx";
 import { COL, BREAK, statWidth } from "../layout.mjs";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
 
@@ -61,7 +62,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
       header: <Head statKey={k} />,
       width: pixel(statWidth(k)),
       align: "center",
-      renderCell: (r) => <Text type="large">{statText(k, r[k])}</Text>,
+      renderCell: (r) => (k === "CD" ? <Dice count={r[k]} /> : <Text type="large">{statText(k, r[k])}</Text>),
     })),
     ...(isNarrow ? [] : [
       { key: "special", header: "Special", width: pixel(COL.special),

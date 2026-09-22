@@ -6,8 +6,9 @@ import { pixel } from "@astryxdesign/core/Table";
 import { Attributes } from "./StatLine.jsx";
 import { figureById, stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
+import Dice from "./Dice.jsx";
 import { equipmentParts } from "../rules/equipment.mjs";
-import { STAT_KEYS, statText, baseText, carriesRule, weaponsOf, RANGES } from "../rules/stats.mjs";
+import { STAT_KEYS, statText, baseText, carriesRule, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { GAP, statWidth } from "../layout.mjs";
 
 const letter = (k) => (k === "pts" ? "Pts" : k);
@@ -29,7 +30,7 @@ function StatRow({ variants, extra = [] }) {
       ),
       width: pixel(statWidth(k)),
       align: "center",
-      renderCell: (r) => <Text type="large">{statText(k, r[k])}</Text>,
+      renderCell: (r) => (k === "CD" ? <Dice count={r[k]} /> : <Text type="large">{statText(k, r[k])}</Text>),
     })),
     { key: "base", width: pixel(72), align: "center",
       header: (
@@ -118,14 +119,7 @@ function Ranged({ fig }) {
   return (
     <HStack gap={GAP.item} align="center" wrap="wrap">
       <Text type="label">Ranged</Text>
-      {named.map((w) => {
-        const [min, max] = RANGES[w] ?? [];
-        return (
-          <Text key={w}>
-            {w} {min ? `${min}" to ` : "up to "}{max}"
-          </Text>
-        );
-      })}
+      {named.map((w) => <Text key={w}>{w} {rangeText(w)}</Text>)}
     </HStack>
   );
 }

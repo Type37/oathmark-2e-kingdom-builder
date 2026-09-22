@@ -22,9 +22,17 @@ export const STAT_KEYS = ["A", "M", "F", "S", "D", "CD", "H", "pts"];
 export function statText(key, value) {
   if (value == null || value === "") return "";
   if (key === "F" || key === "S") return Number(value) > 0 ? `−${value}` : "0";
-  if (key === "D") return `${value}+`;
+  if (key === "A" || key === "D") return `${value}+`;
+  if (key === "M") return `${value}"`;
   if (key === "CD") return `${value}d10`;
   return String(value);
+}
+
+// "0″–20″" reads faster than "None to 20 inches".
+export function rangeText(weapon) {
+  const r = RANGES[weapon];
+  if (!r) return "";
+  return `${r[0] ?? 0}"–${r[1]}"`;
 }
 
 // "25 x 25" is a square base, so one number says it.
@@ -34,7 +42,10 @@ export function baseText(base) {
 }
 
 // Equipment already inside the stats: the card lists what actually does something.
-const BAKED_IN = new Set(["Hand Weapon", "Two-Handed Weapon", "Two-handed Weapon", "Light Armour", "Heavy Armour"]);
+// Shields and spears do their work through Shielding and Brace; weapons and
+// armour sit inside the stats. Only missile weapons survive on their own.
+const BAKED_IN = new Set(["Hand Weapon", "Two-Handed Weapon", "Two-handed Weapon",
+  "Light Armour", "Heavy Armour", "Shield", "Spear"]);
 export const carriesRule = (label) => !BAKED_IN.has(String(label).trim());
 
 export function variantFor(fig, unit = {}) {
