@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  VStack, HStack, Text, Section, NumberInput, ProgressBar, Button, Token, MetadataList, MetadataListItem,
+  VStack, HStack, Text, Section, NumberInput, ProgressBar, Button, Token, Banner, MetadataList, MetadataListItem,
 } from "@astryxdesign/core";
 import FigureCard from "../components/FigureCard.jsx";
 import UnitCard from "../components/UnitCard.jsx";
@@ -72,27 +72,33 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
           <ProgressBar label="Points Value" isLabelHidden
                        value={Math.min(result.points, points)} max={points || 1}
                        variant={over ? "error" : "accent"} />
+          {/* Only what the rules make you act on. The points are on the bar and
+              the progress bar; unit and figure counts serve no rule at all. */}
           <MetadataList>
-            <MetadataListItem label="Points">{result.points} of {points}</MetadataListItem>
-            <MetadataListItem label="Units">{units.length}</MetadataListItem>
-            <MetadataListItem label="Figures">{figureCount}</MetadataListItem>
             {agg.command > 0 && (
               <MetadataListItem label="Command">{agg.command}, {agg.extraActivations} extra activations</MetadataListItem>
             )}
-            {agg.champions > 0 && <MetadataListItem label="Champions">{agg.champions}</MetadataListItem>}
-            {agg.shootingDice > 0 && <MetadataListItem label="Shooting dice">{agg.shootingDice}</MetadataListItem>}
-            {agg.ranges.length > 0 && (
-              <MetadataListItem label="Ranges">{agg.ranges.map((r) => `${r}"`).join(", ")}</MetadataListItem>
+            {agg.champions > 0 && <MetadataListItem label="Champion dice">{agg.champions}</MetadataListItem>}
+            {agg.shootingDice > 0 && (
+              <MetadataListItem label="Shooting">
+                {agg.shootingDice} dice to {agg.ranges.map((r) => `${r}"`).join(", ")}
+              </MetadataListItem>
             )}
             {agg.casters.length > 0 && (
               <MetadataListItem label="Spells">{agg.spellsKnown} known across {agg.casters.length}</MetadataListItem>
             )}
           </MetadataList>
-          {(result.errors.length > 0 || result.warnings.length > 0 || short.length > 0) && (
-            <VStack gap={GAP.tight} className="om-callout">
-              {result.errors.map((e) => <Text key={e}>{e}</Text>)}
-              {result.warnings.map((w) => <Text key={w}>{w}</Text>)}
-              {short.map((x) => <Text key={x.figureId}>{`${x.name}: own ${x.have} of ${x.need}`}</Text>)}
+          {result.errors.length > 0 && (
+            <VStack gap={GAP.tight}>
+              {result.errors.map((e) => <Banner key={e} status="error" title={e} />)}
+            </VStack>
+          )}
+          {(result.warnings.length > 0 || short.length > 0) && (
+            <VStack gap={GAP.tight}>
+              {result.warnings.map((w) => <Banner key={w} status="warning" title={w} />)}
+              {short.map((x) => (
+                <Banner key={x.figureId} status="warning" title={`${x.name}: own ${x.have} of ${x.need}`} />
+              ))}
             </VStack>
           )}
           {battle && <Text type="supporting">{battle.text}</Text>}

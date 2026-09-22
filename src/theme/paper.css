@@ -55,11 +55,13 @@ body {
   background-color: var(--color-background-body);
 }
 
-/* Back is the same target on every page, and big enough to hit. */
-.om-back button,
-.om-back {
-  min-block-size: 44px;
+/* One height for everything in the bar. Four different ones is what made it
+   look like sediment; the touch target comes from the height, not from a
+   special case on one button. */
+.om-topbar :is(button, input) {
+  min-block-size: var(--om-bar-control);
 }
+.om-topbar { --om-bar-control: 40px; }
 
 /* One page scroll. The kingdom sheet rides along, pinned under the nav. */
 .om-sticky {
@@ -449,6 +451,7 @@ body[data-view="work"] .wlf { display: none; }
 
 /* The record's name is a heading you can type in. */
 .om-title-input input {
+  block-size: var(--om-bar-control);
   font-family: var(--font-family-heading);
   font-size: var(--font-size-2xl);
   border-color: transparent;

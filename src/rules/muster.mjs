@@ -91,10 +91,14 @@ export function validateArmy(kingdom, army) {
       const max = fig?.unitMax ?? 1;
       if ((u.count ?? 1) > max) errors.push(`${name}: max ${max} figures`);
     }
-    // Mutually exclusive grants from the same territory.
+    // Mutually exclusive grants from the same territory. The pair is seen from
+    // both ends, so name it in one fixed order and say it once.
     for (const ex of entry.exclusiveWith ?? []) {
       const exId = ex.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      if (byFigure.has(exId)) warnings.push(`Choose either ${name} or ${ex}`);
+      if (!byFigure.has(exId)) continue;
+      const [a, b] = [name, ex].sort();
+      const line = `Choose either ${a} or ${b}`;
+      if (!warnings.includes(line)) warnings.push(line);
     }
   }
 
