@@ -5,6 +5,7 @@ const Territory = z.object({
   region: z.number().int().min(1).max(6),
   list: z.string().min(1),
   name: z.string().min(1),
+  occupied: z.boolean().optional(),
 });
 
 const ChronicleEntry = z.object({
@@ -24,6 +25,7 @@ export const KingdomSchema = z.object({
   chronicle: z.array(ChronicleEntry).optional().default([]),
   emblem: z.string().nullable().optional(),
   culture: z.string().nullable().optional(),
+  founded: z.boolean().optional(),
   lore: z.object({}).passthrough().nullable().optional(),
   saved: z.string().optional(),
 });

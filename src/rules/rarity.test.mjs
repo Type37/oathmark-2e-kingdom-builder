@@ -77,7 +77,7 @@ test("p18: rarity (5) and (6) cannot be taken at creation; Regions 5-6 are campa
                               ["necropolis", "Endless Tunnels"], ["unaligned", "Glade"], ["unaligned", "High Fells"]]) {
     for (const region of [2, 3, 4]) assert.equal(ok(list === "unaligned" ? "elf" : list, region, list, name), false);
   }
-  assert.equal(canPlace({ capitalList: "elf", region: 5, list: "elf", name: "Forests" }).reason, "Campaign only");
+  assert.equal(canPlace({ capitalList: "elf", region: 5, list: "elf", name: "Forests" }).reason, "Campaign only: found the kingdom first");
   assert.equal(canPlace({ capitalList: "elf", region: 4, list: "elf", name: "Hill Caves" }).reason, "Campaign only");
 });
 

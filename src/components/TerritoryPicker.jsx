@@ -71,7 +71,7 @@ function Preview({ t, region, capitalList, pool, onOpenFigure, onAdd, onBack }) 
   );
 }
 
-export default function TerritoryPicker({ region, candidates, capitalList, pool, onPick, onClose, onOpenFigure }) {
+export default function TerritoryPicker({ region, candidates, capitalList, founded, pool, onPick, onClose, onOpenFigure }) {
   const narrow = useMediaQuery(BREAK.narrow);
   const [focus, setFocus] = React.useState(null);
   const isOpen = Boolean(region);

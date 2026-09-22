@@ -60,6 +60,15 @@ export function canJoin(hostFig, charFig) {
 // Command, the character's Activation (p82).
 export const joinedTo = (units, host) => (units ?? []).find((u) => u.joinedTo && u.joinedTo === host.uid) ?? null;
 
+// A unit drawn from an occupied territory activates one worse, and one from
+// Region 6 is Unreliable (p35). The muster records which source it came from.
+export function sourcePenalties(entry) {
+  const sources = entry?.sources ?? [];
+  const allOccupied = sources.length > 0 && sources.every((s) => s.occupied);
+  const allBorderland = sources.length > 0 && sources.every((s) => s.region === 6);
+  return { occupied: allOccupied, unreliable: allBorderland };
+}
+
 export function unitProfile(unit, units) {
   const fig = figureById.get(unit.figureId);
   if (!fig) return null;

@@ -272,3 +272,6 @@ body {
 
 /* A chip that carries a definition still needs a box the popover can measure. */
 .om-defined { display: inline-flex; }
+
+/* Regions the kingdom has not reached yet are present but set back. */
+.om-region-closed { opacity: 0.5; }

@@ -47,3 +47,20 @@ test("an over-full unit is reported", () => {
   const r = validateArmy(kingdom, { points: 5000, units });
   assert.ok(r.errors.some((e) => /21 figures, max 20/.test(e)), r.errors.join("; "));
 });
+
+test("a founded kingdom may grow into Regions 5 and 6, p37", async () => {
+  const { canPlace, startComplete } = await import("./kingdom.mjs");
+  const start = { capitalList: "elf", region: 5, list: "elf", name: "Hill Caves" };
+  assert.equal(canPlace(start).ok, false);
+  assert.equal(canPlace({ ...start, founded: true }).ok, true);
+  const k = {
+    level: "beginner", capitalList: "elf",
+    territories: [
+      { region: 1, list: "elf", name: "Elf City" },
+      { region: 2, list: "elf", name: "Forests" },
+      { region: 2, list: "elf", name: "Silver Mines" },
+    ],
+  };
+  assert.equal(startComplete(k), true);
+  assert.equal(startComplete({ ...k, territories: k.territories.slice(0, 2) }), false);
+});

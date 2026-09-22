@@ -33,7 +33,7 @@ function earliestRegion(rarity, sameList) {
   return sameList ? Math.max(2, rarity) : rarity + 1;
 }
 
-export function canPlace({ capitalList, region, list, name }) {
+export function canPlace({ capitalList, region, list, name, founded }) {
   const t = territory(list, name);
   if (!t) return { ok: false, reason: `Unknown: ${list}/${name}` };
 
@@ -41,7 +41,12 @@ export function canPlace({ capitalList, region, list, name }) {
     if (!t.capital) return { ok: false, reason: "Not a capital" };
     return { ok: true };
   }
-  if (region > 4) return { ok: false, reason: "Campaign only" };
+  // Regions 5 and 6 are campaign additions, so they wait for the kingdom to be founded (p37).
+  if (region > 4) {
+    if (!founded) return { ok: false, reason: "Campaign only: found the kingdom first" };
+    if (t.rarity > region) return { ok: false, reason: `Rarity ${t.rarity}: needs Region ${t.rarity}` };
+    return { ok: true };
+  }
 
   // Unaligned territories use their printed rarity regardless of capital (p18, p22).
   // "On the same list as their capital city" (p17) is about the terrain, so a
@@ -62,7 +67,17 @@ export function canPlace({ capitalList, region, list, name }) {
 // "A territory has open borders if any part of that territory on the kingdom
 // sheet is not bordered by another territory in the kingdom" (p32), so the
 // outermost region a kingdom fills is the one with open borders.
+// The starting kingdom is complete when every region its level names is full.
+export function startComplete(k) {
+  if (!LEVELS[k?.level]) return false;
+  const placed = k.territories ?? [];
+  return LEVELS[k.level].every((r) => placed.filter((p) => p.region === r).length === REGION_SIZES[r]);
+}
+
 export function openBorderRegion(kingdom) {
+  const placed = kingdom?.territories ?? [];
+  const filled = [...new Set(placed.map((p) => p.region))];
+  if (filled.length) return Math.max(...filled);
   const regions = LEVELS[kingdom?.level ?? "moderate"] ?? [];
   return regions.length ? regions.at(-1) : null;
 }
@@ -119,17 +134,26 @@ export function validateKingdom(k) {
     const got = placed.filter((p) => p.region === r).length;
     if (got !== want) errors.push(`Region ${r}: ${got} of ${want}`);
   }
-  // The level fixes which regions are filled (p17); nothing may sit outside them.
-  const outside = [...new Set(placed.map((p) => p.region))]
-    .filter((r) => !LEVELS[k.level].includes(r) && !(r > 4))
-    .sort((a, b) => a - b);
-  for (const r of outside) errors.push(`Region ${r}: not in a ${k.level} kingdom`);
+  // The level sets the starting kingdom (p17). Once founded, a campaign may grow
+  // past it, so extra regions are only an error before founding.
+  if (!k.founded) {
+    const outside = [...new Set(placed.map((p) => p.region))]
+      .filter((r) => !LEVELS[k.level].includes(r))
+      .sort((a, b) => a - b);
+    for (const r of outside) errors.push(`Region ${r}: not in a ${k.level} kingdom`);
+  }
   for (const p of placed) {
-    const res = canPlace({ capitalList: k.capitalList, region: p.region, list: p.list, name: p.name });
+    const res = canPlace({ capitalList: k.capitalList, region: p.region, list: p.list, name: p.name, founded: k.founded });
     if (!res.ok) errors.push(res.reason);
   }
   return { ok: errors.length === 0, errors, slots: slots.length, placed: placed.length };
 }
+
+export const occupiedNote = {
+  title: "Occupied",
+  text: "If a kingdom has occupied territories, they may still purchase figures from that territory as normal; however, all figures and units mustered in this way have their Activation Number increased by 1 for the coming battle to represent the greater disorganisation caused by the occupation.",
+  page: 35,
+};
 
 // Territories stack: two Dwarf Cities grant two Dwarf Spellcasters.
 export function figurePool(k) {
@@ -146,7 +170,7 @@ export function figurePool(k) {
         max: 0, unlimited: false, fromCapital: false,
         levels: null, exclusiveWith: new Set(), armyMax: null,
       };
-      cur.sources.push({ ...p, rarity: t.rarity });
+      cur.sources.push({ ...p, rarity: t.rarity, occupied: Boolean(p.occupied) });
       if (g.max == null) cur.unlimited = true;
       else cur.max += g.max;
       if (isCapital) cur.fromCapital = true;
