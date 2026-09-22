@@ -136,6 +136,7 @@ export default function App() {
     onBack: () => go(PARENT[section] ?? "home"),
     onMenu: () => setMenuOpen(true),
     appActions,
+    onOptions: () => go("options"),
   };
 
   // The rail: three builders, then the saved records, with the rules reference last.
@@ -216,6 +217,7 @@ export default function App() {
         )}
         {page === "kingdom" && (
           <KingdomPane value={kingdom} onChange={update("kingdoms")} settings={store.settings ?? {}}
+                       onPrint={() => window.print()}
                        onEmblem={(blob) => setEmblem(kingdom, blob)}
                        shell={{ ...shell, actions: recordActions("kingdoms", kingdom) }} />
         )}

@@ -269,3 +269,6 @@ body {
 /* On a card the emblem is a mark, not the subject: it sits back from the name. */
 .om-card-emblem { opacity: 0.55; }
 .om-card:hover .om-card-emblem { opacity: 0.85; }
+
+/* A chip that carries a definition still needs a box the popover can measure. */
+.om-defined { display: inline-flex; }

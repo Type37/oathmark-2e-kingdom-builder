@@ -10,7 +10,7 @@ import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 // Per-page frame: title, record actions, content, and the sheet panel.
 // Navigation lives in App (SideNav / MobileNav); edits autosave.
 export default function Shell({
-  title, leading, subtitle, meta, actions, appActions,
+  title, leading, subtitle, meta, actions, appActions, onOptions, onPrint,
   content, detail, detailTitle, inlineDetail,
   onBack, onMenu,
 }) {
@@ -37,6 +37,14 @@ export default function Shell({
         </HStack>
         <HStack gap={GAP.item} align="center" wrap="wrap">
           {meta}
+          {onPrint && (
+            <Button label="Print" variant="secondary" size="md"
+                    icon={<Ico name="printer" size={20} />} onClick={onPrint} />
+          )}
+          {onOptions && (
+            <Button label="Options" variant="ghost" size="md" isIconOnly
+                    icon={<Ico name="gear" size={20} />} onClick={onOptions} />
+          )}
           {noPanels && detail && (
             <Button label={detailTitle ?? "Details"} size="md" variant="secondary"
                     onClick={() => setDetailOpen(true)} />

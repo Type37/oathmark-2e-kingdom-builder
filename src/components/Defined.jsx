@@ -22,7 +22,9 @@ export default function Defined({ def, label, children, bare, width = 340 }) {
   return (
     <Popover width={width} label={def.title} placement="below"
              content={<Definition {...def} />}>
-      {bare ? children : <Button variant="ghost" size="sm" label={label ?? def.title}>{children}</Button>}
+      {bare
+        ? <span className="om-defined">{children}</span>
+        : <Button variant="ghost" size="sm" label={label ?? def.title}>{children}</Button>}
     </Popover>
   );
 }

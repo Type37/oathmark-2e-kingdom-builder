@@ -29,7 +29,7 @@ import { hasLore } from "../lore.mjs";
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
 
 // Every region is visible at once. No stepper, so nothing advances underfoot.
-export default function KingdomPane({ value, onChange, onEmblem, settings, shell }) {
+export default function KingdomPane({ value, onChange, onEmblem, settings, onPrint, shell }) {
   const { level, capitalList, territories: picks } = value;
   const [picking, setPicking] = React.useState(null);
   const [openFigure, setOpenFigure] = React.useState(null);
@@ -96,7 +96,9 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
           ))}
           {!full && (r > 1 || !capitalList) && (
             <ListItem label={r === 1 ? "Choose a capital" : "Add territory"}
-                      startContent={<Ico name="plus" />} onClick={() => setPicking(r)} />
+                      isDisabled={r > 1 && !capitalList}
+                      startContent={<Ico name="plus" />}
+                      onClick={() => (r === 1 || capitalList) && setPicking(r)} />
           )}
         </List>
       </VStack>
@@ -159,6 +161,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
   return (
     <Shell
       {...shell}
+      onPrint={onPrint}
       title={value.name || "Untitled"}
       leading={<Emblem emblemKey={value.emblem} name={value.name} size="lg" />}
       inlineDetail={<VStack gap={GAP.group}>{map}{access}</VStack>}
