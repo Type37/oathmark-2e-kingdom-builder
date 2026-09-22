@@ -102,7 +102,7 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
                 <Button label="Roll for Random Points Value" variant="secondary" onClick={rollSize} />
                 {pointsRoll && <Token label={`Rolled ${pointsRoll.die}`} color="pink" />}
                 {scale && <Token label={scale} />}
-                <Switch label="Uneven Battles" isSelected={uneven}
+                <Switch label="Uneven Battles" value={uneven}
                         onChange={(on) => { setUneven(on); setSides(on ? rollSides(points) : null); }} />
               </HStack>
 

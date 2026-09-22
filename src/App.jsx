@@ -71,6 +71,7 @@ export default function App() {
 
   React.useEffect(() => {
     document.body.dataset.view = ["kingdom", "muster"].includes(section) ? "work" : "front";
+    window.scrollTo(0, 0);
   }, [section]);
 
   const kingdom = activeRecord(store, "kingdoms");

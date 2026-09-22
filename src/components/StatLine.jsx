@@ -4,8 +4,6 @@ import {
   Dialog, DialogHeader, Layout, LayoutContent,
 } from "@astryxdesign/core";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
-import { Icon } from "@iconify/react";
-import { D10 } from "../icons/game.mjs";
 import { stats, lookupAttribute } from "../rules/kingdom.mjs";
 import Mark from "./Mark.jsx";
 
@@ -184,10 +182,7 @@ export function StatBar({ variant, keys = STAT_KEYS }) {
     <div className="om-statbar" style={{ "--om-cols": cols.length }}>
       {cols.map((k) => (
         <div key={k} className="om-statbar-col">
-          <span className="om-statbar-letter">
-            {k === "CD" && <Icon icon={D10} width={13} height={13} />}
-            {k === "pts" ? "Pts" : k === "base" ? "Base" : k}
-          </span>
+          <span className="om-statbar-letter">{k === "pts" ? "Pts" : k === "base" ? "Base" : k}</span>
           <span className="om-statbar-value">
             {k === "base" ? `${baseText(variant.base)}mm` : k === "CD" ? variant[k] : statText(k, variant[k])}
           </span>

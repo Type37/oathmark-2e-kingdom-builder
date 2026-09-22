@@ -13,9 +13,9 @@ export default function OptionsDialog({ isOpen, onOpenChange, value = {}, onChan
         content={
           <LayoutContent>
             <VStack gap={GAP.group} align="start">
-              <Switch label="Lore and Detail" isSelected={Boolean(value.lore)} isDisabled={!hasLore}
+              <Switch label="Lore and Detail" value={Boolean(value.lore)} isDisabled={!hasLore}
                       onChange={(lore) => onChange({ ...value, lore })} />
-              <Switch label="Muster from my collection" isSelected={Boolean(value.useCollection)}
+              <Switch label="Muster from my collection" value={Boolean(value.useCollection)}
                       onChange={(useCollection) => onChange({ ...value, useCollection })} />
             </VStack>
           </LayoutContent>
