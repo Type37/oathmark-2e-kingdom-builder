@@ -1,10 +1,10 @@
-# Oathmark Kingdom Builder — handoff
+# Oathmark Kingdom Builder: handoff
 
-A web app for *Oathmark: Second Edition* (Osprey Games, 2026). Build a kingdom,
-muster an army against it, with the book's rules enforced.
+A web app for *Oathmark: Second Edition* (Osprey Games) that builds a kingdom and musters an army from it, enforcing the book's rules. It's one of the WarLore builders.
 
-Nothing has been committed or pushed. There is no `.git` here and no remote, so
-the project is clean to initialise under whichever account you want.
+- **Live:** https://type37.github.io/oathmark-2e-kingdom-builder/
+- **Repo:** https://github.com/Type37/oathmark-2e-kingdom-builder (public, branch `main`)
+- **Deploy:** every push to `main` runs the tests, builds and deploys to Pages via `.github/workflows/pages.yml`, in about 30 seconds.
 
 ## Run it
 
@@ -12,120 +12,89 @@ the project is clean to initialise under whichever account you want.
 npm install
 npm run dev      # http://localhost:5178
 npm test         # 83 tests, node:test
-npx astryx doctor
+npm run build    # BASE_PATH=/repo-name/ is set by the workflow
 ```
 
-## State: what works
+## Accounts and tooling
 
-- **Rules engine, 83 passing tests.** Kingdom legality, muster caps, derived
-  combat numbers, collection shortfalls, upgrades, spell lists, named saves,
-  import validation.
-- **Data extracted from the PDF**: 123 figures / 147 stat variants, 59
-  territories, 39 attributes, 53 spells, 13 magic items, 73 upgrades — all
-  verbatim, with page numbers.
-- **Verified against the book's own worked examples.** Grundeland and Vasala
-  (pp24–25) both validate. The combat example (p69), shooting example (p76) and
-  flank-dice note (p65) reproduce exactly. The knucker 20% case (p35) returns
-  the book's arithmetic.
-- **UI**: landing cards, kingdom list with the two pregens seeded, kingdom
-  builder with all regions visible, muster with a stat table and upgrade
-  picker, collection, reference, saves with export/import.
+- Commit as `Type37 <elwongo2@gmail.com>`; it's set in this repo's git config.
+- `gh` has two accounts. **Type37** is active; the work account `thundertech-creative` is the other. This repo's git uses `gh auth git-credential`, so pushes go out as Type37.
+- **Use Edge only, never Chrome.** Playwright MCP is set to `--browser msedge` in `~/.claude.json` (takes effect next session). Edge screenshot scripts live in `.playwright-mcp/` (git-ignored).
+- If Playwright hangs on `newPage`, look for orphaned automation browsers (`ps … | grep remote-debugging-pipe`) and kill them. Keep the Mac awake with `caffeinate -i` during long runs; sleep killed several agents.
+
+## Design rules (set by the owner)
+
+1. **No rounded cards** unless Astryx requires it. Buttons keep their radius.
+2. **No horizontal dividers**: no `hasDividers`, no `<Divider />`, no row rules. Tables use `dividers="none"` with `isStriped`.
+3. **No dark text on dark backgrounds.** `.om-band` forces its children to inherit a light colour.
+4. **Buttons aren't full width.** Each screen has one primary action docked at the bottom (`.om-cta-dock`): up to 512px, 56px tall, display font, uppercase. Other buttons use Astryx's `md` size and the Cabin font.
+5. **Mobile-ready.** Check at 390px and 1280px in Edge, with no sideways scrolling. The header's file actions become icon-only at ≤768px.
+6. **Match the Hobgoblin army builder** for flow and interaction (see `notes/hobgoblin-flow.md`).
+7. **Back goes up a level, never off the site.**
+8. **Icons are never clipped.** Book marks carry their own `box` (viewBox) in `src/icons/marks.json`.
+9. **The app writes no prose of its own.** Labels come from the book's vocabulary.
+
+**Type:** Cabin for the interface, Almendra SC for headings and CTAs, EB Garamond (`.om-prose`) for the book's own text. The landing title uses Astryx `display-1`. There is no mono font.
+
+**Palette:**
+
+| Name | Hex | Role |
+|---|---|---|
+| Floral White | `#FFF9EC` | page |
+| Blackberry | `#5D2A42` | text and accent |
+| Powder Blush | `#FCB1A6` | borders |
+| Almond Silk | `#FFDCCC` | muted fill |
+| Bubblegum | `#FB6376` | fill only, never used for text |
+
+Corner radius is the Astryx default (4px); cards override it to 0.
+
+## Notes
+
+| File | Contents |
+|---|---|
+| `notes/book-style.md` | The book's fonts, sizes, colours and layout, measured from the PDF. The accent is magenta `#ec0c6c`, and the older `visual-reference.md` is wrong about the book having no accent. |
+| `notes/hobgoblin-flow.md` | Hobgoblin's routes, flow, interaction table (modal vs popover vs bottom sheet), measured sizes and colours, and the patterns to copy. Screenshots are in `notes/hobgoblin/` (git-ignored). |
+| `notes/visual-reference.md`, `notes/typography.md` | Earlier palette notes, dash and middot rules. |
 
 ## Architecture
 
 ```
-src/rules/     pure logic, no React, fully tested
-  kingdom.mjs    territory legality, figure pool, attribute lookup
-  muster.mjs     army validation: caps, 20% rule, magic items, characters
-  stats.mjs      derived numbers: combat dice, target number, morale, ranks
-  collection.mjs owned miniatures vs what a list needs
-  upgrades.mjs   mount/chariot options, level-scaled costs, prerequisites
-  magic.mjs      spell lists per race, spells known
-  store.mjs      named saves, export/import, merge
-  schema.mjs     zod validation for untrusted imported files
-  examples.mjs   the book's two worked kingdoms
+src/rules/        pure logic, fully tested (kingdom, muster, stats, collection, upgrades, magic, store, schema, examples)
 src/data/oathmark.json   everything parsed from the PDF, plus `errata`
-src/icons/marks.json     27 icon vectors
-src/panes/     one per section, each renders the shared Shell
-src/Shell.jsx  the single three-region frame (library | content | detail)
-src/theme/     marches.ts is the source; marches.css/js are BUILT — do not edit
+src/icons/        marks.json (book glyphs with per-glyph viewBox), game.mjs (laurel crown, muster; game-icons.net CC BY 3.0, credited in README)
+src/useSection.mjs   hash routes (#/kingdoms, #/kingdom, …) with a PARENT map, so Back goes up a level
+src/Shell.jsx     the three-region frame (library | content | detail)
+src/panes/        one per section
+src/theme/        marches.ts is the source; run `npx astryx theme build src/theme/marches.ts`. paper.css holds the app's own rules.
 ```
 
-`npx astryx theme build src/theme/marches.ts` after any theme change.
+Seven PDF errata are recorded in `oathmark.json` under `errata`, with reasoning.
 
-`src/screens/` is the previous UI generation. `Chronicle.jsx` is still used;
-`KingdomBuilder.jsx`, `Muster.jsx`, `Collection.jsx` and `Saves.jsx` are dead
-and safe to delete.
+## Done this session
 
-## Seven errata found in the source PDF
+- Pushed to GitHub with Pages deploy, and added the shared WarLore footer (`data-current="oathmark"`). Oathmark was also added to the `Type37/warlore-footer` tool list.
+- Fixed a build error (a stray comma in KingdomPane), and a crash in Create Kingdom: Astryx's `Selector` needs its `options` passed as data, not as child elements.
+- Browser Back now goes up a level. Landing cards read Found a Kingdom (laurel crown), Muster an Army (banner icon) and Unit Collections. The kingdom list shows 3 across, with Found a Kingdom docked at the bottom.
+- Applied the design rules above: square cards, no dividers, phone margins (a bleeding `Section` was removed from KingdomPane), and a compact header on phones.
 
-All recorded in `oathmark.json` under `errata`, with reasoning.
+## Next, in order
 
-1. **Goblin Champion** lists Smithies as its terrain, an Orc territory. The
-   kingdom list (p21) grants it from Slave Camps.
-2. **Goblin Spellcaster** lists Dungeons for levels 1–5, also Orc. p21 says
-   Warrens.
-3. **Goblin City** list reads "1 Goblin Price". There is no Goblin Prince; the
-   figure is the **Goblin Advisor**, whose own entry says goblins do not use
-   the term.
-4. **Orc King or Queen** extracted as `CD 35`. Combat Dice cap at 5 and every
-   other King is CD3 H3; the orc pages carry a stray-glyph artifact.
-5. **50×50 rank width** was 1, but the Unit Sizes table (p44) says one rank of
-   up to three. With the wrong value, 2 trolls scored a morale bonus they are
-   not entitled to.
-6. **"Human Spells"** extracted as "Human S pells", so all 8 human spells fell
-   into the Goblin and Orc list. p191 restricts a caster to General plus its
-   own race, so this would have offered illegal spells.
-7. **Option text** captured only its first line. The Elf King's chariot ended
-   at "Wild Charge," losing Large, Limited Manoeuvres, Limited Movement and the
-   50×100 base. 43 figures affected.
+1. **Clickable equipment, attributes and stats** (about 2 hours). Hand Weapon, Shield, Heavy Armour and the rest (15 equipment names in `figures[].equipment`), every attribute, and every stat open their explanation: a popover on desktop, a bottom sheet on phones, the same as Hobgoblin's keywords. Equipment definitions aren't in `oathmark.json` yet; extract them from the book (around p44–48).
+2. **Selectable points options per unit** (about 1 hour). Show unit options and upgrades as radio or checkbox rows with the cost on the right, like Hobgoblin's TYPE list.
+3. **Routes per record**, e.g. `#/kingdom/:id` and `#/muster/:id/u/:unitId`, so each screen can be deep-linked.
+4. **A muster list with a docked "Muster an Army" CTA.** The Muster screen is empty until a kingdom is loaded.
+5. **Unit Collections** currently opens the Reference pane (attributes, spells, items). Decide whether it should open Collection instead.
+6. Carried over from before: characters joining units, choosing spells and magic items, the p218 roster print view, regions 5–6 and campaign play.
 
-## Design decisions, and why
+## Known issues
 
-- **Palette**: Floral White `#FFF9EC`, Blackberry `#5D2A42`, Powder Blush
-  `#FCB1A6`, Almond Silk `#FFDCCC`, Bubblegum `#FB6376`. Bubblegum measures
-  2.8:1 on Floral White so it **never carries text** — it is a fill only, in
-  `--color-highlight`. Blackberry carries the accent at 10.67:1.
-- **Type**: Cabin for UI (Johnston and Gill Sans lineage), Almendra SC for
-  display, EB Garamond for the book's own words via `.om-prose`. Astryx owns
-  weights and line heights; do not hand-set them.
-- **Copy rule**: the app writes no prose. Labels come from the book's own
-  vocabulary; icons carry the rest.
-- **Icons**: 27 vectors extracted from the `RWMIconsandNumbers` font embedded
-  in the owner's PDF, converted to SVG paths. Stat mapping is in
-  `FigureTable.jsx` / `StatLine.jsx`.
-- **Layout contract** is written down in `src/layout.mjs`, each line naming the
-  mechanism that enforces it.
-
-## Not done
-
-- **Regions 5 and 6** and campaign kingdom modification. Rarity (5)/(6)
-  territories are earned by winning battles (p28–38); the data supports them
-  and `canPlace` rejects them at creation, but there is no campaign screen.
-- **Characters joining units** in the muster. `validateArmy` already checks
-  base size, Move and Activation; the UI cannot attach one.
-- **Spell and magic item selection** per caster. Rules and tests exist
-  (`magic.mjs`), no UI.
-- **Army Roster print/export** matching the p218 sheet.
-- **A build step.** There is only a dev server. GitHub Pages needs
-  `vite build`, plus `base` in `vite.config.js` if not served at the domain root.
-
-## Open decision: auth and cloud save
-
-GitHub Pages is static, so a Discord client secret cannot ship in the app.
-
-1. **Supabase** — Discord is a built-in provider, Postgres for saves, driven
-   from the browser with a publishable key. Best fit for static hosting.
-2. **One serverless function** (Cloudflare/Netlify/Vercel) for the token
-   exchange only, Pages still serving the app.
-3. **No auth** — the export/import JSON path already works and is tested.
-
-Whether Discord supports PKCE for public clients is worth checking; I did not
-verify it.
+- The main JS chunk is 3.3 MB (590 KB gzipped), because `Ico.jsx` loads the whole pepicons set. Import only the icons used.
+- There's no error boundary, so one crash blanks the whole app.
+- The Region map puts small "1/2" labels on Bubblegum, which conflicts with the fill-only rule.
+- The Actions workflow gets a Node 20 deprecation warning; bump `checkout`/`setup-node`/`upload-pages-artifact`/`deploy-pages` to their latest majors.
+- `src/screens/KingdomBuilder.jsx`, `Muster.jsx`, `Collection.jsx` and `Saves.jsx` are dead code and safe to delete. `Chronicle.jsx` is still used.
+- Auth and cloud save are still undecided: Supabase, a serverless function, or none. JSON export/import already works.
 
 ## Source
 
-`Oathmark-2e-small.pdf` sits in this folder and is the owner's purchased copy.
-It is the source for all extracted data and is not redistributable. Notes on
-the book's measured palette and typography are in `notes/visual-reference.md`;
-dash and middot rules in `notes/typography.md`.
+`Oathmark-2e-small.pdf` is the owner's purchased ebook. It's watermarked to the buyer, git-ignored, and must never be committed. All data was extracted from it, with page numbers.
