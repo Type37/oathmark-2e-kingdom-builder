@@ -1,7 +1,6 @@
 import React from "react";
-import { HStack, TextInput, Button } from "@astryxdesign/core";
-import { Icon } from "@iconify/react";
-import { DICE } from "../icons/game.mjs";
+import { HStack, TextInput } from "@astryxdesign/core";
+import RollButton from "./RollButton.jsx";
 import { randomName } from "../names.mjs";
 
 // A text field with a roll button that draws from one of the name pools.
@@ -12,9 +11,8 @@ export default function NameField({ label, value, onChange, pool, onRoll, isOpti
       <TextInput label={label} value={value ?? ""} isOptional={isOptional} size={size} width={width}
                  onChange={(e) => onChange(e.target?.value ?? e)} />
       {(onRoll || pool?.length > 0) && (
-        <Button label={`Roll ${label}`} variant="secondary" size={size} isIconOnly
-                icon={<Icon icon={DICE} width={18} height={18} />}
-                onClick={() => (onRoll ? onRoll() : onChange(randomName(pool, value)))} />
+        <RollButton label={`Roll ${label}`} size={size} isIconOnly
+                    onClick={() => (onRoll ? onRoll() : onChange(randomName(pool, value)))} />
       )}
     </HStack>
   );

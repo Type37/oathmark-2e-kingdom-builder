@@ -1,7 +1,6 @@
 import React from "react";
 import { VStack, HStack, Text, Heading, Button, MetadataList, MetadataListItem } from "@astryxdesign/core";
-import { Icon } from "@iconify/react";
-import { DICE } from "../icons/game.mjs";
+import RollButton from "./RollButton.jsx";
 import { rollLore } from "../lore.mjs";
 import { GAP } from "../layout.mjs";
 
@@ -29,9 +28,8 @@ export default function KingdomLore({ value, onChange }) {
         </VStack>
       )}
       <HStack justify="end">
-        <Button label={lore ? "Reroll the Realm" : "Roll the Realm"} size="sm" variant="secondary"
-                icon={<Icon icon={DICE} width={18} height={18} />}
-                onClick={() => onChange({ ...value, lore: rollLore() })} />
+        <RollButton label={lore ? "Reroll the Realm" : "Roll the Realm"} size="sm"
+                    onClick={() => onChange({ ...value, lore: rollLore() })} />
       </HStack>
     </VStack>
   );

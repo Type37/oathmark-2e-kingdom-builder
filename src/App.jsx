@@ -7,6 +7,7 @@ import { marchesTheme } from "./theme/marches.js";
 
 import Landing from "./panes/Landing.jsx";
 import Emblem from "./components/Emblem.jsx";
+import Footer from "./components/Footer.jsx";
 
 import { validateKingdom } from "./rules/kingdom.mjs";
 import {
@@ -159,7 +160,11 @@ export default function App() {
     </>
   );
   const sideNav = section === "home" ? undefined : (
-    <SideNav header={<SideNavHeading heading="Oathmark" headingHref="#/" />}>{navItems}</SideNav>
+    <SideNav header={
+      <a href="#/" className="om-brand" aria-label="Oathmark, home">
+        <img src={`${import.meta.env.BASE_URL}art/oathmark-logo.png`} alt="Oathmark" />
+      </a>
+    }>{navItems}</SideNav>
   );
 
   // A record route with nothing active falls back to its list.
@@ -225,7 +230,7 @@ export default function App() {
                        shell={{ ...shell, actions: recordActions("kingdoms", kingdom) }} />
         )}
         {page === "musters" && (
-          <MusterList store={store} fileActions={fileActions} {...shell}
+          <MusterList store={store} fileActions={fileActions} recordActions={recordActions} {...shell}
                       onOpen={(id) => open("musters", id)} onNew={() => setMustering(true)} />
         )}
         {page === "muster" && (
@@ -253,6 +258,7 @@ export default function App() {
                        onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
         )}
         </React.Suspense>
+        <Footer />
       </AppShell>
     </Theme>
   );

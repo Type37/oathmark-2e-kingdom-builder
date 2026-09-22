@@ -98,7 +98,7 @@ export default function CollectionPane({ value, onChange, shell }) {
           </TabList>
         </Section>
         {groups.map((g) => (
-          <Section key={g.list} padding={0}>
+          <Section key={g.list} padding={0} className="om-list-section">
             <div ref={(el) => { sections.current[g.list] = el; }}>
               <HStack justify="center" className="om-plate"><Text type="label">{LABEL[g.list]}</Text></HStack>
             </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Card, Text, Heading, Button,
+  Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Card, Text, Heading, Button, Token,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { Icon } from "@iconify/react";
@@ -12,7 +12,7 @@ import { armyPoints } from "../rules/muster.mjs";
 import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
 
-export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileActions }) {
+export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileActions, recordActions }) {
   const rows = listOf(store, "musters");
 
   return (
@@ -42,16 +42,21 @@ export default function MusterList({ store, onOpen, onNew, onBack, onMenu, fileA
                 const k = get(store, "kingdoms", m.kingdomId);
                 return (
                   <Card key={m.id} padding={5} variant={hueOf(k?.capitalList)}>
-                    <VStack gap={GAP.tight} onClick={() => onOpen(m.id)} className="om-card">
-                      <HStack gap={GAP.item} align="center">
-                        <Emblem emblemKey={k?.emblem} name={k?.name} size="lg" />
-                        <Heading level={2}>{m.name || "Untitled"}</Heading>
+                    <VStack gap={GAP.tight} className="om-card">
+                      <HStack gap={GAP.item} align="center" justify="between">
+                        <HStack gap={GAP.item} align="center" onClick={() => onOpen(m.id)}>
+                          <span className="om-card-emblem">
+                            <Emblem emblemKey={k?.emblem} name={k?.name} size="lg" />
+                          </span>
+                          <Heading level={2}>{m.name || "Untitled"}</Heading>
+                        </HStack>
+                        {recordActions && <MoreMenu items={recordActions("musters", m)} alignment="end" />}
                       </HStack>
-                      <HStack gap={GAP.item} align="baseline" wrap="wrap">
-                        <Text type="label">{armyPoints(m)}/{m.points}pts</Text>
-                        {k && <Text type="supporting">{k.name}</Text>}
-                        {m.commander && <Text type="supporting">{m.commander}</Text>}
-                      </HStack>
+                      <VStack gap={GAP.tight} onClick={() => onOpen(m.id)}>
+                        {k && <Text>Kingdom: {k.name || "Untitled"}</Text>}
+                        {m.commander && <Text>Commander: {m.commander}</Text>}
+                        <Token label={`${armyPoints(m)} of ${m.points}pts`} />
+                      </VStack>
                     </VStack>
                   </Card>
                 );

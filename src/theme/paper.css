@@ -295,3 +295,45 @@ body {
     border: 0.5pt solid #000;
   }
 }
+
+/* The collection lists every figure in the book, so the browser only lays out
+   the sections in view. The reserved height keeps the scrollbar honest. */
+.om-list-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1200px;
+}
+
+/* The book's own logo stands in for the app name. */
+.om-brand {
+  display: block;
+  padding: var(--spacing-2) var(--spacing-3) var(--spacing-1);
+}
+.om-brand img {
+  inline-size: 100%;
+  max-inline-size: 180px;
+  block-size: auto;
+  display: block;
+}
+
+/* The credit line: the game on the left, this builder on the right. */
+.om-footer {
+  border-block-start: var(--border-width) solid var(--color-border);
+  margin-block-start: var(--spacing-10);
+  padding: var(--spacing-4) var(--spacing-6);
+}
+
+/* A roll tumbles the dice once and lands with a bounce. */
+@keyframes om-roll {
+  0%   { transform: rotate(0deg) scale(1); }
+  55%  { transform: rotate(320deg) scale(1.25); }
+  75%  { transform: rotate(350deg) scale(0.92); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.om-roll {
+  display: inline-flex;
+  animation: om-roll 520ms var(--ease-standard) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .om-roll { animation: none; }
+}

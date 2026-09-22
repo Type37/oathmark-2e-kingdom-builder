@@ -9,8 +9,7 @@ import {
   beginnerAdvice, rollPointsModifier, applyModifier,
 } from "../rules/battle.mjs";
 import NameField from "./NameField.jsx";
-import { Icon } from "@iconify/react";
-import { DICE } from "../icons/game.mjs";
+import RollButton from "./RollButton.jsx";
 import { rulerPool } from "../names.mjs";
 import { GAP } from "../layout.mjs";
 
@@ -57,8 +56,7 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
                 <HStack justify="center" className="om-plate"><Text type="label">Battle Type</Text></HStack>
                 <HStack gap={GAP.item} align="center">
                   {rolled != null && <Token label={`Rolled ${rolled}`} color="pink" />}
-                  <Button label="Roll 1d10" variant="secondary" onClick={rollBattle}
-                          icon={<Icon icon={DICE} width={18} height={18} />} />
+                  <RollButton label="Roll 1d10" onClick={rollBattle} />
                 </HStack>
               </HStack>
               {advice && <HStack className="om-callout"><Text type="supporting">{advice}</Text></HStack>}
@@ -93,16 +91,13 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
               <HStack gap={GAP.group} align="end" wrap="wrap">
                 <NumberInput label="Total Points" size="lg" width={150} value={points} min={0} step={50}
                              isOptional onChange={(p) => setPoints(p || 0)} />
-                <Button label="Roll 1d10" variant="secondary" onClick={rollSize}
-                        icon={<Icon icon={DICE} width={18} height={18} />} />
+                <RollButton label="Roll 1d10" onClick={rollSize} />
                 {scale && <Token label={scale} />}
                 <Switch label="Uneven Battles, super optional" isSelected={uneven}
                         onChange={(on) => { setUneven(on); if (!on) setModifier(null); }} />
                 {uneven && (
                   <>
-                    <Button label="Roll Modifier" variant="secondary"
-                            onClick={() => setModifier(rollPointsModifier())}
-                            icon={<Icon icon={DICE} width={18} height={18} />} />
+                    <RollButton label="Roll Modifier" onClick={() => setModifier(rollPointsModifier())} />
                     {modifier != null && (
                       <Token color="red" label={`${modifier > 0 ? "+" : ""}${modifier}% attacker: ${attackerPoints}pts`} />
                     )}

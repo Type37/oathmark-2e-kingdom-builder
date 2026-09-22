@@ -384,42 +384,6 @@
     --_card-radius: var(--radius-none);
   }
 
-  .astryx-card[data-variant="blue"] {
-    border-top: var(--spacing-1) solid var(--color-border-blue);
-  }
-
-  .astryx-card[data-variant="green"] {
-    border-top: var(--spacing-1) solid var(--color-border-green);
-  }
-
-  .astryx-card[data-variant="orange"] {
-    border-top: var(--spacing-1) solid var(--color-border-orange);
-  }
-
-  .astryx-card[data-variant="yellow"] {
-    border-top: var(--spacing-1) solid var(--color-border-yellow);
-  }
-
-  .astryx-card[data-variant="red"] {
-    border-top: var(--spacing-1) solid var(--color-border-red);
-  }
-
-  .astryx-card[data-variant="purple"] {
-    border-top: var(--spacing-1) solid var(--color-border-purple);
-  }
-
-  .astryx-card[data-variant="gray"] {
-    border-top: var(--spacing-1) solid var(--color-border-gray);
-  }
-
-  .astryx-card[data-variant="teal"] {
-    border-top: var(--spacing-1) solid var(--color-border-teal);
-  }
-
-  .astryx-card[data-variant="pink"] {
-    border-top: var(--spacing-1) solid var(--color-border-pink);
-  }
-
   .astryx-button {
     font-family: var(--font-family-ui);
   }

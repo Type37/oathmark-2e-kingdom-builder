@@ -250,33 +250,6 @@ export const marchesTheme = {
     "card": {
       "base": {
         "borderRadius": "var(--radius-none)"
-      },
-      "variant:blue": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-blue)"
-      },
-      "variant:green": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-green)"
-      },
-      "variant:orange": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-orange)"
-      },
-      "variant:yellow": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-yellow)"
-      },
-      "variant:red": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-red)"
-      },
-      "variant:purple": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-purple)"
-      },
-      "variant:gray": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-gray)"
-      },
-      "variant:teal": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-teal)"
-      },
-      "variant:pink": {
-        "borderTop": "var(--spacing-1) solid var(--color-border-pink)"
       }
     },
     "button": {
