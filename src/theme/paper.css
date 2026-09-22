@@ -102,3 +102,11 @@ body {
 }
 .om-card { cursor: pointer; }
 .om-card:hover .om-card-art { background-color: var(--color-border); }
+
+.astryx-button[data-size="lg"] {
+  min-block-size: var(--spacing-12);
+  padding-inline: var(--spacing-8);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-lg);
+  letter-spacing: 0.02em;
+}

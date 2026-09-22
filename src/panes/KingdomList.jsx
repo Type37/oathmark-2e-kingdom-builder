@@ -22,11 +22,7 @@ export default function KingdomList({ store, onOpen, onNew }) {
       contentWidth={1040}
       header={
         <LayoutHeader>
-          <HStack gap={GAP.group} align="center" justify="between">
-            <Heading level={1}>Kingdoms</Heading>
-            <Button label="New" size="md" variant="primary"
-                    icon={<Ico name="plus" size={18} />} onClick={onNew} />
-          </HStack>
+          <Heading level={1}>Kingdoms</Heading>
         </LayoutHeader>
       }
       content={
@@ -51,6 +47,8 @@ export default function KingdomList({ store, onOpen, onNew }) {
                 </Card>
               );
             })}
+            <Button label="Create Kingdom" size="lg" variant="primary" width="100%"
+                    icon={<Ico name="plus" size={22} />} onClick={onNew} />
           </VStack>
         </LayoutContent>
       }

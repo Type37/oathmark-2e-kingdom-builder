@@ -41,14 +41,14 @@ export default function Shell({
         <HStack gap={GAP.item} align="center">
           {meta}
           {saved && <Text type="label">Saved</Text>}
-          <Button label="Save" size="sm" variant="primary"
-                  icon={<Ico name="floppy-disk" size={18} />} onClick={onSave} />
-          <Button label="New" size="sm" variant="secondary"
-                  icon={<Ico name="plus" size={18} />} onClick={onNew} />
-          <Button label="Import" size="sm" variant="secondary"
-                  icon={<Ico name="arrow-up" size={18} />} onClick={onImport} />
+          <Button label="Save" size="lg" variant="primary"
+                  icon={<Ico name="floppy-disk" size={22} />} onClick={onSave} />
+          <Button label="New" size="lg" variant="secondary"
+                  icon={<Ico name="plus" size={22} />} onClick={onNew} />
+          <Button label="Import" size="lg" variant="secondary"
+                  icon={<Ico name="arrow-up" size={22} />} onClick={onImport} />
           {noPanels && detail && (
-            <Button label={detailTitle ?? "Details"} size="sm" variant="secondary"
+            <Button label={detailTitle ?? "Details"} size="lg" variant="secondary"
                     onClick={() => setDetailOpen(true)} />
           )}
         </HStack>
