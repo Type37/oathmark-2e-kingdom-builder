@@ -1,57 +1,61 @@
 import React from "react";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FileInput,
-  HStack, Button, Slider, Text,
+  HStack, VStack, Button, Slider, Text,
 } from "@astryxdesign/core";
-import { AspectRatio } from "@astryxdesign/core/AspectRatio";
-import Cropper from "react-easy-crop";
+import AvatarEditor from "react-avatar-editor";
 
-// Draw the chosen crop onto a 512px square.
-async function cropToBlob(src, area) {
-  const img = await new Promise((resolve, reject) => {
-    const el = new Image();
-    el.crossOrigin = "anonymous";
-    el.onload = () => resolve(el);
-    el.onerror = reject;
-    el.src = src;
+const SIZE = 512;
+
+// Big photographs make the canvas crawl, so the source is scaled down first.
+function downscale(file, max = 1600) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      if (scale === 1) { resolve(url); return; }
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        URL.revokeObjectURL(url);
+        resolve(URL.createObjectURL(blob));
+      }, "image/png");
+    };
+    img.onerror = () => resolve(url);
+    img.src = url;
   });
-  const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 512;
-  const ctx = canvas.getContext("2d");
-  ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(img, area.x, area.y, area.width, area.height, 0, 0, 512, 512);
-  return new Promise((r) => canvas.toBlob(r, "image/png"));
 }
 
-// Pick an image, drag to move, scroll or pinch to zoom, hand back a 512px PNG.
+// Drag the picture, scroll or drag the slider to zoom, turn it if it needs it.
 export default function EmblemDialog({ isOpen, onOpenChange, onDone }) {
   const [file, setFile] = React.useState(null);
   const [src, setSrc] = React.useState(null);
-  const [crop, setCrop] = React.useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = React.useState(1);
-  const [rotation, setRotation] = React.useState(0);
-  const [area, setArea] = React.useState(null);
+  const [scale, setScale] = React.useState(1.2);
+  const [rotate, setRotate] = React.useState(0);
   const [busy, setBusy] = React.useState(false);
+  const editor = React.useRef(null);
 
   React.useEffect(() => {
     if (!isOpen) { setFile(null); setBusy(false); }
   }, [isOpen]);
 
   React.useEffect(() => {
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
-    setRotation(0);
-    if (!file) { setSrc(null); return; }
-    const url = URL.createObjectURL(file);
-    setSrc(url);
-    return () => URL.revokeObjectURL(url);
+    let dead = false;
+    setScale(1.2);
+    setRotate(0);
+    if (!file) { setSrc(null); return undefined; }
+    downscale(file).then((url) => { if (!dead) setSrc(url); });
+    return () => { dead = true; };
   }, [file]);
 
   async function done() {
-    if (!src || !area) return;
+    if (!editor.current) return;
     setBusy(true);
-    const blob = await cropToBlob(src, area);
+    const canvas = editor.current.getImageScaledToCanvas();
+    const blob = await new Promise((r) => canvas.toBlob(r, "image/png"));
     setBusy(false);
     if (blob) onDone(blob);
   }
@@ -63,35 +67,28 @@ export default function EmblemDialog({ isOpen, onOpenChange, onDone }) {
         content={
           <LayoutContent>
             {src ? (
-              <>
-                <AspectRatio ratio={4 / 3}>
-                  <div className="om-crop-stage">
-                    <Cropper
-                      image={src}
-                      crop={crop}
-                      zoom={zoom}
-                      rotation={rotation}
-                      aspect={1}
-                      minZoom={0.5}
-                      maxZoom={8}
-                      restrictPosition={false}
-                      zoomSpeed={0.25}
-                      showGrid={false}
-                      onCropChange={setCrop}
-                      onZoomChange={setZoom}
-                      onRotationChange={setRotation}
-                      onCropComplete={(_, pixels) => setArea(pixels)}
-                    />
-                  </div>
-                </AspectRatio>
-                <HStack gap={4} align="center">
+              <VStack gap={4} align="center">
+                <div className="om-crop-stage">
+                  <AvatarEditor
+                    ref={editor}
+                    image={src}
+                    width={SIZE / 2}
+                    height={SIZE / 2}
+                    border={24}
+                    borderRadius={0}
+                    color={[92, 89, 83, 0.55]}
+                    scale={scale}
+                    rotate={rotate}
+                  />
+                </div>
+                <HStack gap={4} align="center" width="100%">
                   <Text type="label">Zoom</Text>
-                  <Slider label="Zoom" isLabelHidden value={zoom} min={0.5} max={8} step={0.05}
-                          onChange={setZoom} />
+                  <Slider label="Zoom" isLabelHidden value={scale} min={1} max={5} step={0.02}
+                          onChange={setScale} />
                   <Button label="Rotate" size="sm" variant="secondary"
-                          onClick={() => setRotation((r) => (r + 90) % 360)} />
+                          onClick={() => setRotate((r) => (r + 90) % 360)} />
                 </HStack>
-              </>
+              </VStack>
             ) : (
               <FileInput label="Emblem" isLabelHidden accept="image/*" mode="dropzone"
                          value={file} onChange={(f) => setFile(Array.isArray(f) ? f[0] ?? null : f)} />

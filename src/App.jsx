@@ -8,6 +8,7 @@ import { marchesTheme } from "./theme/marches.js";
 import Landing from "./panes/Landing.jsx";
 import Emblem from "./components/Emblem.jsx";
 import Footer from "./components/Footer.jsx";
+import OptionsDialog from "./components/OptionsDialog.jsx";
 
 import { validateKingdom } from "./rules/kingdom.mjs";
 import {
@@ -26,7 +27,6 @@ const MusterList = React.lazy(() => import("./panes/MusterList.jsx"));
 const MusterPane = React.lazy(() => import("./panes/MusterPane.jsx"));
 const CollectionPane = React.lazy(() => import("./panes/CollectionPane.jsx"));
 const ReferencePane = React.lazy(() => import("./panes/ReferencePane.jsx"));
-const OptionsPane = React.lazy(() => import("./panes/OptionsPane.jsx"));
 const FoundKingdom = React.lazy(() => import("./components/FoundKingdom.jsx"));
 const MusterNew = React.lazy(() => import("./components/MusterNew.jsx"));
 
@@ -61,6 +61,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [founding, setFounding] = React.useState(false);
   const [mustering, setMustering] = React.useState(false);
+  const [options, setOptions] = React.useState(false);
   const [deleting, setDeleting] = React.useState(null);
   const fileRef = React.useRef(null);
 
@@ -108,7 +109,7 @@ export default function App() {
     { label: "Export All", onClick: exportAll },
   ];
   const appActions = [
-    { label: "Options", onClick: () => go("options") },
+    { label: "Options", onClick: () => setOptions(true) },
     { type: "divider" },
     ...fileActions,
   ];
@@ -143,7 +144,7 @@ export default function App() {
     onBack: () => go(PARENT[section] ?? "home"),
     onMenu: () => setMenuOpen(true),
     appActions,
-    onOptions: () => go("options"),
+    onOptions: () => setOptions(true),
   };
 
   // The rail: three builders, then the saved records, with the rules reference last.
@@ -258,11 +259,10 @@ export default function App() {
           />
         )}
         {page === "reference" && <ReferencePane shell={shell} />}
-        {page === "options" && (
-          <OptionsPane value={store.settings ?? {}} shell={shell}
-                       onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
-        )}
+
         </React.Suspense>
+        <OptionsDialog isOpen={options} onOpenChange={setOptions} value={store.settings ?? {}}
+                       onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
         <Footer />
       </AppShell>
     </Theme>

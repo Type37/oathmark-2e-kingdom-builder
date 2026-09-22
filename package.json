@@ -22,6 +22,7 @@
     "@stylexjs/stylex": "^0.19.1",
     "idb-keyval": "^6.3.0",
     "react": "^19.3.0",
+    "react-avatar-editor": "^15.1.0",
     "react-dom": "^19.3.0",
     "react-easy-crop": "^6.2.3",
     "zod": "^4.6.5"

@@ -5,7 +5,6 @@ import {
 } from "@astryxdesign/core";
 import Emblem from "./Emblem.jsx";
 import NameField from "./NameField.jsx";
-import { LevelIcon } from "./Level.jsx";
 import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
 import { knaveRealm } from "../knave-names.mjs";
 import EmblemDialog from "./EmblemDialog.jsx";
@@ -56,11 +55,12 @@ export default function FoundKingdom({ isOpen, onOpenChange, onFound }) {
                 <NameField label="Current Ruler" value={ruler} onChange={setRuler} pool={rulerPool(culture)} />
                 <RadioList label="Oathmark Experience" value={level} onChange={setLevel}>
                   {SIZES.map((s) => (
-                    <RadioListItem key={s.value} value={s.value} label={s.label} description={s.regions}
-                                   endContent={<Tooltip content={s.help}><LevelIcon level={s.value} /></Tooltip>} />
+                    <Tooltip key={s.value} content={s.help}>
+                      <RadioListItem value={s.value} label={s.label} description={s.regions} />
+                    </Tooltip>
                   ))}
                 </RadioList>
-                <Field label="Emblem" isOptional>
+                <Field label="Emblem">
                   <HStack gap={3} align="center">
                     <Emblem blob={emblem} name={name} size={96} />
                     <Button label={emblem ? "Change" : "Add Emblem"} variant="secondary"

@@ -86,11 +86,11 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
                           options={kingdoms.map((k) => ({ value: k.id, label: k.name || "Untitled" }))} />
                 <NameField label="Army Name" width={240} value={name} onChange={setName} />
                 <NameField label="Army Commander" width={230} value={commander} onChange={setCommander}
-                           pool={rulerPool(kingdom?.culture)} isOptional />
+                           pool={rulerPool(kingdom?.culture)} />
               </HStack>
               <HStack gap={GAP.group} align="end" wrap="wrap">
                 <NumberInput label="Total Points" size="lg" width={150} value={points} min={0} step={50}
-                             isOptional onChange={(p) => setPoints(p || 0)} />
+                             onChange={(p) => setPoints(p || 0)} />
                 <RollButton label="Roll 1d10" onClick={rollSize} />
                 {scale && <Token label={scale} />}
                 <Switch label="Uneven Battles, super optional" isSelected={uneven}

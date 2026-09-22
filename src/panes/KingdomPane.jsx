@@ -186,7 +186,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       }
       inlineDetail={<VStack gap={GAP.group}>{map}{access}</VStack>}
       subtitle={value.ruler ? <Text>{value.ruler}</Text> : null}
-      meta={<HStack gap={GAP.item} align="center"><Capital kingdom={value} /><Level level={level ?? "moderate"} /></HStack>}
+      meta={<Capital kingdom={value} />}
       detail={detail}
       detailTitle="Kingdom Sheet"
       content={(

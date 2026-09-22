@@ -12,7 +12,6 @@ import { list as listOf } from "../rules/store.mjs";
 import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
 import Emblem from "../components/Emblem.jsx";
-import { LevelIcon } from "../components/Level.jsx";
 import Capital from "../components/Capital.jsx";
 
 function slots(level) {
@@ -62,10 +61,7 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, file
                       </HStack>
                       <VStack gap={GAP.tight} onClick={() => onOpen(k.id)}>
                       {k.ruler && <Text>Ruler: {k.ruler}</Text>}
-                      <HStack gap={GAP.item} align="center" wrap="wrap">
-                        <Capital kingdom={k} />
-                        <LevelIcon level={k.level} />
-                      </HStack>
+                      <Capital kingdom={k} />
                       {!ok && <Text color="error">{total - placed === 1 ? "1 territory to place" : `${total - placed} territories to place`}</Text>}
                       </VStack>
                     </VStack>
