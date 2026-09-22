@@ -235,7 +235,6 @@
     --radius-full: 9999px;
     --font-family-body: Cabin, 'Gill Sans', 'Gill Sans MT', 'Helvetica Neue', Helvetica, sans-serif;
     --font-family-heading: "Almendra SC", 'EB Garamond', Palatino, Georgia, serif;
-    --font-family-code: "Geist Mono", 'SF Mono', ui-monospace, monospace;
     --color-highlight: light-dark(#FB6376, #FB6376);
     --font-family-prose: 'EB Garamond', 'Iowan Old Style', Palatino, Georgia, serif;
   }

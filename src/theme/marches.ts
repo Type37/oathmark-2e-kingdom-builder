@@ -22,7 +22,6 @@ export default defineTheme({
       weight: "bold",
       weights: { 1: "bold", 2: "bold", 3: "bold" },
     },
-    code: { family: "Geist Mono", fallbacks: "'SF Mono', ui-monospace, monospace" },
   },
 
   // Letterpress-flat: the book has no rounded cards and no glow.

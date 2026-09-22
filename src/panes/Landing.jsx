@@ -21,7 +21,7 @@ export default function Landing({ onOpen }) {
       content={
         <LayoutContent>
           <VStack gap={8}>
-            <Heading level={1}>Oathmark</Heading>
+            <Heading level={1} type="display-1">Oathmark</Heading>
             <Grid columns={{ minWidth: 260, max: 3, repeat: "fit" }} gap={6}>
               {CARDS.map((c) => (
                 <Card key={c.id} padding={0} elevation="low">

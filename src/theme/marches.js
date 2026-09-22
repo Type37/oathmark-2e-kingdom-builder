@@ -107,7 +107,6 @@ export const marchesTheme = {
     "--radius-full": "9999px",
     "--font-family-body": "Cabin, 'Gill Sans', 'Gill Sans MT', 'Helvetica Neue', Helvetica, sans-serif",
     "--font-family-heading": "\"Almendra SC\", 'EB Garamond', Palatino, Georgia, serif",
-    "--font-family-code": "\"Geist Mono\", 'SF Mono', ui-monospace, monospace",
     "--color-highlight": "light-dark(#FB6376, #FB6376)"
   },
   localTokens: {
@@ -259,10 +258,6 @@ export const marchesTheme = {
           "2": "bold",
           "3": "bold"
         }
-      },
-      "code": {
-        "family": "Geist Mono",
-        "fallbacks": "'SF Mono', ui-monospace, monospace"
       }
     },
     "color": {
