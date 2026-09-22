@@ -11,6 +11,7 @@ import KingdomPane from "./panes/KingdomPane.jsx";
 import MusterList from "./panes/MusterList.jsx";
 import MusterPane from "./panes/MusterPane.jsx";
 import CollectionPane from "./panes/CollectionPane.jsx";
+import OptionsPane from "./panes/OptionsPane.jsx";
 import ReferencePane from "./panes/ReferencePane.jsx";
 import FoundKingdom from "./components/FoundKingdom.jsx";
 import MusterNew from "./components/MusterNew.jsx";
@@ -158,6 +159,7 @@ export default function App() {
       })}
       <SideNavSection title="Rules">
         <SideNavItem label="Reference" isSelected={section === "reference"} onClick={() => go("reference")} />
+        <SideNavItem label="Options" isSelected={section === "options"} onClick={() => go("options")} />
       </SideNavSection>
     </>
   );
@@ -221,7 +223,7 @@ export default function App() {
                        onOpen={(id) => open("kingdoms", id)} onNew={() => setFounding(true)} />
         )}
         {page === "kingdom" && (
-          <KingdomPane value={kingdom} onChange={update("kingdoms")}
+          <KingdomPane value={kingdom} onChange={update("kingdoms")} settings={store.settings ?? {}}
                        onEmblem={(blob) => setEmblem(kingdom, blob)}
                        shell={{ ...shell, actions: recordActions("kingdoms", kingdom) }} />
         )}
@@ -249,6 +251,10 @@ export default function App() {
           />
         )}
         {page === "reference" && <ReferencePane shell={shell} />}
+        {page === "options" && (
+          <OptionsPane value={store.settings ?? {}} shell={shell}
+                       onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
+        )}
       </AppShell>
     </Theme>
   );

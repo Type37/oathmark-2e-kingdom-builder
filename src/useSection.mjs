@@ -7,6 +7,7 @@ export const PARENT = {
   muster: "musters",
   collection: "home",
   reference: "home",
+  options: "home",
 };
 
 const HOME = "home";

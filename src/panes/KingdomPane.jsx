@@ -21,11 +21,13 @@ import {
 } from "../rules/kingdom.mjs";
 import { hueOf } from "../race.mjs";
 import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
+import KingdomLore from "../components/KingdomLore.jsx";
+import { hasLore } from "../lore.mjs";
 
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
 
 // Every region is visible at once. No stepper, so nothing advances underfoot.
-export default function KingdomPane({ value, onChange, onEmblem, shell }) {
+export default function KingdomPane({ value, onChange, onEmblem, settings, shell }) {
   const { level, capitalList, territories: picks } = value;
   const [picking, setPicking] = React.useState(null);
   const [openFigure, setOpenFigure] = React.useState(null);
@@ -124,6 +126,7 @@ export default function KingdomPane({ value, onChange, onEmblem, shell }) {
         {value.emblem && <Button label="Remove" size="sm" variant="ghost" onClick={() => onEmblem(null)} />}
       </HStack>
       {map}
+      {settings?.lore && hasLore && <KingdomLore value={value} onChange={onChange} />}
       {access}
     </VStack>
   );
