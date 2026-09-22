@@ -44,6 +44,9 @@ export const MusterSchema = z.object({
         count: z.number().int().min(1).optional().default(1),
         level: z.number().int().min(1).max(5).optional(),
         upgrades: z.array(z.object({ name: z.string() }).passthrough()).optional(),
+        spells: z.array(z.string()).optional(),
+        magicItem: z.object({ name: z.string() }).passthrough().nullable().optional(),
+        joinedTo: z.string().nullable().optional(),
       }),
     )
     .optional()

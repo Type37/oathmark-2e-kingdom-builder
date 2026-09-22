@@ -30,7 +30,7 @@ export default function KingdomPrint({ value }) {
       </header>
 
       <div className="om-print-map">
-        <RegionMap regions={regions} picks={picks} />
+        <RegionMap regions={[1, 2, 3, 4, 5, 6]} playable={regions} picks={picks} />
       </div>
 
       {regions.map((r) => {

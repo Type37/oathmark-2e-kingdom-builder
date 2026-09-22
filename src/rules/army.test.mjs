@@ -1,0 +1,49 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { formation, sizeRule, canJoin, crewOf, unitProfile, isMonster } from "./army.mjs";
+import { figureById } from "./kingdom.mjs";
+import { validateArmy } from "./muster.mjs";
+
+const soldiers = figureById.get("human-soldiers");
+const general = figureById.get("human-general");
+const dwarfChampion = figureById.get("dwarf-champion");
+const catapult = figureById.get("human-light-catapult");
+
+test("unit sizes follow the base, p44", () => {
+  assert.deepEqual(sizeRule(soldiers), { max: 20, rank: 5 });
+  assert.equal(formation(soldiers, 13), "2 ranks of 5 + 3");
+  assert.equal(formation(soldiers, 20), "4 ranks of 5");
+});
+
+test("a character counts towards the unit maximum, p81", () => {
+  const units = [
+    { uid: "h", figureId: "human-soldiers", count: 19 },
+    { uid: "c", figureId: "human-general", count: 1, joinedTo: "h" },
+  ];
+  const p = unitProfile(units[0], units);
+  assert.equal(p.bodies, 20);
+  assert.equal(p.charFig.name, general.name);
+});
+
+test("a champion only joins its own race, p83", () => {
+  assert.equal(canJoin(soldiers, dwarfChampion).ok, false);
+  assert.equal(canJoin(soldiers, general).ok, true);
+});
+
+test("artillery takes no character and has fixed crew, p84", () => {
+  assert.equal(canJoin(catapult, general).ok, false);
+  assert.ok(crewOf(catapult) > 0);
+});
+
+test("an over-full unit is reported", () => {
+  const kingdom = {
+    level: "moderate", capitalList: "human",
+    territories: [{ region: 1, list: "human", name: "Human City" }],
+  };
+  const units = [
+    { uid: "h", figureId: "human-soldiers", count: 20 },
+    { uid: "c", figureId: "human-general", count: 1, joinedTo: "h" },
+  ];
+  const r = validateArmy(kingdom, { points: 5000, units });
+  assert.ok(r.errors.some((e) => /21 figures, max 20/.test(e)), r.errors.join("; "));
+});

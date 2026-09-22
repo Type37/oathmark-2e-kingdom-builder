@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FormLayout,
-  Selector, NumberInput, HStack, VStack, Button, Text, Heading, Switch, Token, Card,
+  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter,
+  Selector, NumberInput, HStack, VStack, Button, Text, Switch, Token, SelectableCard, Tooltip,
 } from "@astryxdesign/core";
 import { rollPoints, battleScale } from "../rules/muster.mjs";
 import {
@@ -24,11 +24,12 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
   const [points, setPoints] = React.useState(1000);
   const [uneven, setUneven] = React.useState(false);
   const [modifier, setModifier] = React.useState(null);
+  const [rolled, setRolled] = React.useState(null);
 
   React.useEffect(() => {
     if (!isOpen) return;
     setName(""); setCommander(""); setPoints(1000);
-    setBattle(null); setUneven(false); setModifier(null);
+    setBattle(null); setUneven(false); setModifier(null); setRolled(null);
     setKingdomId(defaultKingdomId ?? kingdoms[0]?.id ?? "");
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -38,7 +39,11 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
   const scale = battleScale(points);
   const attackerPoints = uneven && modifier != null ? applyModifier(points, modifier) : null;
 
-  const rollBattle = () => setBattle(rollBattleType().id);
+  const rollBattle = () => {
+    const d10 = 1 + Math.floor(Math.random() * 10);
+    setRolled(d10);
+    setBattle(rollBattleType(d10).id);
+  };
   const rollSize = () => setPoints(rollPoints(1 + Math.floor(Math.random() * 10), kingdom?.level));
 
   return (
@@ -50,57 +55,60 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
             <VStack gap={GAP.group}>
               <HStack gap={GAP.item} align="center" justify="between" wrap="wrap">
                 <HStack justify="center" className="om-plate"><Text type="label">Battle Type</Text></HStack>
-                <Button label="Roll 1d10 for Battle Type" variant="secondary" onClick={rollBattle}
-                        icon={<Icon icon={DICE} width={18} height={18} />} />
+                <HStack gap={GAP.item} align="center">
+                  {rolled != null && <Token label={`Rolled ${rolled}`} color="pink" />}
+                  <Button label="Roll 1d10" variant="secondary" onClick={rollBattle}
+                          icon={<Icon icon={DICE} width={18} height={18} />} />
+                </HStack>
               </HStack>
-              {advice && <HStack className="om-callout"><Text>{advice}</Text></HStack>}
+              {advice && <HStack className="om-callout"><Text type="supporting">{advice}</Text></HStack>}
               <div className="om-battle-grid">
                 {BATTLE_TYPES.map((b) => (
-                  <Card key={b.id} variant={b.id === battle ? "pink" : undefined}
-                        className="om-card" onClick={() => setBattle(b.id)}>
-                    <VStack gap={GAP.item}>
-                      <HStack gap={GAP.item} align="baseline" justify="between" wrap="wrap">
-                        <Heading level={3}>{b.name}</Heading>
-                        <HStack gap={1} align="center">
-                          <Token label={rollLabel(b)} size="sm" />
-                          {b.attacker && <Token label="Attacker" size="sm" color="red" />}
-                        </HStack>
+                  <SelectableCard key={b.id} label={b.name} padding={3}
+                                  isSelected={b.id === battle} onChange={() => setBattle(b.id)}>
+                    <VStack gap={GAP.tight}>
+                      <HStack gap={GAP.tight} align="baseline" wrap="wrap">
+                        <Text weight="semibold">{b.name}</Text>
+                        <Token label={rollLabel(b)} size="sm" />
+                        {b.attacker && (
+                          <Tooltip content="Both players roll a die; the higher roll takes the attacker's role (p29).">
+                            <Token label="One side attacks" size="sm" color="red" />
+                          </Tooltip>
+                        )}
+                        <Text type="supporting" color="secondary">p{b.page}</Text>
                       </HStack>
-                      <Text>{b.text}</Text>
-                      <Text type="label" color="secondary">p{b.page}</Text>
+                      <Text type="supporting">{b.text}</Text>
                     </VStack>
-                  </Card>
+                  </SelectableCard>
                 ))}
               </div>
 
-              <FormLayout>
-                <Selector label="Kingdom" value={kingdomId} onChange={setKingdomId}
+              <HStack gap={GAP.group} align="end" wrap="wrap">
+                <Selector label="Kingdom" width={200} value={kingdomId} onChange={setKingdomId}
                           options={kingdoms.map((k) => ({ value: k.id, label: k.name || "Untitled" }))} />
-                <NameField label="Army Name" value={name} onChange={setName} />
-                <NameField label="Army Commander" value={commander} onChange={setCommander}
+                <NameField label="Army Name" width={240} value={name} onChange={setName} />
+                <NameField label="Army Commander" width={230} value={commander} onChange={setCommander}
                            pool={rulerPool(kingdom?.culture)} isOptional />
-                <HStack gap={2} align="end" wrap="wrap">
-                  <NumberInput label="Total Points" value={points} min={0} step={50} isOptional
-                               onChange={(p) => setPoints(p || 0)} />
-                  <Button label="Roll Total Points" variant="secondary" isIconOnly onClick={rollSize}
-                          icon={<Icon icon={DICE} width={18} height={18} />} />
-                  {scale && <Text type="label">{scale}</Text>}
-                </HStack>
-                <VStack gap={GAP.tight} align="start">
-                  <Switch label="Uneven Battles, super optional" isSelected={uneven}
-                          onChange={(on) => { setUneven(on); if (!on) setModifier(null); }} />
-                  {uneven && (
-                    <HStack gap={2} align="center" wrap="wrap">
-                      <Button label="Roll Points Modifier" size="sm" variant="secondary"
-                              onClick={() => setModifier(rollPointsModifier())}
-                              icon={<Icon icon={DICE} width={18} height={18} />} />
-                      {modifier != null && (
-                        <Text>{modifier > 0 ? `+${modifier}` : modifier}% to the attacker: {attackerPoints}pts</Text>
-                      )}
-                    </HStack>
-                  )}
-                </VStack>
-              </FormLayout>
+              </HStack>
+              <HStack gap={GAP.group} align="end" wrap="wrap">
+                <NumberInput label="Total Points" size="lg" width={150} value={points} min={0} step={50}
+                             isOptional onChange={(p) => setPoints(p || 0)} />
+                <Button label="Roll 1d10" variant="secondary" onClick={rollSize}
+                        icon={<Icon icon={DICE} width={18} height={18} />} />
+                {scale && <Token label={scale} />}
+                <Switch label="Uneven Battles, super optional" isSelected={uneven}
+                        onChange={(on) => { setUneven(on); if (!on) setModifier(null); }} />
+                {uneven && (
+                  <>
+                    <Button label="Roll Modifier" variant="secondary"
+                            onClick={() => setModifier(rollPointsModifier())}
+                            icon={<Icon icon={DICE} width={18} height={18} />} />
+                    {modifier != null && (
+                      <Token color="red" label={`${modifier > 0 ? "+" : ""}${modifier}% attacker: ${attackerPoints}pts`} />
+                    )}
+                  </>
+                )}
+              </HStack>
             </VStack>
           </LayoutContent>
         }

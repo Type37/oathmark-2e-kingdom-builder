@@ -104,7 +104,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, shell
   });
 
   const map = (
-    <RegionMap regions={regions} picks={picks} activeRegion={picking} litRegion={lit}
+    <RegionMap regions={[1, 2, 3, 4, 5, 6]} playable={regions} picks={picks} activeRegion={picking} litRegion={lit}
                onRegionHover={setLit}
                onSlotClick={(r, _i, pick) => { if (!pick && (r === 1 || capitalList)) setPicking(r); }} />
   );

@@ -1,41 +1,25 @@
 import React from "react";
 import {
-  VStack, HStack, Text, Section, TabList, Tab, NumberInput,
-  ProgressBar, Button,
+  VStack, HStack, Text, Section, NumberInput, ProgressBar, Button, Token, MetadataList, MetadataListItem,
 } from "@astryxdesign/core";
-import FigureTable from "../components/FigureTable.jsx";
 import FigureCard from "../components/FigureCard.jsx";
-import Upgrades from "../components/Upgrades.jsx";
-import { Derived, Attributes } from "../components/StatLine.jsx";
+import UnitCard from "../components/UnitCard.jsx";
+import AddUnits from "../components/AddUnits.jsx";
 import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
 import { figurePool, figureById } from "../rules/kingdom.mjs";
-import { validateArmy, unitCost } from "../rules/muster.mjs";
-import { unitStats, armyStats, STAT_KEYS } from "../rules/stats.mjs";
-import { shortfalls, owned } from "../rules/collection.mjs";
-import { upgradeCost, applyUpgrades } from "../rules/upgrades.mjs";
+import { validateArmy } from "../rules/muster.mjs";
+import { armyStats } from "../rules/stats.mjs";
+import { shortfalls } from "../rules/collection.mjs";
+import { sizeRule, crewOf, isArtillery, unitProfile } from "../rules/army.mjs";
+import { battleTypeById } from "../rules/battle.mjs";
 import { GAP } from "../layout.mjs";
 
-const ROLE_ORDER = ["character", "infantry", "cavalry", "monster", "artillery"];
-const ROLE_LABEL = {
-  character: "Characters", infantry: "Infantry", cavalry: "Cavalry",
-  monster: "Monsters", artillery: "Artillery",
-};
-
-function roleOf(fig) {
-  const v = fig.variants[0];
-  if (v.attributes.includes("Artillery") || /catapult|ballista/i.test(fig.name)) return "artillery";
-  if (v.attributes.some((a) => /^(Command|Champion|Spellcaster)/.test(a)) || v.attributes.includes("Magic Items"))
-    return "character";
-  if (v.attributes.includes("Monster")) return "monster";
-  if (v.base === "25 x 50") return "cavalry";
-  if (v.base === "50 x 50" || v.base === "50 x 100") return "monster";
-  return "infantry";
-}
-
+// The Army Roster (p218): the units you have bought, what they cost, and what
+// the muster rules (p35) say about them.
 export default function MusterPane({ kingdom, collection = {}, value, onChange, ready, shell }) {
-  const [role, setRole] = React.useState("infantry");
   const [openFigure, setOpenFigure] = React.useState(null);
+  const [adding, setAdding] = React.useState(false);
   const points = value.points ?? 1000;
   const units = value.units ?? [];
 
@@ -44,157 +28,109 @@ export default function MusterPane({ kingdom, collection = {}, value, onChange, 
   const agg = armyStats(units);
   const short = shortfalls(collection, units);
   const over = result.points > points;
+  const battle = value.battleType ? battleTypeById.get(value.battleType) : null;
 
-  const grouped = React.useMemo(() => {
-    const g = {};
-    for (const entry of pool.values()) {
-      const fig = figureById.get(entry.figureId);
-      if (!fig) continue;
-      (g[roleOf(fig)] ??= []).push({ entry, fig });
-    }
-    for (const l of Object.values(g)) l.sort((a, b) => a.fig.variants[0].pts - b.fig.variants[0].pts);
-    return g;
-  }, [pool]);
-
-  const roles = ROLE_ORDER.filter((r) => grouped[r]?.length);
-  const activeRole = roles.includes(role) ? role : roles[0];
   const setUnits = (next) => onChange({ ...value, units: next });
+  const patchUnit = (uid, next) => setUnits(units.map((u) => (u.uid === uid ? next : u)));
+
+  // Figures on the table, characters included (p81).
+  const figureCount = units.reduce((s, u) => s + (u.joinedTo ? 0 : unitProfile(u, units)?.bodies ?? 0), 0);
+
+  const add = (r) => {
+    const crew = crewOf(r.fig);
+    const max = Math.min(sizeRule(r.fig).max, r.entry.maxFigures ?? sizeRule(r.fig).max);
+    setUnits([...units, {
+      uid: crypto.randomUUID(),
+      figureId: r.fig.id,
+      count: isArtillery(r.fig) ? (crew ?? 1) : max,
+      level: r.entry.levels ? r.entry.levels[0] : undefined,
+    }]);
+  };
 
   if (!ready) {
-    return (
-      <Shell
-        {...shell}
-        title={value.name || "Untitled"}
-        content={
-          <Section paddingBlock={GAP.section}>
-          </Section>
-        }
-      />
-    );
+    return <Shell {...shell} title={value.name || "Untitled"} content={<Section paddingBlock={GAP.section} />} />;
   }
-
-  const rows = (grouped[activeRole] ?? []).map(({ entry, fig }) => {
-    const v = fig.variants[0];
-    const taken = units.filter((u) => u.figureId === fig.id).length;
-    const unitCap = entry.maxUnits ?? Math.min(4, entry.maxFigures ?? 4);
-    return {
-      figureId: fig.id,
-      name: fig.name,
-      ...Object.fromEntries(STAT_KEYS.map((k) => [k, v[k]])),
-      taken,
-      atCap: taken >= unitCap,
-      cap: [
-        entry.levels ? `Levels ${entry.levels[0]}–${entry.levels.at(-1)}` : null,
-        entry.maxUnits ? `${unitCap} units` : `max ${entry.maxFigures}`,
-        owned(collection, fig.id) ? `own ${owned(collection, fig.id)}` : null,
-      ].filter(Boolean).join(", "),
-      entry, fig,
-    };
-  });
 
   return (
     <Shell
       {...shell}
       title={value.name || "Untitled"}
       meta={(
-      <HStack gap={GAP.item} align="center">
-        <NumberInput label="Points" value={points} min={0} step={50} size="sm"
-                     onChange={(p) => onChange({ ...value, points: p || 0 })} />
-        <Text type="large" color={over ? "error" : undefined}>
-          {result.points}/{points}
-        </Text>
-      </HStack>
-    )}
+        <HStack gap={GAP.item} align="center" wrap="wrap">
+          {battle && <Token label={battle.name} color="pink" />}
+          <NumberInput label="Points" size="lg" width={130} value={points} min={0} step={50}
+                       onChange={(p) => onChange({ ...value, points: p || 0 })} />
+          <Text type="large" color={over ? "error" : undefined}>{result.points}/{points}</Text>
+        </HStack>
+      )}
       detailTitle="Army Roster"
       detail={(
-      <VStack gap={GAP.group}>
-        <HStack justify="center" className="om-plate"><Text type="label">Army Roster</Text></HStack>
-        <ProgressBar label="Points Value" isLabelHidden
-                     value={Math.min(result.points, points)} max={points || 1}
-                     variant={over ? "error" : "accent"} />
-        {units.map((u, i) => {
-          const fig = figureById.get(u.figureId);
-          const st = unitStats(u);
-          return (
-            <VStack key={u.uid} gap={GAP.item}>
-              <HStack gap={GAP.item} align="center" justify="between" wrap="wrap">
-                <Text type="large">{fig.name}</Text>
-                <HStack gap={1} align="center">
-                  {fig.unitMax > 1 && (
-                    <NumberInput label={`${fig.name} figures`} isLabelHidden size="sm"
-                                 value={u.count} min={0} max={fig.unitMax}
-                                 onChange={(n) =>
-                                   setUnits(!n || n < 1
-                                     ? units.filter((x) => x.uid !== u.uid)
-                                     : units.map((x) => (x.uid === u.uid ? { ...x, count: n } : x)))} />
-                  )}
-                  <Button label="Remove" size="sm" variant="ghost" isIconOnly
-                          icon={<Ico name="minus" />}
-                          onClick={() => setUnits(units.filter((x) => x.uid !== u.uid))} />
-                </HStack>
-              </HStack>
-              <Text type="label">{unitCost(u)}pts</Text>
-              <Derived s={st} />
-              <Attributes variant={applyUpgrades(st.variant, u.upgrades ?? [])} />
-              <Upgrades kingdom={kingdom} figureId={u.figureId} level={u.level}
-                        chosen={u.upgrades ?? []}
-                        onChange={(ups) =>
-                          setUnits(units.map((x) => x.uid === u.uid
-                            ? { ...x, upgrades: ups.map((g) => ({
-                                name: g.name, pts: upgradeCost(g, u.level),
-                                changes: g.changes, base: g.base, adds: g.adds })) }
-                            : x))} />
-            </VStack>
-          );
-        })}
-        {(result.errors.length > 0 || short.length > 0) && (
-          <VStack gap={GAP.tight} className="om-callout">
-            {result.errors.map((e) => <Text key={e}>{e}</Text>)}
-            {short.map((x) => <Text key={x.figureId}>{`${x.name}: own ${x.have} of ${x.need}`}</Text>)}
-          </VStack>
-        )}
-        {units.length > 0 && (
-          <VStack gap={GAP.tight}>
-            <HStack gap={GAP.group} justify="between">
-              <Text type="label">Activation</Text>
-              <Text type="large">
-                {Object.entries(agg.activation).map(([n, c]) => `${c} on ${n}`).join(", ")}
-              </Text>
-            </HStack>
+        <VStack gap={GAP.group}>
+          <HStack justify="center" className="om-plate"><Text type="label">Army Roster</Text></HStack>
+          <ProgressBar label="Points Value" isLabelHidden
+                       value={Math.min(result.points, points)} max={points || 1}
+                       variant={over ? "error" : "accent"} />
+          <MetadataList>
+            <MetadataListItem label="Points">{result.points} of {points}</MetadataListItem>
+            <MetadataListItem label="Units">{units.length}</MetadataListItem>
+            <MetadataListItem label="Figures">{figureCount}</MetadataListItem>
+            <MetadataListItem label="Health">{agg.health}</MetadataListItem>
             {agg.command > 0 && (
-              <HStack gap={GAP.group} justify="between">
-                <Text type="label">Command</Text>
-                <Text type="large">{agg.command}, giving {agg.extraActivations} extra</Text>
-              </HStack>
+              <MetadataListItem label="Command">{agg.command}, {agg.extraActivations} extra activations</MetadataListItem>
             )}
-            <HStack gap={GAP.group} justify="between">
-              <Text type="label">Health</Text>
-              <Text type="large">{agg.health}</Text>
-            </HStack>
-          </VStack>
-        )}
-      </VStack>
+            {agg.champions > 0 && <MetadataListItem label="Champions">{agg.champions}</MetadataListItem>}
+            {agg.shootingDice > 0 && <MetadataListItem label="Shooting dice">{agg.shootingDice}</MetadataListItem>}
+            {agg.ranges.length > 0 && (
+              <MetadataListItem label="Ranges">{agg.ranges.map((r) => `${r}"`).join(", ")}</MetadataListItem>
+            )}
+            {Object.keys(agg.activation).length > 0 && (
+              <MetadataListItem label="Activation">
+                {Object.entries(agg.activation).map(([n, c]) => `${c} on ${n}+`).join(", ")}
+              </MetadataListItem>
+            )}
+            {agg.casters.length > 0 && (
+              <MetadataListItem label="Spells">{agg.spellsKnown} known across {agg.casters.length}</MetadataListItem>
+            )}
+          </MetadataList>
+          {(result.errors.length > 0 || result.warnings.length > 0 || short.length > 0) && (
+            <VStack gap={GAP.tight} className="om-callout">
+              {result.errors.map((e) => <Text key={e}>{e}</Text>)}
+              {result.warnings.map((w) => <Text key={w}>{w}</Text>)}
+              {short.map((x) => <Text key={x.figureId}>{`${x.name}: own ${x.have} of ${x.need}`}</Text>)}
+            </VStack>
+          )}
+          {battle && <Text type="supporting">{battle.text}</Text>}
+        </VStack>
       )}
       content={(
-      <VStack gap={0}>
-          <TabList value={activeRole} onChange={setRole}>
-            {roles.map((r) => <Tab key={r} value={r} label={ROLE_LABEL[r]} />)}
-          </TabList>
-          <FigureTable
-            rows={rows}
-            onOpen={setOpenFigure}
-            onAdd={(r) =>
-              setUnits([...units, {
-                uid: crypto.randomUUID(),
-                figureId: r.fig.id,
-                count: Math.min(r.fig.unitMax, r.entry.maxFigures ?? r.fig.unitMax),
-                level: r.entry.levels ? r.entry.levels[0] : undefined,
-              }])}
-          />
-        {openFigure && (
-          <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)} />
-        )}
-      </VStack>
+        <VStack gap={GAP.group} className="om-page">
+          {units.map((u) => (
+            <UnitCard key={u.uid} kingdom={kingdom} unit={u} pool={pool} units={units}
+                      onChange={(next) => patchUnit(u.uid, next)}
+                      onJoin={(hostUid) => setUnits(units.map((x) => {
+                        if (x.uid === u.uid) return { ...x, joinedTo: hostUid };
+                        // Joining fills a slot in the host, so trim it to fit (p81).
+                        if (hostUid && x.uid === hostUid) {
+                          const max = unitProfile(x, [])?.max ?? 1;
+                          return { ...x, count: Math.min(x.count ?? 1, max - 1) };
+                        }
+                        return x;
+                      }))}
+                      onRemove={() => setUnits(units.filter((x) => x.uid !== u.uid)
+                        .map((x) => (x.joinedTo === u.uid ? { ...x, joinedTo: null } : x)))}
+                      onOpenFigure={setOpenFigure} />
+          ))}
+          <div className="om-cta-dock">
+            <Button label="Add Units" variant="primary" onClick={() => setAdding(true)}
+                    icon={<Ico name="plus" size={20} />} />
+          </div>
+          <AddUnits isOpen={adding} onOpenChange={setAdding} pool={pool} units={units}
+                    collection={collection} onAdd={add} onOpenFigure={setOpenFigure} />
+          {openFigure && (
+            <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)}
+                        owns={(name) => (kingdom.territories ?? []).some((t) => t.name === name)} />
+          )}
+        </VStack>
       )}
     />
   );

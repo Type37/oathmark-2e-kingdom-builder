@@ -7,7 +7,7 @@ function radii(count) {
   return Array.from({ length: count }, (_, i) => Math.round(step * (i + 1)));
 }
 
-export default function RegionMap({ regions, picks, activeRegion, litRegion, hoverKey, onSlotHover, onRegionHover, onSlotClick }) {
+export default function RegionMap({ regions, playable, picks, activeRegion, litRegion, hoverKey, onSlotHover, onRegionHover, onSlotClick }) {
   // Animate only the slot that just arrived, not every filled slot on re-render.
   const [claimed, setClaimed] = React.useState(null);
   const prev = React.useRef(picks.length);
@@ -23,6 +23,7 @@ export default function RegionMap({ regions, picks, activeRegion, litRegion, hov
     prev.current = picks.length;
   }, [picks]);
 
+  const inPlay = new Set(playable ?? regions);
   const outer = Math.max(...regions);
   const R = radii(outer);
   const pickAt = (region, index) => picks.filter((p) => p.region === region)[index] ?? null;
@@ -42,6 +43,7 @@ export default function RegionMap({ regions, picks, activeRegion, litRegion, hov
               const a1 = ((i + 1) * step - 90) * (Math.PI / 180);
               const pick = pickAt(region, i);
               const key = pick ? `${pick.region}-${pick.name}-${i}` : null;
+              const live = inPlay.has(region);
               const isLit = region === litRegion;
               const isActive = region === activeRegion || isLit;
               const isHovered = key && key === hoverKey;
@@ -64,17 +66,19 @@ export default function RegionMap({ regions, picks, activeRegion, litRegion, hov
                     className={`om-slot${key && key === claimed ? " om-slot-claimed" : ""}`}
                     d={d}
                     fill={pick ? `var(--color-background-${hueOf(pick.list)})`
-                      : isActive ? "var(--color-accent-muted)" : "var(--color-background-card)"}
+                      : isActive ? "var(--color-accent-muted)"
+                      : live ? "var(--color-background-card)" : "var(--color-background-body)"}
                     stroke={isLit ? "var(--color-accent)"
                       : pick ? `var(--color-border-${hueOf(pick.list)})`
                       : isActive ? "var(--color-accent)" : "var(--color-border-emphasized)"}
                     strokeWidth={isHovered || isLit ? 3 : isActive || pick ? 2 : 1}
-                    style={{ cursor: "pointer" }}
+                    strokeDasharray={live ? undefined : "4 4"}
+                    style={{ cursor: live ? "pointer" : "default", opacity: live ? 1 : 0.55 }}
                     onMouseEnter={() => { onSlotHover?.(key); onRegionHover?.(region); }}
                     onMouseLeave={() => { onSlotHover?.(null); onRegionHover?.(null); }}
-                    onClick={() => onSlotClick?.(region, i, pick)}
+                    onClick={() => live && onSlotClick?.(region, i, pick)}
                   >
-                    <title>{pick ? `Region ${region}: ${pick.name}` : `Region ${region}`}</title>
+                    <title>{pick ? `Region ${region}: ${pick.name}` : live ? `Region ${region}` : `Region ${region}: campaign play`}</title>
                   </path>
                   {region === 1 ? null : (
                     <text

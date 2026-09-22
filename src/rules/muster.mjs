@@ -1,4 +1,6 @@
 import { figurePool, figureById, chariotUnlocked } from "./kingdom.mjs";
+import { canJoin, unitProfile } from "./army.mjs";
+import { attrLevel } from "./stats.mjs";
 
 // Random Points Value Table, p33. Rows 11–12 are only reachable at Expert.
 export const RANDOM_POINTS = [500, 750, 1000, 1500, 1750, 2000, 2500, 2750, 3000, 3500, 4000, 6000];
@@ -127,18 +129,24 @@ export function validateArmy(kingdom, army) {
   for (const [item, n] of itemCounts)
     if (n > 1) errors.push(`${item} appears ${n} times, one allowed per army`);
 
-  // Characters joining units.
+  // Characters joining units, p81.
   for (const u of units) {
-    if (!u.character) continue;
-    const host = figureById.get(u.figureId);
-    const char = figureById.get(u.character.figureId);
-    if (!host || !char) continue;
-    if (host.variants[0].base !== char.variants[0].base)
-      errors.push(`${char.name} base differs from ${host.name}`);
-    const hostV = host.variants[0];
-    const charV = variantFor(char, u.character);
-    if (charV.M < hostV.M) warnings.push(`${host.name} moves ${charV.M}"`);
-    if (charV.A > hostV.A) warnings.push(`${host.name} activates on ${charV.A}`);
+    if (!u.joinedTo) continue;
+    const host = units.find((x) => x.uid === u.joinedTo);
+    const hostFig = host && figureById.get(host.figureId);
+    const char = figureById.get(u.figureId);
+    if (!host || !hostFig || !char) continue;
+    const join = canJoin(hostFig, char);
+    if (!join.ok) errors.push(`${char.name} cannot join ${hostFig.name}: ${join.why}`);
+    if (units.filter((x) => x.joinedTo === host.uid).length > 1)
+      errors.push(`${hostFig.name}: a unit may contain only one character`);
+    const p = unitProfile(host, units);
+    if (p && p.bodies > p.max) errors.push(`${hostFig.name}: ${p.bodies} figures, max ${p.max}`);
+    const hostV = hostFig.variants[0];
+    const charV = variantFor(char, u);
+    if (charV.M < hostV.M) warnings.push(`${hostFig.name} moves ${charV.M}" with ${char.name}`);
+    if (charV.A > hostV.A && attrLevel(charV, "Command"))
+      warnings.push(`${hostFig.name} activates on ${charV.A}+ with ${char.name}`);
   }
 
   return { ok: errors.length === 0, errors, warnings, points: total, budget, remaining: budget - total };

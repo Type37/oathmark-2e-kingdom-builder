@@ -265,3 +265,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: var(--spacing-4);
 }
+
+/* On a card the emblem is a mark, not the subject: it sits back from the name. */
+.om-card-emblem { opacity: 0.55; }
+.om-card:hover .om-card-emblem { opacity: 0.85; }
