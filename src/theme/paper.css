@@ -115,6 +115,9 @@ body {
   .astryx-side-nav { display: none; }
 }
 
+/* cropperjs mounts on a plain image and needs it block-level and bounded. */
+.om-crop { display: block; max-inline-size: 100%; max-block-size: 320px; }
+
 /* Stat buttons sit on the dark header bar and take its pale text. */
 .astryx-table-header-cell .astryx-button,
 .astryx-table-header-cell .astryx-button * { color: inherit; }

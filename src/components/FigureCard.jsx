@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Dialog, DialogHeader, VStack, HStack, Text, Table,
+  Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, Text, Table,
 } from "@astryxdesign/core";
 import { pixel, proportional } from "@astryxdesign/core/Table";
 import { Attributes } from "./StatLine.jsx";
@@ -53,12 +53,11 @@ export default function FigureCard({ figureId, level, isOpen, onOpenChange }) {
   const full = unitStats({ figureId, count: fig.unitMax, level: shown[0]?.level });
 
   return (
-    <Dialog
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      width={680}
-      header={<DialogHeader title={fig.name} />}
-    >
+    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={680}>
+      <Layout
+        header={<DialogHeader title={fig.name} onOpenChange={onOpenChange} />}
+        content={
+      <LayoutContent>
       <VStack gap={GAP.group}>
         <StatRow variants={shown} />
         <Attributes variant={shown[0]} />
@@ -98,6 +97,9 @@ export default function FigureCard({ figureId, level, isOpen, onOpenChange }) {
           </>
         )}
       </VStack>
+      </LayoutContent>
+        }
+      />
     </Dialog>
   );
 }

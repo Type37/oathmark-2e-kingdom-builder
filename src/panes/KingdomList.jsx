@@ -10,6 +10,7 @@ import { LEVELS, REGION_SIZES, validateKingdom } from "../rules/kingdom.mjs";
 import { list as listOf } from "../rules/store.mjs";
 import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
+import Emblem from "../components/Emblem.jsx";
 
 function slots(level) {
   return (LEVELS[level] ?? LEVELS.moderate).reduce((n, r) => n + REGION_SIZES[r], 0);
@@ -51,7 +52,10 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu }) {
               return (
                 <Card key={k.id} padding={5} variant={hueOf(k.capitalList)}>
                     <VStack gap={GAP.tight} onClick={() => onOpen(k.id)} className="om-card">
-                      <Heading level={2}>{k.name}</Heading>
+                      <HStack gap={GAP.item} align="center">
+                        <Emblem emblemKey={k.emblem} name={k.name} />
+                        <Heading level={2}>{k.name || "Untitled"}</Heading>
+                      </HStack>
                       <HStack gap={GAP.item} align="baseline">
                         <Text type="label">{LEVEL_LABEL[k.level] ?? "Moderate"}</Text>
                         {k.ruler && <Text type="supporting">{k.ruler}</Text>}

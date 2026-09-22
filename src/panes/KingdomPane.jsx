@@ -1,7 +1,7 @@
 import React from "react";
 import {
   VStack, HStack, Text, Heading, Button, List, ListItem,
-  Token, Badge, Dialog, DialogHeader, Selector, TextInput,
+  Token, Badge, Dialog, DialogHeader, TextInput, Layout, LayoutContent,
 } from "@astryxdesign/core";
 import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
@@ -15,6 +15,7 @@ import {
 } from "../rules/kingdom.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "../rules/examples.mjs";
 import { hueOf } from "../race.mjs";
+import Emblem from "../components/Emblem.jsx";
 
 const LIST_LABEL = {
   dwarf: "Dwarf", elf: "Elf", goblin: "Goblin", human: "Human",
@@ -45,16 +46,6 @@ export default function KingdomPane({ value, onChange, shell }) {
       {!capitalList && (
           <VStack gap={GAP.group}>
             <HStack gap={GAP.item} align="end" wrap="wrap">
-              <Selector
-                label="Experience"
-                value={level ?? "moderate"}
-                onChange={(l) => patch({ level: l, capitalList: null, territories: [] })}
-                options={[
-                  { value: "beginner", label: "Beginner, Regions 1 & 2" },
-                  { value: "moderate", label: "Moderate, Regions 1, 2 & 3" },
-                  { value: "expert", label: "Expert, Regions 1, 2, 3 & 4" },
-                ]}
-              />
               {EXAMPLE_KINGDOMS.map((e) => (
                 <Button key={e.id} label={e.name} size="sm" variant="secondary"
                         onClick={() => onChange(loadExample(e.id))} />
@@ -124,6 +115,7 @@ export default function KingdomPane({ value, onChange, shell }) {
   const detail = capitalList ? (
     <VStack gap={GAP.group}>
       <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
+      {value.emblem && <HStack justify="center"><Emblem emblemKey={value.emblem} name={value.name} /></HStack>}
       <RegionMap regions={regions} picks={picks} activeRegion={picking} />
       <TextInput label="Kingdom" value={value.name ?? ""} size="sm"
                  onChange={(e) => patch({ name: e.target?.value ?? e })} />
@@ -140,8 +132,11 @@ export default function KingdomPane({ value, onChange, shell }) {
 
   const dialogs = (
     <>
-      <Dialog isOpen={Boolean(picking)} onOpenChange={(o) => !o && setPicking(null)} width={560}
-              header={<DialogHeader title={`Region ${picking}`} />}>
+      <Dialog isOpen={Boolean(picking)} onOpenChange={(o) => !o && setPicking(null)} width={560}>
+        <Layout
+          header={<DialogHeader title={`Region ${picking}`} onOpenChange={(o) => !o && setPicking(null)} />}
+          content={
+        <LayoutContent padding={0}>
         <List density={DENSITY.data}>
           {candidates.map(({ t }) => (
             <ListItem
@@ -156,6 +151,9 @@ export default function KingdomPane({ value, onChange, shell }) {
             />
           ))}
         </List>
+        </LayoutContent>
+          }
+        />
       </Dialog>
       {openFigure && (
         <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)} />

@@ -52,6 +52,18 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 
 **Book shapes:** `.om-plate` is the notched, double-ruled label plate; `.om-callout` is the pale-magenta notched callout. Both use CSS `corner-shape: scoop` (Chromium), with plain radius elsewhere.
 
+## Astryx gotchas (learned the hard way)
+
+- **Dialog titles go in a Layout header slot:** `<Dialog><Layout header={<DialogHeader title onOpenChange/>} content footer/></Dialog>`. `Dialog` has no `header` prop; passing one is silently ignored.
+- **AppShell `mobileNav` config-object drawer does not render its content in 0.6.2.** The app uses `mobileNav={false}` plus a standalone controlled `<MobileNav isOpen onOpenChange>` opened by an `.om-menu-btn` hamburger. `paper.css` hides the SideNav below 768px and the hamburger above it.
+- **AppShell breakpoints come from the theme:** `adaptations.widthBreakpoints` is declared in `marches.ts`.
+- **Page width:** `Shell` caps pages with `Layout contentWidth` (`FRAME.contentWidth` = 1120), which covers the content column and the sheet panel together.
+
+## Images and print
+
+- **Emblems:** `cropperjs` crops to a 512px square, and `idb-keyval` stores the PNG blob in IndexedDB (`src/emblem.mjs`). The kingdom record keeps only the key. Same stack as the Billion Suns builder.
+- **Print (planned, Army Roster):** reuse the Dropfleet builder's CSS-only approach, not a library: a `#print-container`, `body:has(> #print-container) > *:not(#print-container) { display: none }`, `@page { margin: 12mm }`, the WebKit block-flow reset, and `print-color-adjust: exact`. See `Dropfleet-Builder/css/app.css` around line 5214.
+
 ## Notes
 
 | File | Contents |

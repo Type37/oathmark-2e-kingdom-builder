@@ -62,17 +62,20 @@ export default function Shell({
   return (
     <>
       <Layout
-        padding={FRAME.padding}
+        padding={narrow ? 4 : 8}
         height="auto"
+        contentWidth={FRAME.contentWidth}
         header={header}
-        content={<LayoutContent padding={narrow ? 4 : undefined}>{content}</LayoutContent>}
+        content={<LayoutContent>{content}</LayoutContent>}
         end={noPanels || !detail ? undefined : <LayoutPanel width={PANEL.detail} hasDivider className="om-sticky">{detail}</LayoutPanel>}
       />
 
       {noPanels && detail && (
-        <Dialog isOpen={detailOpen} onOpenChange={setDetailOpen} width={420}
-                header={<DialogHeader title={detailTitle ?? "Details"} />}>
-          {detail}
+        <Dialog isOpen={detailOpen} onOpenChange={setDetailOpen} width={420}>
+          <Layout
+            header={<DialogHeader title={detailTitle ?? "Details"} onOpenChange={setDetailOpen} />}
+            content={<LayoutContent>{detail}</LayoutContent>}
+          />
         </Dialog>
       )}
     </>

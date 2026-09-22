@@ -5,6 +5,7 @@ import { MobileNav } from "@astryxdesign/core/MobileNav";
 import { marchesTheme } from "./theme/marches.js";
 
 import Landing from "./panes/Landing.jsx";
+import FoundKingdom from "./components/FoundKingdom.jsx";
 import KingdomList from "./panes/KingdomList.jsx";
 import KingdomPane from "./panes/KingdomPane.jsx";
 import CollectionPane from "./panes/CollectionPane.jsx";
@@ -46,6 +47,7 @@ export default function App() {
   const [saved, setSaved] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [founding, setFounding] = React.useState(false);
   const fileRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -65,7 +67,7 @@ export default function App() {
     subtitle: kingdom.name ? <Text type="label">{kingdom.name}</Text> : null,
     onBack: () => setSection(PARENT[section] ?? "home"),
     onMenu: () => setMenuOpen(true),
-    onNew: () => { setKingdom(EMPTY_KINGDOM); setMuster(EMPTY_MUSTER); setSection("kingdom"); },
+    onNew: () => setFounding(true),
     onImport: () => fileRef.current?.click(),
     onSave: saveAll,
     saved,
@@ -159,6 +161,16 @@ export default function App() {
         <MobileNav isOpen={menuOpen} onOpenChange={setMenuOpen} header="Oathmark">
           {navItems}
         </MobileNav>
+        <FoundKingdom
+          isOpen={founding}
+          onOpenChange={setFounding}
+          onFound={(base) => {
+            setKingdom({ ...EMPTY_KINGDOM, ...base });
+            setMuster(EMPTY_MUSTER);
+            setFounding(false);
+            setSection("kingdom");
+          }}
+        />
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
         {error && (
           <Section paddingBlockEnd={0}>
@@ -172,7 +184,7 @@ export default function App() {
           <KingdomList
             store={store}
             onOpen={(id) => load("kingdoms", id)}
-            onNew={() => { setKingdom(EMPTY_KINGDOM); setSection("kingdom"); }}
+            onNew={() => setFounding(true)}
             onBack={() => setSection("home")}
             onMenu={() => setMenuOpen(true)}
           />
