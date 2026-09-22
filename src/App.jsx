@@ -28,7 +28,7 @@ import { downloadJson, fileSlug } from "./download.mjs";
 
 const EMPTY_KINGDOM = {
   name: "", ruler: "", level: "moderate", capitalList: null,
-  territories: [], collection: {}, emblem: null,
+  territories: [], collection: {}, emblem: null, culture: null,
 };
 const EMPTY_MUSTER = { name: "", commander: "", points: 1000, units: [] };
 

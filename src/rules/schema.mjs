@@ -23,6 +23,7 @@ export const KingdomSchema = z.object({
   collection: z.record(z.string(), z.number().int().min(0)).optional().default({}),
   chronicle: z.array(ChronicleEntry).optional().default([]),
   emblem: z.string().nullable().optional(),
+  culture: z.string().nullable().optional(),
   saved: z.string().optional(),
 });
 

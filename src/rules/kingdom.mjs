@@ -43,8 +43,10 @@ export function canPlace({ capitalList, region, list, name }) {
   }
   if (region > 4) return { ok: false, reason: "Campaign only" };
 
-  // Unaligned territories use their printed rarity regardless of capital.
-  const sameList = list === "unaligned" ? true : list === capitalList;
+  // Unaligned territories use their printed rarity regardless of capital (p18, p22).
+  // "On the same list as their capital city" (p17) is about the terrain, so a
+  // terrain printed on both lists (Dark Hills, Rivers: goblin and orc) counts as own.
+  const sameList = list === "unaligned" || list === capitalList || Boolean(territory(capitalList, name));
   if (t.rarity > maxRarity(region, sameList)) {
     const need = earliestRegion(t.rarity, sameList);
     return {
@@ -61,6 +63,7 @@ export function placeableIn({ capitalList, region }) {
 
 export function validateKingdom(k) {
   const errors = [];
+  if (!LEVELS[k.level]) return { ok: false, errors: [`Unknown level: ${k.level}`], slots: 0, placed: 0 };
   const slots = territorySlots(k.level);
   const placed = k.territories ?? [];
   const capital = placed.find((p) => p.region === 1);
@@ -74,6 +77,11 @@ export function validateKingdom(k) {
     const got = placed.filter((p) => p.region === r).length;
     if (got !== want) errors.push(`Region ${r}: ${got} of ${want}`);
   }
+  // The level fixes which regions are filled (p17); nothing may sit outside them.
+  const outside = [...new Set(placed.map((p) => p.region))]
+    .filter((r) => !LEVELS[k.level].includes(r) && !(r > 4))
+    .sort((a, b) => a - b);
+  for (const r of outside) errors.push(`Region ${r}: not in a ${k.level} kingdom`);
   for (const p of placed) {
     const res = canPlace({ capitalList: k.capitalList, region: p.region, list: p.list, name: p.name });
     if (!res.ok) errors.push(res.reason);

@@ -1,12 +1,11 @@
 // Name pools for the roll buttons. Every entry is printed in a published book
 // the owner has, with its page; nothing here is invented. See notes/name-pools.md.
-//   OM = Oathmark: Second Edition (Osprey Games, 2026)
 //   DR = Dragon Rampant, second edition (Osprey Games), Daniel Mersey
+//   KL = The Book of Knights & Ladies (Pendragon 5th ed., 2007), in bkl-names.mjs
 // Page numbers are the books' printed page numbers.
+import { BKL_CULTURES, BKL_HOMELANDS } from "./bkl-names.mjs";
 
 const KINGDOM = [
-  ["Grundeland", "OM p24"],
-  ["Vasala", "OM p24"],
   ["Barbarica", "DR p203"],
   ["Ukkert", "DR p174"],
   ["the Foul-Wind Pass", "DR p16"],
@@ -39,10 +38,6 @@ const ARMY = [
 ];
 
 const HERO = [
-  ["Barrok IV", "OM p24"],
-  ["Queen Kelindra", "OM p24"],
-  ["Prince Kalek", "OM p24"],
-  ["Grunk Nosesplatter", "OM p208"],
   ["Rottingutt", "DR p16"],
   ["MacTavish", "DR p22"],
   ["Ardenuff the Slayer", "DR p22"],
@@ -55,11 +50,45 @@ const HERO = [
 ];
 
 export const SOURCES = { kingdom: KINGDOM, army: ARMY, hero: HERO };
-export const NAMES = {
-  kingdom: KINGDOM.map(([n]) => n),
-  army: ARMY.map(([n]) => n),
-  hero: HERO.map(([n]) => n),
+
+// A culture is a homeland's people and the names they give their rulers.
+// Dragon Rampant realms keep that book's heroes.
+const book = (src) => (list) => list.filter(([, cite]) => cite.startsWith(src)).map(([n]) => n);
+export const CULTURES = {
+  "dragon-rampant": { label: "Dragon Rampant", rulers: book("DR")(HERO) },
+  ...Object.fromEntries(Object.entries(BKL_CULTURES).map(([id, c]) => [id, {
+    label: c.label,
+    // Pict women take Cymric names (KL p26); Roman women feminize the men's (KL p27).
+    rulers: [...c.male, ...c.female, ...(c.femaleRule ?? []),
+             ...(c.femaleFrom ? BKL_CULTURES[c.femaleFrom].female : [])],
+  }])),
 };
+
+// [homeland, culture]
+export const HOMELANDS = [
+  ...book("DR")(KINGDOM).map((n) => [n, "dragon-rampant"]),
+  ...BKL_HOMELANDS.map(([n, c]) => [n, c]),
+];
+
+export const NAMES = {
+  kingdom: HOMELANDS.map(([n]) => n),
+  army: ARMY.map(([n]) => n),
+  hero: [...new Set(Object.values(CULTURES).flatMap((c) => c.rulers))],
+};
+
+const byName = new Map(HOMELANDS.map(([n, c]) => [n.toLowerCase(), c]));
+export const cultureOf = (name) => byName.get(String(name ?? "").trim().toLowerCase()) ?? null;
+
+// A kingdom's ruler, and any later hero, comes from its culture's names.
+export const rulerPool = (culture) => CULTURES[culture]?.rulers ?? NAMES.hero;
+
+// The kingdom-name roll: a culture first, then one of its homelands, then a ruler of that culture.
+const CULTURE_IDS = Object.keys(CULTURES).filter((c) => HOMELANDS.some(([, h]) => h === c));
+export function rollKingdom(avoid) {
+  const culture = CULTURE_IDS[Math.floor(Math.random() * CULTURE_IDS.length)];
+  const homes = HOMELANDS.filter(([, c]) => c === culture).map(([n]) => n);
+  return { name: randomName(homes, avoid), culture, ruler: randomName(rulerPool(culture)) };
+}
 
 // A random entry, nudged off the current value so a roll always changes it.
 export function randomName(pool, avoid) {

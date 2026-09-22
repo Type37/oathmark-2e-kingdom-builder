@@ -20,7 +20,7 @@ import {
   validateKingdom, territory, grantList, figurePool,
 } from "../rules/kingdom.mjs";
 import { hueOf } from "../race.mjs";
-import { NAMES } from "../names.mjs";
+import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
 
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
 
@@ -112,9 +112,10 @@ export default function KingdomPane({ value, onChange, onEmblem, shell }) {
   const detail = (
     <VStack gap={GAP.group}>
       <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
-      <NameField label="Kingdom Name" size="sm" value={value.name} pool={NAMES.kingdom}
-                 onChange={(name) => patch({ name })} />
-      <NameField label="Current Ruler" size="sm" value={value.ruler} pool={NAMES.hero}
+      <NameField label="Kingdom Name" size="sm" value={value.name}
+                 onChange={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
+                 onRoll={() => patch(rollKingdom(value.name))} />
+      <NameField label="Current Ruler" size="sm" value={value.ruler} pool={rulerPool(value.culture)}
                  onChange={(ruler) => patch({ ruler })} />
       <HStack gap={2} align="center">
         <Emblem emblemKey={value.emblem} name={value.name} size="xl" />

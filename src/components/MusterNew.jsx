@@ -7,7 +7,7 @@ import { rollPoints, battleScale } from "../rules/muster.mjs";
 import NameField from "./NameField.jsx";
 import { Icon } from "@iconify/react";
 import { DICE } from "../icons/game.mjs";
-import { NAMES } from "../names.mjs";
+import { NAMES, rulerPool } from "../names.mjs";
 
 // The Army Roster header (p218): Army Name, Army Commander, Total Points,
 // plus the kingdom the army is drawn from (p35).
@@ -35,7 +35,7 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
           <LayoutContent>
             <FormLayout>
               <NameField label="Army Name" value={name} onChange={setName} pool={NAMES.army} />
-              <NameField label="Army Commander" value={commander} onChange={setCommander} pool={NAMES.hero} isOptional />
+              <NameField label="Army Commander" value={commander} onChange={setCommander} pool={rulerPool(kingdom?.culture)} isOptional />
               <Selector label="Kingdom" value={kingdomId} onChange={setKingdomId}
                         options={kingdoms.map((k) => ({ value: k.id, label: k.name || "Untitled" }))} />
               <HStack gap={2} align="end" wrap="wrap">
