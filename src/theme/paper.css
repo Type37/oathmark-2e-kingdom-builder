@@ -19,24 +19,21 @@ body {
   opacity: 0.75;
 }
 
-/* A newly claimed territory fills in: the wedge wipes from the capital outward. */
-@keyframes om-claim {
-  from { fill-opacity: 0; }
-  to   { fill-opacity: 1; }
-}
-@keyframes om-claim-edge {
-  0%   { stroke-width: 6; }
-  100% { stroke-width: 1; }
+/* A newly claimed territory pops onto the sheet from its own centre. */
+@keyframes om-pop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
 }
 .om-slot {
+  transform-box: fill-box;
+  transform-origin: center;
   transition:
-    fill-opacity var(--duration-fast) var(--ease-standard),
+    fill var(--duration-fast) var(--ease-standard),
     stroke-width var(--duration-fast) var(--ease-standard);
 }
 .om-slot-claimed {
-  animation:
-    om-claim var(--duration-medium) var(--ease-standard) both,
-    om-claim-edge var(--duration-medium-max) var(--ease-standard) both;
+  animation: om-pop var(--duration-medium) var(--ease-standard) both;
 }
 @media (prefers-reduced-motion: reduce) {
   .om-slot,
@@ -77,8 +74,6 @@ body {
   font-family: var(--font-family-heading);
   letter-spacing: 0.04em;
 }
-
-.om-slot-claimed { animation-name: om-claim, om-claim-edge; }
 
 /* The book's label plate: scooped corners, a double rule. Plain radius where corner-shape is unsupported. */
 .om-plate {
@@ -121,6 +116,7 @@ body {
 /* Stat buttons sit on the dark header bar and take its pale text. */
 .astryx-table-header-cell .astryx-button,
 .astryx-table-header-cell .astryx-button * { color: inherit; }
+.astryx-table-header-cell .astryx-button { padding-inline: var(--spacing-1); }
 
 /* Card art sits on the muted field, never a dark fill behind dark text. */
 .om-card-art {

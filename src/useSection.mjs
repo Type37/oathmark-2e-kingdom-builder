@@ -3,8 +3,9 @@ import React from "react";
 export const PARENT = {
   kingdoms: "home",
   kingdom: "kingdoms",
+  musters: "home",
+  muster: "musters",
   collection: "home",
-  muster: "home",
   reference: "home",
 };
 

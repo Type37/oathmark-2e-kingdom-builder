@@ -13,7 +13,7 @@ A web app for *Oathmark: Second Edition* (Osprey Games) that builds a kingdom an
 ```
 npm install
 npm run dev      # http://localhost:5178
-npm test         # 83 tests, node:test
+npm test         # 85 tests, node:test
 npm run build    # BASE_PATH=/repo-name/ is set by the workflow
 ```
 
@@ -42,22 +42,32 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 
 | Role | Face | Token |
 |---|---|---|
-| All text | Berling LT Std (owner's licence, self-hosted, git-ignored in `public/fonts/berling/`); Crimson Pro stands in without it | `--font-family-body` |
+| All text | Berling LT Std (owner's web licence, self-hosted from `public/fonts/berling/`); Crimson Pro is the fallback | `--font-family-body` |
 | Headings, table bars, plates, docked CTA | Grenze Gotisch | `--font-family-heading` |
 | Buttons, tabs, tokens, badges | Cabin | `--font-family-ui` (local) |
 
-**Colour:** paper `#F7EEDD`, ink `#221F1F`, warm grey `#5C5953` (secondary text and bars), dusty rose `#D7B5A6` (borders), magenta accent `#D40B61` (`#EC0C6C` as `--color-highlight` for fills only).
+**Colour:** page `#FBF7EF` over the parchment scan, cards `#FFFFFF`, ink `#221F1F`, warm grey `#5C5953` (secondary text and bars), dusty rose `#D7B5A6` (borders), magenta accent `#D40B61` (`#EC0C6C` as `--color-highlight` for fills only).
 
 **Race colours** use Astryx's categorical families (`src/race.mjs`), retuned in the theme as manuscript pigments: dwarf `orange` (copper), elf `green` (verdigris), goblin `yellow` (orpiment), human `blue` (lapis), orc `red` (vermilion), necropolis `purple`, unaligned `gray`. Use them through `Card variant`, `Token color`, or `var(--color-{background,border,text}-<hue>)`.
 
 **Book shapes:** `.om-plate` is the notched, double-ruled label plate; `.om-callout` is the pale-magenta notched callout. Both use CSS `corner-shape: scoop` (Chromium), with plain radius elsewhere.
+
+## App structure
+
+- **Landing** (`#/`): three cards, **Kingdom Builder**, **Army Builder** and **Unit Collection**, with no rail.
+- **Inside a builder** the Astryx SideNav rail lists the three builders, the saved Kingdoms and Armies, and Rules › Reference.
+- **Lists** (`#/kingdoms`, `#/musters`) have a docked CTA (New Kingdom / Muster a New Army) that opens a modal, plus a ⋯ menu with Import and Export All.
+- **Records** (`#/kingdom`, `#/muster`) autosave every edit into the store, so there is no Save button. Their ⋯ menu has Export, Duplicate and Delete (Delete asks through an AlertDialog).
+- **Unit Collection** is one global record (`store.collections[0].owned`), shared by every muster's shortfall check.
+- **New kingdom modal:** name, ruler, experience and emblem. **New army modal:** the p218 roster header (Army Name, Army Commander, Total Points) plus the Kingdom, with a Roll button for the p33 Random Points table.
 
 ## Astryx gotchas (learned the hard way)
 
 - **Dialog titles go in a Layout header slot:** `<Dialog><Layout header={<DialogHeader title onOpenChange/>} content footer/></Dialog>`. `Dialog` has no `header` prop; passing one is silently ignored.
 - **AppShell `mobileNav` config-object drawer does not render its content in 0.6.2.** The app uses `mobileNav={false}` plus a standalone controlled `<MobileNav isOpen onOpenChange>` opened by an `.om-menu-btn` hamburger. `paper.css` hides the SideNav below 768px and the hamburger above it.
 - **AppShell breakpoints come from the theme:** `adaptations.widthBreakpoints` is declared in `marches.ts`.
-- **Page width:** `Shell` caps pages with `Layout contentWidth` (`FRAME.contentWidth` = 1120), which covers the content column and the sheet panel together.
+- **Page width:** `Shell` caps pages with `Layout contentWidth` (`FRAME.contentWidth` = 1200), which covers the content column and the sheet panel together.
+- **Tables bleed by the Layout padding.** Keep `Layout padding` and `LayoutContent padding` equal (both 6), and don't wrap a Table in `Section padding={0}`. Column `pixel()` widths exclude cell padding.
 
 ## Images and print
 
@@ -79,7 +89,8 @@ src/rules/        pure logic, fully tested (kingdom, muster, stats, collection, 
 src/data/oathmark.json   everything parsed from the PDF, plus `errata`
 src/icons/        marks.json (book glyphs with per-glyph viewBox), game.mjs (laurel crown, muster; game-icons.net CC BY 3.0, credited in README)
 src/useSection.mjs   hash routes (#/kingdoms, #/kingdom, …) with a PARENT map, so Back goes up a level
-src/Shell.jsx     the three-region frame (library | content | detail)
+src/Shell.jsx     page frame: header (menu, back, title, ⋯), content, sheet panel
+src/App.jsx       AppShell + SideNav/MobileNav, store, autosave, modals
 src/panes/        one per section
 src/theme/        marches.ts is the source; run `npx astryx theme build src/theme/marches.ts`. fonts.css loads Berling; paper.css holds the app's own rules.
 src/race.mjs      capital list → Astryx categorical colour

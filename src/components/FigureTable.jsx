@@ -2,22 +2,15 @@ import React from "react";
 import {
   Table, HStack, VStack, Text, Button, Badge, Popover, Link, useMediaQuery,
 } from "@astryxdesign/core";
-import { pixel, proportional } from "@astryxdesign/core/Table";
-import Mark from "./Mark.jsx";
+import { pixel } from "@astryxdesign/core/Table";
 import { stats } from "../rules/kingdom.mjs";
 import { COL, BREAK } from "../layout.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
-
-const MARK_FOR = {
-  A: "skill", M: "march", F: "melee", S: "ranged",
-  D: "defend", CD: "hit", H: "mortal-strike", pts: null,
-};
 
 // The stat letters belong in one header row, as the book prints them.
 function Head({ statKey }) {
   const def = stats[statKey];
   const letter = statKey === "pts" ? "Pts" : statKey;
-  const mark = MARK_FOR[statKey];
   return (
     <Popover
       width={340}
@@ -34,10 +27,7 @@ function Head({ statKey }) {
       }
     >
       <Button variant="ghost" size="sm" label={def?.name ?? letter}>
-        <VStack gap={0} align="center">
-          {mark ? <Mark name={mark} size={15} /> : null}
-          <Text type="label">{letter}</Text>
-        </VStack>
+        <Text type="label">{letter}</Text>
       </Button>
     </Popover>
   );
@@ -52,7 +42,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
     {
       key: "name",
       header: "Figure",
-      width: proportional(COL.name),
+      width: pixel(COL.name),
       renderCell: (r) => (
         <VStack gap={0}>
           <Link isStandalone onClick={() => onOpen?.(r.figureId)}>{r.name}</Link>
@@ -97,7 +87,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn }) {
       data={rows}
       columns={columns.filter((c) => !c.isHidden)}
       idKey="figureId"
-      density="balanced"
+      density="compact"
       dividers="rows"
       hasHover
       textOverflow="wrap"

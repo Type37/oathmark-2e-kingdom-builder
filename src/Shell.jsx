@@ -1,18 +1,18 @@
 import React from "react";
 import {
   Layout, LayoutHeader, LayoutContent, LayoutPanel,
-  HStack, Text, Heading, Button, useMediaQuery, Dialog, DialogHeader,
+  HStack, Heading, Button, useMediaQuery, Dialog, DialogHeader,
 } from "@astryxdesign/core";
+import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import Ico from "./components/Ico.jsx";
 import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 
-// Per-section header + content + optional detail panel. Navigation lives in
-// the AppShell's SideNav / MobileNav (App.jsx), so this frame only owns the
-// page: its title, file actions, and the sheet panel on the side.
+// Per-page frame: title, record actions, content, and the sheet panel.
+// Navigation lives in App (SideNav / MobileNav); edits autosave.
 export default function Shell({
-  title, subtitle, meta,
-  content, detail, detailTitle,
-  onNew, onImport, onSave, saved, onBack, onMenu,
+  title, subtitle, meta, actions,
+  content, detail, detailTitle, inlineDetail,
+  onBack, onMenu,
 }) {
   const noPanels = useMediaQuery(BREAK.panel);
   const narrow = useMediaQuery(BREAK.narrow);
@@ -27,46 +27,35 @@ export default function Shell({
                     icon={<Ico name="menu" size={20} />} onClick={onMenu} />
           )}
           {onBack && (
-            <Button
-              label="Back"
-              size="sm"
-              variant="ghost"
-              isIconOnly
-              icon={<Ico name="arrow-left" size={20} />}
-              onClick={onBack}
-            />
+            <Button label="Back" size="sm" variant="ghost" isIconOnly
+                    icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
           )}
           <Heading level={1}>{title}</Heading>
           {subtitle}
         </HStack>
-
-        {/* File actions sit beside the name they act on, not across the page. */}
         <HStack gap={GAP.item} align="center" wrap="wrap">
           {meta}
-          {saved && <Text type="label">Saved</Text>}
-          <Button label="Save" size="md" isIconOnly={narrow} variant="primary"
-                  icon={<Ico name="floppy-disk" size={18} />} onClick={onSave} />
-          <Button label="New" size="md" isIconOnly={narrow} variant="secondary"
-                  icon={<Ico name="plus" size={18} />} onClick={onNew} />
-          <Button label="Import" size="md" isIconOnly={narrow} variant="secondary"
-                  icon={<Ico name="arrow-up" size={18} />} onClick={onImport} />
           {noPanels && detail && (
             <Button label={detailTitle ?? "Details"} size="md" variant="secondary"
                     onClick={() => setDetailOpen(true)} />
           )}
+          {actions?.length > 0 && <MoreMenu items={actions} alignment="end" />}
         </HStack>
       </HStack>
     </LayoutHeader>
   );
 
+  // Below the panel breakpoint, a page can keep part of its sheet in view above the content.
+  const body = noPanels && inlineDetail ? <>{inlineDetail}{content}</> : content;
+
   return (
     <>
       <Layout
-        padding={narrow ? 4 : 8}
+        padding={narrow ? 4 : 6}
         height="auto"
         contentWidth={FRAME.contentWidth}
         header={header}
-        content={<LayoutContent>{content}</LayoutContent>}
+        content={<LayoutContent padding={narrow ? 4 : 6}>{body}</LayoutContent>}
         end={noPanels || !detail ? undefined : <LayoutPanel width={PANEL.detail} hasDivider className="om-sticky">{detail}</LayoutPanel>}
       />
 

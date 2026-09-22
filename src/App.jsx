@@ -2,27 +2,34 @@ import React from "react";
 import { Theme, AppShell, Text, Banner, Section } from "@astryxdesign/core";
 import { SideNav, SideNavHeading, SideNavItem, SideNavSection } from "@astryxdesign/core/SideNav";
 import { MobileNav } from "@astryxdesign/core/MobileNav";
+import { AlertDialog } from "@astryxdesign/core/AlertDialog";
 import { marchesTheme } from "./theme/marches.js";
 
 import Landing from "./panes/Landing.jsx";
-import FoundKingdom from "./components/FoundKingdom.jsx";
 import KingdomList from "./panes/KingdomList.jsx";
 import KingdomPane from "./panes/KingdomPane.jsx";
-import CollectionPane from "./panes/CollectionPane.jsx";
+import MusterList from "./panes/MusterList.jsx";
 import MusterPane from "./panes/MusterPane.jsx";
+import CollectionPane from "./panes/CollectionPane.jsx";
 import ReferencePane from "./panes/ReferencePane.jsx";
+import FoundKingdom from "./components/FoundKingdom.jsx";
+import MusterNew from "./components/MusterNew.jsx";
 
 import { validateKingdom } from "./rules/kingdom.mjs";
-import { STORE_KEY, emptyStore, normalise, save, get, setActive, activeRecord } from "./rules/store.mjs";
+import {
+  STORE_KEY, emptyStore, normalise, save, get, remove, duplicate, setActive, activeRecord, toFile,
+} from "./rules/store.mjs";
 import { parseImport } from "./rules/schema.mjs";
 import useSection, { PARENT } from "./useSection.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "./rules/examples.mjs";
+import { deleteEmblem } from "./emblem.mjs";
+import { downloadJson, fileSlug } from "./download.mjs";
 
 const EMPTY_KINGDOM = {
   name: "", ruler: "", level: "moderate", capitalList: null,
-  territories: [], collection: {}, chronicle: [],
+  territories: [], collection: {}, chronicle: [], emblem: null,
 };
-const EMPTY_MUSTER = { name: "", points: 1000, units: [] };
+const EMPTY_MUSTER = { name: "", commander: "", points: 1000, units: [] };
 
 function read() {
   let store;
@@ -39,170 +46,195 @@ function read() {
   return store;
 }
 
+// The owned-miniatures tracker is one record, shared by every kingdom and muster.
+const collectionOf = (store) => store.collections[0] ?? { name: "Collection", owned: {} };
+
 export default function App() {
   const [store, setStore] = React.useState(read);
   const [section, setSection] = useSection();
-  const [kingdom, setKingdom] = React.useState(() => activeRecord(read(), "kingdoms") ?? EMPTY_KINGDOM);
-  const [muster, setMuster] = React.useState(EMPTY_MUSTER);
-  const [saved, setSaved] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [founding, setFounding] = React.useState(false);
+  const [mustering, setMustering] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(null);
   const fileRef = React.useRef(null);
 
   React.useEffect(() => {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch {}
   }, [store]);
 
-  React.useEffect(() => {
-    if (!saved) return;
-    const t = setTimeout(() => setSaved(false), 1800);
-    return () => clearTimeout(t);
-  }, [saved]);
+  const kingdom = activeRecord(store, "kingdoms");
+  const muster = activeRecord(store, "musters");
+  const musterKingdom = muster ? get(store, "kingdoms", muster.kingdomId) : null;
+  const collection = collectionOf(store);
+  const buildable = store.kingdoms.filter((k) => k.capitalList);
 
-  const ready = Boolean(kingdom.capitalList && validateKingdom(kingdom).ok);
-
-  // Everything the frame needs, identical for every section.
-  const shell = {
-    subtitle: kingdom.name ? <Text type="label">{kingdom.name}</Text> : null,
-    onBack: () => setSection(PARENT[section] ?? "home"),
-    onMenu: () => setMenuOpen(true),
-    onNew: () => setFounding(true),
-    onImport: () => fileRef.current?.click(),
-    onSave: saveAll,
-    saved,
+  // Every edit writes straight to the store: nothing to save by hand.
+  const update = (kind) => (next) => setStore((s) => save(s, kind, next));
+  const go = (id) => { setSection(id); setMenuOpen(false); };
+  const open = (kind, id) => {
+    setStore((s) => setActive(s, kind, id));
+    go(kind === "kingdoms" ? "kingdom" : "muster");
   };
 
-  // One nav tree, rendered by SideNav on desktop and MobileNav on phones.
-  const SECTIONS = [
-    { id: "home", label: "Home" },
-    { id: "kingdom", label: "Kingdom" },
-    { id: "collection", label: "Collection" },
-    { id: "muster", label: "Muster" },
-    { id: "reference", label: "Reference" },
+  const exportAll = () => downloadJson("oathmark.json", toFile(store));
+  const exportOne = (rec) => downloadJson(`${fileSlug(rec.name)}.json`, JSON.stringify(rec, null, 2));
+
+  async function onFile(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setError(null);
+    try {
+      const { kind, value } = parseImport(await file.text());
+      if (kind === "store") setStore((s) => normalise({ ...s, ...value }));
+      else setStore((s) => save(s, kind, { ...value, id: undefined }));
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  const fileActions = [
+    { label: "Import", onClick: () => fileRef.current?.click() },
+    { label: "Export All", onClick: exportAll },
+  ];
+  const recordActions = (kind, rec) => rec ? [
+    { label: "Export", onClick: () => exportOne(rec) },
+    { label: "Duplicate", onClick: () => setStore((s) => duplicate(s, kind, rec.id)) },
+    { type: "divider" },
+    { label: "Delete", variant: "destructive", onClick: () => setDeleting({ kind, rec }) },
+  ] : [];
+
+  function confirmDelete() {
+    const { kind, rec } = deleting;
+    if (kind === "kingdoms") deleteEmblem(rec.emblem);
+    setStore((s) => remove(s, kind, rec.id));
+    setDeleting(null);
+    go(kind === "kingdoms" ? "kingdoms" : "musters");
+  }
+
+  const shell = {
+    onBack: () => go(PARENT[section] ?? "home"),
+    onMenu: () => setMenuOpen(true),
+  };
+
+  // The rail: three builders, then the saved records, with the rules reference last.
+  const builders = [
+    { id: "kingdoms", label: "Kingdom Builder", match: ["kingdoms", "kingdom"] },
+    { id: "musters", label: "Army Builder", match: ["musters", "muster"] },
+    { id: "collection", label: "Unit Collection", match: ["collection"] },
   ];
   const navItems = (
     <>
-      {SECTIONS.map((s) => (
-        <SideNavItem
-          key={s.id}
-          label={s.label}
-          isSelected={section === s.id || (s.id === "kingdom" && section === "kingdoms")}
-          onClick={() => { setSection(s.id); setMenuOpen(false); }}
-        />
+      {builders.map((b) => (
+        <SideNavItem key={b.id} label={b.label} isSelected={b.match.includes(section)}
+                     onClick={() => go(b.id)} />
       ))}
       {["kingdoms", "musters"].map((kind) => {
         const rows = store[kind] ?? [];
         if (!rows.length) return null;
         return (
-          <SideNavSection key={kind} title={kind === "kingdoms" ? "Kingdoms" : "Musters"}>
+          <SideNavSection key={kind} title={kind === "kingdoms" ? "Kingdoms" : "Armies"}>
             {rows.map((r) => (
-              <SideNavItem
-                key={r.id}
-                label={r.name || "Untitled"}
-                isSelected={store.active?.[kind] === r.id}
-                onClick={() => { load(kind, r.id); setMenuOpen(false); }}
-              />
+              <SideNavItem key={r.id} label={r.name || "Untitled"}
+                           isSelected={store.active?.[kind] === r.id &&
+                             section === (kind === "kingdoms" ? "kingdom" : "muster")}
+                           onClick={() => open(kind, r.id)} />
             ))}
           </SideNavSection>
         );
       })}
+      <SideNavSection title="Rules">
+        <SideNavItem label="Reference" isSelected={section === "reference"} onClick={() => go("reference")} />
+      </SideNavSection>
     </>
   );
-  const sideNav = (
-    <SideNav header={<SideNavHeading heading="Oathmark" headingHref="#/" />}>
-      {navItems}
-    </SideNav>
+  const sideNav = section === "home" ? undefined : (
+    <SideNav header={<SideNavHeading heading="Oathmark" headingHref="#/" />}>{navItems}</SideNav>
   );
 
-  function saveAll() {
-    setStore((s) => {
-      let next = s;
-      if (kingdom.capitalList) next = save(next, "kingdoms", kingdom);
-      if (muster.units.length)
-        next = save(next, "musters", { ...muster, name: muster.name || `${muster.points}pts` });
-      return next;
-    });
-    setSaved(true);
-  }
-
-  function load(kind, id) {
-    const rec = get(store, kind, id);
-    if (!rec) return;
-    setStore(setActive(store, kind, id));
-    if (kind === "kingdoms") { setKingdom({ ...EMPTY_KINGDOM, ...rec }); setSection("kingdom"); }
-    if (kind === "musters") { setMuster({ ...EMPTY_MUSTER, ...rec }); setSection("muster"); }
-  }
-
-  async function onFile(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setError(null);
-    try {
-      const { kind, value } = parseImport(await file.text());
-      if (kind === "store") setStore((s) => ({ ...s, ...value }));
-      else setStore((s) => save(s, kind, { ...value, id: undefined }));
-    } catch (err) {
-      setError(err.message);
-    }
-    e.target.value = "";
-  }
-
+  // A record route with nothing active falls back to its list.
+  let page = section;
+  if (page === "kingdom" && !kingdom) page = "kingdoms";
+  if (page === "muster" && !muster) page = "musters";
 
   return (
     <Theme theme={marchesTheme} mode="light">
-      <AppShell
-        height="auto"
-        contentPadding={0}
-        variant="wash"
-        sideNav={sideNav}
-        mobileNav={false}
-      >
+      <AppShell height="auto" contentPadding={0} variant="wash" sideNav={sideNav} mobileNav={false}>
         <MobileNav isOpen={menuOpen} onOpenChange={setMenuOpen} header="Oathmark">
           {navItems}
         </MobileNav>
+        <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
+
         <FoundKingdom
           isOpen={founding}
           onOpenChange={setFounding}
           onFound={(base) => {
-            setKingdom({ ...EMPTY_KINGDOM, ...base });
-            setMuster(EMPTY_MUSTER);
+            setStore((s) => save(s, "kingdoms", { ...EMPTY_KINGDOM, ...base }));
             setFounding(false);
-            setSection("kingdom");
+            go("kingdom");
           }}
         />
-        <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
+        <MusterNew
+          isOpen={mustering}
+          onOpenChange={setMustering}
+          kingdoms={buildable}
+          defaultKingdomId={kingdom?.capitalList ? kingdom.id : undefined}
+          onMuster={(base) => {
+            setStore((s) => save(s, "musters", { ...EMPTY_MUSTER, ...base }));
+            setMustering(false);
+            go("muster");
+          }}
+        />
+        {deleting && (
+          <AlertDialog
+            isOpen
+            onOpenChange={(o) => !o && setDeleting(null)}
+            title={deleting.kind === "kingdoms" ? "Delete Kingdom" : "Delete Army"}
+            description={deleting.rec.name || "Untitled"}
+            actionLabel="Delete"
+            onAction={confirmDelete}
+          />
+        )}
+
         {error && (
           <Section paddingBlockEnd={0}>
             <Banner status="error" title={error} isDismissable onDismiss={() => setError(null)} />
           </Section>
         )}
-        {section === "home" && (
-          <Landing onOpen={(id) => setSection(id === "kingdom" ? "kingdoms" : id)} onMenu={() => setMenuOpen(true)} />
+
+        {page === "home" && <Landing onOpen={go} />}
+        {page === "kingdoms" && (
+          <KingdomList store={store} fileActions={fileActions} {...shell}
+                       onOpen={(id) => open("kingdoms", id)} onNew={() => setFounding(true)} />
         )}
-        {section === "kingdoms" && (
-          <KingdomList
-            store={store}
-            onOpen={(id) => load("kingdoms", id)}
-            onNew={() => setFounding(true)}
-            onBack={() => setSection("home")}
-            onMenu={() => setMenuOpen(true)}
+        {page === "kingdom" && (
+          <KingdomPane value={kingdom} onChange={update("kingdoms")}
+                       shell={{ ...shell, actions: recordActions("kingdoms", kingdom) }} />
+        )}
+        {page === "musters" && (
+          <MusterList store={store} fileActions={fileActions} {...shell}
+                      onOpen={(id) => open("musters", id)} onNew={() => setMustering(true)} />
+        )}
+        {page === "muster" && (
+          <MusterPane
+            kingdom={musterKingdom ?? EMPTY_KINGDOM}
+            collection={collection.owned}
+            value={muster}
+            onChange={update("musters")}
+            ready={Boolean(musterKingdom?.capitalList && validateKingdom(musterKingdom).ok)}
+            shell={{ ...shell, actions: recordActions("musters", muster),
+                     subtitle: musterKingdom ? <Text type="label">{musterKingdom.name}</Text> : null }}
           />
         )}
-        {section === "kingdom" && (
-          <KingdomPane value={kingdom} onChange={setKingdom} shell={shell} />
-        )}
-        {section === "collection" && (
+        {page === "collection" && (
           <CollectionPane
-            value={kingdom.collection ?? {}}
-            onChange={(collection) => setKingdom({ ...kingdom, collection })}
+            value={collection.owned}
+            onChange={(owned) => setStore((s) => ({ ...s, collections: [{ ...collection, owned }] }))}
             shell={shell}
           />
         )}
-        {section === "muster" && (
-          <MusterPane kingdom={kingdom} value={muster} onChange={setMuster} ready={ready} shell={shell} />
-        )}
-        {section === "reference" && <ReferencePane shell={shell} />}
+        {page === "reference" && <ReferencePane shell={shell} />}
       </AppShell>
     </Theme>
   );

@@ -33,12 +33,11 @@ function roleOf(fig) {
   return "infantry";
 }
 
-export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
+export default function MusterPane({ kingdom, collection = {}, value, onChange, ready, shell }) {
   const [role, setRole] = React.useState("infantry");
   const [openFigure, setOpenFigure] = React.useState(null);
   const points = value.points ?? 1000;
   const units = value.units ?? [];
-  const collection = kingdom.collection ?? {};
 
   const pool = React.useMemo(() => figurePool(kingdom), [kingdom]);
   const result = validateArmy(kingdom, { points, units });
@@ -65,7 +64,7 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
     return (
       <Shell
         {...shell}
-        title="Muster"
+        title={value.name || "Untitled"}
         content={
           <Section paddingBlock={GAP.section}>
           </Section>
@@ -96,7 +95,7 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
   return (
     <Shell
       {...shell}
-      title="Muster"
+      title={value.name || "Untitled"}
       meta={(
       <HStack gap={GAP.item} align="center">
         <NumberInput label="Points" value={points} min={0} step={50} size="sm"
@@ -178,12 +177,9 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
       )}
       content={(
       <VStack gap={0}>
-        <Section paddingBlockEnd={0}>
-          <TabList value={activeRole} onChange={setRole} isFullBleed>
+          <TabList value={activeRole} onChange={setRole}>
             {roles.map((r) => <Tab key={r} value={r} label={ROLE_LABEL[r]} />)}
           </TabList>
-        </Section>
-        <Section padding={0}>
           <FigureTable
             rows={rows}
             onOpen={setOpenFigure}
@@ -195,7 +191,6 @@ export default function MusterPane({ kingdom, value, onChange, ready, shell }) {
                 level: r.entry.levels ? r.entry.levels[0] : undefined,
               }])}
           />
-        </Section>
         {openFigure && (
           <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)} />
         )}

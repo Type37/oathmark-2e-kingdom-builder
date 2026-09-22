@@ -30,7 +30,6 @@ export default function ReferencePane({ shell }) {
     <Shell
       {...shell}
       title="Reference"
-      meta={<Text type="label">{rows.length} entries</Text>}
       content={
         <VStack gap={0}>
           <Section paddingBlockEnd={GAP.item}>
@@ -38,7 +37,7 @@ export default function ReferencePane({ shell }) {
                        onChange={(e) => setQuery(e.target?.value ?? e)} />
           </Section>
           <Section paddingBlockEnd={0}>
-            <TabList value={kind} onChange={setKind} isFullBleed>
+            <TabList value={kind} onChange={setKind}>
               <Tab value="attributes" label="Attributes" />
               <Tab value="spells" label="Spells" />
               <Tab value="items" label="Magic Items" />

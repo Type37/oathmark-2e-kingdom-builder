@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { canPlace, validateKingdom, figurePool, placeableIn, chariotUnlocked } from "./kingdom.mjs";
-import { validateArmy, armyPoints, rollPoints } from "./muster.mjs";
+import { validateArmy, armyPoints, rollPoints, battleScale } from "./muster.mjs";
 
 // Book example 1, p24. Beginner: Dwarf City capital, Human City + Forges in Region 2.
 const grundeland = {
@@ -199,10 +199,23 @@ test("the 20% rule uses the book's knucker example", () => {
 
 test("the random points table matches the book", () => {
   assert.equal(rollPoints(1, "moderate"), 500);
-  assert.equal(rollPoints(12, "moderate"), 6000);
-  assert.equal(rollPoints(12, "beginner"), 3000);
-  assert.equal(rollPoints(12, "expert"), 6000);
+  assert.equal(rollPoints(10, "moderate"), 3500);
   assert.equal(rollPoints(10, "expert"), 6000); // 10 + 2 = 12
+  assert.equal(rollPoints(1, "expert"), 1000); // 1 + 2 = 3
+});
+
+test("Beginner halves the die roll, not the points (p33)", () => {
+  assert.equal(rollPoints(10, "beginner"), 1750); // 5: "your largest battle will be 1,750 points"
+  assert.equal(rollPoints(9, "beginner"), 1750); // 4.5 rounds up to 5
+  assert.equal(rollPoints(3, "beginner"), 750); // 1.5 rounds up to 2
+  assert.equal(rollPoints(1, "beginner"), 500);
+});
+
+test("each points value names its scale of battle", () => {
+  assert.equal(battleScale(500), "Minor Skirmish");
+  assert.equal(battleScale(2500), "Pitched Battle");
+  assert.equal(battleScale(6000), "Epic Battle");
+  assert.equal(battleScale(1234), null);
 });
 
 import { EXAMPLE_KINGDOMS, loadExample } from "./examples.mjs";

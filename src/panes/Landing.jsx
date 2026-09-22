@@ -1,35 +1,24 @@
 import React from "react";
 import {
-  Layout, LayoutContent, LayoutHeader, HStack, Grid, VStack, Card, Heading, Section, Button,
+  Layout, LayoutContent, Grid, VStack, Card, Heading, Section,
 } from "@astryxdesign/core";
 import { Icon } from "@iconify/react";
 import Mark from "../components/Mark.jsx";
-import Ico from "../components/Ico.jsx";
 import { LAUREL, MUSTER } from "../icons/game.mjs";
 import { GAP } from "../layout.mjs";
 
 const CARDS = [
-  { id: "kingdom", title: "Found a Kingdom", icon: LAUREL },
-  { id: "muster", title: "Muster an Army", icon: MUSTER },
-  { id: "reference", title: "Unit Collections", mark: "skill" },
+  { id: "kingdoms", title: "Kingdom Builder", icon: LAUREL },
+  { id: "musters", title: "Army Builder", icon: MUSTER },
+  { id: "collection", title: "Unit Collection", mark: "skill" },
 ];
 
-export default function Landing({ onOpen, onMenu }) {
+export default function Landing({ onOpen }) {
   return (
     <Layout
       height="auto"
       padding={8}
       contentWidth={1040}
-      header={
-        onMenu && (
-          <LayoutHeader>
-            <HStack>
-              <Button className="om-menu-btn" label="Menu" size="sm" variant="ghost" isIconOnly
-                      icon={<Ico name="menu" size={20} />} onClick={onMenu} />
-            </HStack>
-          </LayoutHeader>
-        )
-      }
       content={
         <LayoutContent>
           <VStack gap={8}>

@@ -22,12 +22,14 @@ export const KingdomSchema = z.object({
   territories: z.array(Territory).optional().default([]),
   collection: z.record(z.string(), z.number().int().min(0)).optional().default({}),
   chronicle: z.array(ChronicleEntry).optional().default([]),
+  emblem: z.string().nullable().optional(),
   saved: z.string().optional(),
 });
 
 export const MusterSchema = z.object({
   id: z.string().optional(),
   name: z.string().optional().default(""),
+  commander: z.string().optional().default(""),
   points: z.number().int().min(0).optional().default(1000),
   kingdomId: z.string().optional(),
   units: z
@@ -37,6 +39,7 @@ export const MusterSchema = z.object({
         figureId: z.string().min(1),
         count: z.number().int().min(1).optional().default(1),
         level: z.number().int().min(1).max(5).optional(),
+        upgrades: z.array(z.object({ name: z.string() }).passthrough()).optional(),
       }),
     )
     .optional()

@@ -14,7 +14,8 @@ export default function RegionMap({ regions, picks, activeRegion, hoverKey, onSl
   React.useEffect(() => {
     if (picks.length > prev.current) {
       const last = picks[picks.length - 1];
-      setClaimed(`${last.region}-${last.name}-${picks.length - 1}`);
+      const slot = picks.filter((p) => p.region === last.region).length - 1;
+      setClaimed(`${last.region}-${last.name}-${slot}`);
       const t = setTimeout(() => setClaimed(null), 700);
       prev.current = picks.length;
       return () => clearTimeout(t);

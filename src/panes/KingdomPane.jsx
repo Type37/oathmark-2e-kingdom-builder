@@ -112,11 +112,16 @@ export default function KingdomPane({ value, onChange, shell }) {
     </VStack>
   );
 
-  const detail = capitalList ? (
+  const map = (
+    <RegionMap regions={regions} picks={picks} activeRegion={picking}
+               onSlotClick={(r, _i, pick) => { if (capitalList && !pick && r > 1) setPicking(r); }} />
+  );
+
+  const detail = (
     <VStack gap={GAP.group}>
       <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
       {value.emblem && <HStack justify="center"><Emblem emblemKey={value.emblem} name={value.name} /></HStack>}
-      <RegionMap regions={regions} picks={picks} activeRegion={picking} />
+      {map}
       <TextInput label="Kingdom" value={value.name ?? ""} size="sm"
                  onChange={(e) => patch({ name: e.target?.value ?? e })} />
       <Chronicle entries={value.chronicle ?? []} ruler={value.ruler}
@@ -128,7 +133,7 @@ export default function KingdomPane({ value, onChange, shell }) {
         </VStack>
       )}
     </VStack>
-  ) : null;
+  );
 
   const dialogs = (
     <>
@@ -164,7 +169,8 @@ export default function KingdomPane({ value, onChange, shell }) {
   return (
     <Shell
       {...shell}
-      title="Kingdom"
+      title={value.name || "Untitled"}
+      inlineDetail={map}
       meta={capitalList ? <Text type="label">{{ beginner: "Beginner", moderate: "Moderate", expert: "Expert" }[level ?? "moderate"]}</Text> : null}
       detail={detail}
       detailTitle="Kingdom Sheet"

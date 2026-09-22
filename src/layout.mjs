@@ -11,7 +11,7 @@
 //   - The panel region reserves its width whether or not it has content.
 //   - The stepper never auto-advances; the user moves it.
 
-export const FRAME = { padding: 4, contentWidth: 1120 };
+export const FRAME = { padding: 4, contentWidth: 1200 };
 export const PANEL = { library: 240, detail: 360, kingdom: 340, roster: 360 };
 export const GAP = { tight: 1, item: 2, group: 4, section: 6 };
 export const DENSITY = { choice: "spacious", data: "balanced", dense: "compact" };
@@ -23,4 +23,4 @@ export const BREAK = {
 };
 
 // Column widths never vary by tab, so switching tabs cannot reflow the table.
-export const COL = { stat: 56, name: 4, action: 76 };
+export const COL = { stat: 52, name: 168, action: 76 };

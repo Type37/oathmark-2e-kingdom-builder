@@ -3,6 +3,7 @@ import {
   Layout, LayoutContent, LayoutHeader, VStack, HStack, Grid, Card, Text, Heading,
   Button,
 } from "@astryxdesign/core";
+import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { Icon } from "@iconify/react";
 import Ico from "../components/Ico.jsx";
 import { LAUREL } from "../icons/game.mjs";
@@ -18,7 +19,7 @@ function slots(level) {
 
 const LEVEL_LABEL = { beginner: "Beginner", moderate: "Moderate", expert: "Expert" };
 
-export default function KingdomList({ store, onOpen, onNew, onBack, onMenu }) {
+export default function KingdomList({ store, onOpen, onNew, onBack, onMenu, fileActions }) {
   const rows = listOf(store, "kingdoms");
 
   return (
@@ -28,16 +29,15 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu }) {
       contentWidth={1040}
       header={
         <LayoutHeader>
-          <HStack gap={GAP.item} align="center">
-            {onMenu && (
+          <HStack gap={GAP.item} align="center" justify="between">
+            <HStack gap={GAP.item} align="center">
               <Button className="om-menu-btn" label="Menu" size="sm" variant="ghost" isIconOnly
                       icon={<Ico name="menu" size={20} />} onClick={onMenu} />
-            )}
-            {onBack && (
               <Button label="Back" size="sm" variant="ghost" isIconOnly
                       icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
-            )}
-            <Heading level={1}>Kingdoms</Heading>
+              <Heading level={1}>Kingdom Builder</Heading>
+            </HStack>
+            <MoreMenu items={fileActions} alignment="end" />
           </HStack>
         </LayoutHeader>
       }
@@ -67,7 +67,7 @@ export default function KingdomList({ store, onOpen, onNew, onBack, onMenu }) {
             })}
             </Grid>
             <HStack className="om-cta-dock">
-              <Button label="Found a Kingdom" size="lg" variant="primary"
+              <Button label="New Kingdom" size="lg" variant="primary"
                       icon={<Icon icon={LAUREL} width={24} height={24} />} onClick={onNew} />
             </HStack>
           </VStack>

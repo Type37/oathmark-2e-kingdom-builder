@@ -1,12 +1,25 @@
 import { figurePool, figureById, chariotUnlocked } from "./kingdom.mjs";
 
+// Random Points Value Table, p33. Rows 11–12 are only reachable at Expert.
 export const RANDOM_POINTS = [500, 750, 1000, 1500, 1750, 2000, 2500, 2750, 3000, 3500, 4000, 6000];
+export const BATTLE_SCALE = [
+  "Minor Skirmish", "Moderate Skirmish", "Major Skirmish", "Minor Battle",
+  "Moderate Battle", "Moderate Battle", "Pitched Battle", "Pitched Battle",
+  "Major Battle", "Major Battle", "Epic Battle", "Epic Battle",
+];
 
-export function rollPoints(d12, level) {
-  let roll = d12;
-  if (level === "expert") roll = Math.min(12, roll + 2);
-  const pts = RANDOM_POINTS[roll - 1];
-  return level === "beginner" ? Math.ceil(pts / 2 / 250) * 250 : pts;
+// p33: Beginner halves the die roll and rounds up (max 1,750); Expert adds 2.
+export function rollPoints(d10, level) {
+  let roll = d10;
+  if (level === "beginner") roll = Math.ceil(d10 / 2);
+  if (level === "expert") roll = d10 + 2;
+  roll = Math.min(12, Math.max(1, roll));
+  return RANDOM_POINTS[roll - 1];
+}
+
+export function battleScale(points) {
+  const i = RANDOM_POINTS.indexOf(points);
+  return i >= 0 ? BATTLE_SCALE[i] : null;
 }
 
 function variantFor(fig, unit) {
