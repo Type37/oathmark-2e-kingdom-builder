@@ -445,8 +445,7 @@
   }
 
   .astryx-field-label {
-    font-family: var(--font-family-heading);
-    letter-spacing: 0.02em;
+    font-family: var(--font-family-ui);
   }
 
   .astryx-tab {
@@ -464,8 +463,10 @@
   .astryx-table-header-cell {
     background-color: var(--color-bar);
     color: var(--color-on-bar);
-    font-family: var(--font-family-heading);
-    letter-spacing: 0.04em;
+    font-family: var(--font-family-ui);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .astryx-text[data-color="primary"] { color: var(--color-text-primary); }

@@ -311,8 +311,7 @@ export const marchesTheme = {
     },
     "field-label": {
       "base": {
-        "fontFamily": "var(--font-family-heading)",
-        "letterSpacing": "0.02em"
+        "fontFamily": "var(--font-family-ui)"
       }
     },
     "tab": {
@@ -334,8 +333,10 @@ export const marchesTheme = {
       "base": {
         "backgroundColor": "var(--color-bar)",
         "color": "var(--color-on-bar)",
-        "fontFamily": "var(--font-family-heading)",
-        "letterSpacing": "0.04em"
+        "fontFamily": "var(--font-family-ui)",
+        "fontWeight": "var(--font-weight-semibold)",
+        "letterSpacing": "0.06em",
+        "textTransform": "uppercase"
       }
     }
   },

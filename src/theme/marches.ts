@@ -127,8 +127,9 @@ export default defineTheme({
     "side-nav-section": { base: { fontFamily: "var(--font-family-ui)" } },
     "side-nav-heading": { base: { fontFamily: "var(--font-family-heading)" } },
     "dialog-header-title-block": { base: { fontFamily: "var(--font-family-heading)" } },
-    // Field labels are the book's sheet labels: KINGDOM NAME, ARMY COMMANDER, TOTAL POINTS (p217–218).
-    "field-label": { base: { fontFamily: "var(--font-family-heading)", letterSpacing: "0.02em" } },
+    // Grenze Gotisch only at headline size. Small labels follow the book's plain
+    // sans capitals (Gandur New) in Cabin: field labels, table bars, plates.
+    "field-label": { base: { fontFamily: "var(--font-family-ui)" } },
     tab: { base: { fontFamily: "var(--font-family-ui)" } },
     token: { base: { fontFamily: "var(--font-family-ui)" } },
     badge: { base: { fontFamily: "var(--font-family-ui)" } },
@@ -136,8 +137,10 @@ export default defineTheme({
       base: {
         backgroundColor: "var(--color-bar)",
         color: "var(--color-on-bar)",
-        fontFamily: "var(--font-family-heading)",
-        letterSpacing: "0.04em",
+        fontFamily: "var(--font-family-ui)",
+        fontWeight: "var(--font-weight-semibold)",
+        letterSpacing: "0.06em",
+        textTransform: "uppercase",
       },
     },
   },

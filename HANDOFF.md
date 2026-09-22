@@ -43,12 +43,12 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 | Role | Face | Token |
 |---|---|---|
 | All text | Berling LT Std (owner's web licence, self-hosted from `public/fonts/berling/`); Crimson Pro is the fallback | `--font-family-body` |
-| Headings, table bars, plates, docked CTA | Grenze Gotisch | `--font-family-heading` |
+| Headings (20px and up), dialog titles, docked CTA | Grenze Gotisch | `--font-family-heading` |
 | Buttons, tabs, tokens, badges, SideNav items and section titles | Cabin | `--font-family-ui` (local) |
-| Field labels (the book's sheet labels), dialog titles, SideNav heading | Grenze Gotisch | theme `components` overrides |
+| Field labels, table bars, plates | Cabin; bars and plates in spaced capitals, like the book's Gandur New labels | theme `components` overrides, `.om-plate *` |
 | ⋯ menu items | Cabin | theme `components` override |
 
-Grenze Gotisch is a blackletter; its capitals are hard to read, so never set it in uppercase. Plates use title case.
+Grenze Gotisch is a blackletter: unreadable below about 20px and in uppercase. Keep it to headline sizes.
 
 **Colour:** page `#FBF7EF` over the parchment scan, cards `#FFFFFF`, ink `#221F1F`, warm grey `#5C5953` (secondary text and bars), dusty rose `#D7B5A6` (borders), magenta accent `#D40B61` (`#EC0C6C` as `--color-highlight` for fills only).
 

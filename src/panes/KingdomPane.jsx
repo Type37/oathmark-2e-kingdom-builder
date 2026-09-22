@@ -85,7 +85,7 @@ export default function KingdomPane({ value, onChange, onEmblem, shell }) {
                   ))}
                 </HStack>
               }
-              startContent={<Token label={String(territory(p.list, p.name)?.rarity ?? "")} size="sm" color={hueOf(p.list)} />}
+              startContent={<Token label={`Rarity ${territory(p.list, p.name)?.rarity ?? ""}`} size="sm" color={hueOf(p.list)} />}
               endContent={r === 1 ? undefined : (
                 <Button label="Remove" size="sm" variant="ghost" isIconOnly
                         icon={<Ico name="minus" />}

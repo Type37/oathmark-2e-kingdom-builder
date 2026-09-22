@@ -81,10 +81,12 @@ body {
     inset 0 0 0 calc(var(--spacing-0-5) + var(--border-width)) var(--color-text-secondary);
   padding: var(--spacing-1) var(--spacing-4);
 }
-/* Grenze Gotisch is a blackletter: its capitals are ornate, so plates stay in title case. */
+/* Plate labels are the book's spaced sans capitals (Gandur New), set in Cabin. */
 .om-plate * {
-  font-family: var(--font-family-heading);
-  letter-spacing: 0.02em;
+  font-family: var(--font-family-ui);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* A region under the pointer, here or on the Kingdom Sheet, lights its plate. */
