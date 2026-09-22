@@ -20,7 +20,8 @@ import { GAP } from "../layout.mjs";
 
 // One entry on the Army Roster: who they are, how many, and what they carry.
 export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin, onRemove, onOpenFigure }) {
-  const p = unitProfile(unit, units);
+  const entry = pool.get(unit.figureId);
+  const p = unitProfile(unit, units, entry);
   if (!p) return null;
   const { fig, variant, charFig, guest } = p;
   const crew = crewOf(fig);
@@ -28,7 +29,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
   const caster = attrLevel(variantAfter, "Spellcaster");
   const knows = caster ? spellsKnown(unit.level ?? caster) : 0;
   const chosenSpells = unit.spells ?? [];
-  const levels = pool.get(unit.figureId)?.levels ?? null;
+  const levels = entry?.levels ?? null;
 
   // A character already in the army may lead a unit instead of standing alone.
   const hosts = isCharacter(fig)
@@ -55,6 +56,8 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
             <Text type="supporting">
               {[
                 p.formation,
+                p.penalty?.occupied ? "from occupied ground, activates one worse" : null,
+                p.penalty?.unreliable ? "from the borderlands, Unreliable" : null,
                 p.unitOfOne ? "unit-of-one" : null,
                 crew ? `crew of ${crew}` : null,
                 charFig ? `led by ${charFig.name}` : null,

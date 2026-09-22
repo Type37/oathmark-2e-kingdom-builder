@@ -69,10 +69,20 @@ export function sourcePenalties(entry) {
   return { occupied: allOccupied, unreliable: allBorderland };
 }
 
-export function unitProfile(unit, units) {
+export function unitProfile(unit, units, entry) {
   const fig = figureById.get(unit.figureId);
   if (!fig) return null;
-  const v = variantFor(fig, unit);
+  const base = variantFor(fig, unit);
+  const penalty = sourcePenalties(entry);
+  const v = penalty.occupied || penalty.unreliable
+    ? {
+        ...base,
+        A: base.A + (penalty.occupied ? 1 : 0),
+        attributes: penalty.unreliable && !base.attributes.includes("Unreliable")
+          ? [...base.attributes, "Unreliable"]
+          : base.attributes,
+      }
+    : base;
   const guest = joinedTo(units, unit);
   const charFig = guest ? figureById.get(guest.figureId) : null;
   const charV = charFig ? variantFor(charFig, guest) : null;
@@ -80,7 +90,7 @@ export function unitProfile(unit, units) {
   const move = charV ? Math.min(v.M, charV.M) : v.M;
   const activation = charV && attrLevel(charV, "Command") ? Math.max(v.A, charV.A) : v.A;
   return {
-    fig, variant: v, guest, charFig, charVariant: charV,
+    fig, variant: v, guest, charFig, charVariant: charV, penalty,
     bodies,
     max: sizeRule(fig).max,
     formation: formation(fig, bodies),

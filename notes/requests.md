@@ -80,16 +80,22 @@
 - Figure cards draw the same stat bar as the roster, so the table's own header bar cannot collide with the dialog's
 - Territory preview columns are proportional, so nothing scrolls sideways
 
+## Done, print and campaign round
+
+- Print rebuilt: crest and rings beside the ledger, a tick box per territory and a rule to write new ones on, The Realm on page one, figures by race on page two
+- Occupied ground adds +1 Activation and the borderlands add Unreliable, on the unit card and in the stats
+- A campaign territory must share a border with unoccupied ground (p37)
+- Skeletons are infantry again: "Spellcaster Control" was being read as a spellcaster
+- Switches work; Astryx's Switch takes `value`, not `isSelected`
+- List actions moved into their headers; the dock is for build screens only
+- Record names are edited in the header; the points budget is stated once
+- Army summary drops total Health and the activation spread
+
 ## Open
 
-1. **Print rebuild** — map beside the region ledger, occupied boxes, The Realm block, figures grouped by race. Audited, half-written.
-2. **Muster modal polish** — plain boxes on a plain panel; the last screen ignoring the paper treatment.
-3. **Army header** — "Points 1000" and "906/1000" say the same thing twice; the army name can't be edited where it's shown.
-4. **Nekoweb copy** — whether to publish a second copy there.
-5. **Knave's other tables** — inn names, factions, wizard names, missions.
-6. **Occupied and Region 6 in the muster** — the engine records both; the army side doesn't yet apply +1 Activation or Unreliable.
-7. **Campaign additions must share a border** with an unoccupied territory (p37).
-8. **Legendary Heroes** (Appendix D).
+1. **Nekoweb copy** — whether to publish a second copy there.
+2. **Knave's other tables** — inn names, factions, wizard names, missions.
+3. **Legendary Heroes** (Appendix D).
 9. **"We had a good thing before"** on unit cards — say which version and I'll restore it.
 10. **Contrast pass** across the tinted cards and supporting text, measured against WCAG, not eyeballed.
 11. **Top menu** — still not right: back arrow, app menu, title, then Print, gear and record menu all queued at the ends.

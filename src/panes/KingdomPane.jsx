@@ -45,7 +45,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
     if (picking === 1) return capitals().map((t) => ({ t, res: { ok: true } }));
     if (!picking || !capitalList) return [];
     return allTerritories()
-      .map((t) => ({ t, res: canPlace({ capitalList, region: picking, list: t.list, name: t.name, founded: value.founded }) }))
+      .map((t) => ({ t, res: canPlace({ capitalList, region: picking, list: t.list, name: t.name, founded: value.founded, kingdom: value }) }))
       .filter((x) => x.res.ok)
       .sort((a, b) =>
         (a.t.list === capitalList ? -1 : 0) - (b.t.list === capitalList ? -1 : 0) ||

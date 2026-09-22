@@ -64,3 +64,20 @@ test("a founded kingdom may grow into Regions 5 and 6, p37", async () => {
   assert.equal(startComplete(k), true);
   assert.equal(startComplete({ ...k, territories: k.territories.slice(0, 2) }), false);
 });
+
+test("a campaign territory must share a border with unoccupied ground, p37", async () => {
+  const { canPlace, sharesBorder } = await import("./kingdom.mjs");
+  const kingdom = {
+    founded: true, level: "expert", capitalList: "elf",
+    territories: [
+      { region: 1, list: "elf", name: "Elf City" },
+      { region: 4, list: "elf", name: "Outposts" },
+    ],
+  };
+  assert.equal(sharesBorder(kingdom, 5), true);
+  const cut = { ...kingdom, territories: kingdom.territories.map((t) => ({ ...t, occupied: true })) };
+  assert.equal(sharesBorder(cut, 5), false);
+  assert.equal(canPlace({
+    capitalList: "elf", region: 5, list: "elf", name: "Hill Caves", founded: true, kingdom: cut,
+  }).ok, false);
+});

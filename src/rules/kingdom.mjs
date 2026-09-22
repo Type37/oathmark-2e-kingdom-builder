@@ -33,7 +33,13 @@ function earliestRegion(rarity, sameList) {
   return sameList ? Math.max(2, rarity) : rarity + 1;
 }
 
-export function canPlace({ capitalList, region, list, name, founded }) {
+export function sharesBorder(kingdom, region) {
+  if (region <= 1) return true;
+  const placed = (kingdom?.territories ?? []).filter((t) => !t.occupied);
+  return placed.some((t) => Math.abs(t.region - region) <= 1);
+}
+
+export function canPlace({ capitalList, region, list, name, founded, kingdom }) {
   const t = territory(list, name);
   if (!t) return { ok: false, reason: `Unknown: ${list}/${name}` };
 
@@ -44,6 +50,8 @@ export function canPlace({ capitalList, region, list, name, founded }) {
   // Regions 5 and 6 are campaign additions, so they wait for the kingdom to be founded (p37).
   if (region > 4) {
     if (!founded) return { ok: false, reason: "Campaign only: found the kingdom first" };
+    if (kingdom && !sharesBorder(kingdom, region))
+      return { ok: false, reason: `Region ${region} shares no border with an unoccupied territory` };
     if (t.rarity > region) return { ok: false, reason: `Rarity ${t.rarity}: needs Region ${t.rarity}` };
     return { ok: true };
   }
@@ -143,7 +151,7 @@ export function validateKingdom(k) {
     for (const r of outside) errors.push(`Region ${r}: not in a ${k.level} kingdom`);
   }
   for (const p of placed) {
-    const res = canPlace({ capitalList: k.capitalList, region: p.region, list: p.list, name: p.name, founded: k.founded });
+    const res = canPlace({ capitalList: k.capitalList, region: p.region, list: p.list, name: p.name, founded: k.founded, kingdom: k });
     if (!res.ok) errors.push(res.reason);
   }
   return { ok: errors.length === 0, errors, slots: slots.length, placed: placed.length };
