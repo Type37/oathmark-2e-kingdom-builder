@@ -24,9 +24,6 @@ export default defineTheme({
     },
   },
 
-  // Letterpress-flat: the book has no rounded cards and no glow.
-  radius: { base: 2, multiplier: 1 },
-
   // Each entry is [light, dark].
   localTokens: {
     "--font-family-prose": "'EB Garamond', 'Iowan Old Style', Palatino, Georgia, serif",

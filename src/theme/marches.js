@@ -98,13 +98,6 @@ export const marchesTheme = {
     "--text-display-3-size": "var(--font-size-3xl)",
     "--text-display-3-weight": "var(--font-weight-normal)",
     "--text-display-3-leading": "1.2571",
-    "--radius-none": "0px",
-    "--radius-inner": "2px",
-    "--radius-element": "4px",
-    "--radius-container": "6px",
-    "--radius-page": "14px",
-    "--radius-chat": "14px",
-    "--radius-full": "9999px",
     "--font-family-body": "Cabin, 'Gill Sans', 'Gill Sans MT', 'Helvetica Neue', Helvetica, sans-serif",
     "--font-family-heading": "\"Almendra SC\", 'EB Garamond', Palatino, Georgia, serif",
     "--color-highlight": "light-dark(#FB6376, #FB6376)"
@@ -264,10 +257,6 @@ export const marchesTheme = {
       "accent": "#5D2A42",
       "neutralStyle": "warm",
       "contrast": "high"
-    },
-    "radius": {
-      "base": 2,
-      "multiplier": 1
     }
   },
 

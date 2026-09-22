@@ -57,5 +57,3 @@ page number in a centred cartouche.
   FFG exactly, and reads close to Morris Troy's spirit), **EB Garamond** for
   body (old-style, closest free stand-in for Berling).
 - Small caps for proper nouns is a cheap, period-correct move.
-- No gradients, no glow, no rounded-everything. The source material is
-  letterpress-flat.
