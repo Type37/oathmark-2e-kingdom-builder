@@ -71,18 +71,6 @@ body {
   stroke-width: 3;
 }
 
-/* The book's header bar, for section heads that are not table headers. */
-.om-band {
-  background-color: var(--color-bar);
-  color: var(--color-on-bar);
-  padding: var(--spacing-1) var(--spacing-3);
-}
-.om-band * {
-  color: inherit;
-  font-family: var(--font-family-heading);
-  letter-spacing: 0.04em;
-}
-
 /* The book's label plate: scooped corners, a double rule. Plain radius where corner-shape is unsupported. */
 .om-plate {
   border: var(--border-width) solid var(--color-text-secondary);
@@ -93,10 +81,19 @@ body {
     inset 0 0 0 calc(var(--spacing-0-5) + var(--border-width)) var(--color-text-secondary);
   padding: var(--spacing-1) var(--spacing-4);
 }
+/* Grenze Gotisch is a blackletter: its capitals are ornate, so plates stay in title case. */
 .om-plate * {
   font-family: var(--font-family-heading);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* A region under the pointer, here or on the Kingdom Sheet, lights its plate. */
+.om-region-lit .om-plate {
+  background-color: var(--color-accent-muted);
+  border-color: var(--color-accent);
+  box-shadow:
+    inset 0 0 0 var(--spacing-0-5) var(--color-accent-muted),
+    inset 0 0 0 calc(var(--spacing-0-5) + var(--border-width)) var(--color-accent);
 }
 
 /* The book's callout: pale magenta field, notched border, magenta text. */

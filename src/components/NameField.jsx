@@ -10,9 +10,11 @@ export default function NameField({ label, value, onChange, pool, isOptional, si
     <HStack gap={2} align="end">
       <TextInput label={label} value={value ?? ""} isOptional={isOptional} size={size} width="100%"
                  onChange={(e) => onChange(e.target?.value ?? e)} />
-      <Button label={`Roll ${label}`} variant="secondary" size={size} isIconOnly
-              icon={<Icon icon={DICE} width={18} height={18} />}
-              onClick={() => onChange(randomName(pool, value))} />
+      {pool?.length > 0 && (
+        <Button label={`Roll ${label}`} variant="secondary" size={size} isIconOnly
+                icon={<Icon icon={DICE} width={18} height={18} />}
+                onClick={() => onChange(randomName(pool, value))} />
+      )}
     </HStack>
   );
 }

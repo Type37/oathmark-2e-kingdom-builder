@@ -123,6 +123,7 @@ export default defineTheme({
     },
     button: { base: { fontFamily: "var(--font-family-ui)" } },
     "side-nav-item": { base: { fontFamily: "var(--font-family-ui)" } },
+    "dropdown-menu-item": { base: { fontFamily: "var(--font-family-ui)" } },
     "side-nav-section": { base: { fontFamily: "var(--font-family-ui)" } },
     "side-nav-heading": { base: { fontFamily: "var(--font-family-heading)" } },
     "dialog-header-title-block": { base: { fontFamily: "var(--font-family-heading)" } },

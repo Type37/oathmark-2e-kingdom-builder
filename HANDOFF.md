@@ -46,6 +46,9 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 | Headings, table bars, plates, docked CTA | Grenze Gotisch | `--font-family-heading` |
 | Buttons, tabs, tokens, badges, SideNav items and section titles | Cabin | `--font-family-ui` (local) |
 | Field labels (the book's sheet labels), dialog titles, SideNav heading | Grenze Gotisch | theme `components` overrides |
+| ⋯ menu items | Cabin | theme `components` override |
+
+Grenze Gotisch is a blackletter; its capitals are hard to read, so never set it in uppercase. Plates use title case.
 
 **Colour:** page `#FBF7EF` over the parchment scan, cards `#FFFFFF`, ink `#221F1F`, warm grey `#5C5953` (secondary text and bars), dusty rose `#D7B5A6` (borders), magenta accent `#D40B61` (`#EC0C6C` as `--color-highlight` for fills only).
 
@@ -60,8 +63,8 @@ The look follows the book (`notes/book-style.md`), made colourful through race c
 - **Lists** (`#/kingdoms`, `#/musters`) have a docked CTA (New Kingdom / Muster a New Army) that opens a modal, plus a ⋯ menu with Import and Export All.
 - **Records** (`#/kingdom`, `#/muster`) autosave every edit into the store, so there is no Save button. Their ⋯ menu has Export, Duplicate and Delete (Delete asks through an AlertDialog).
 - **Unit Collection** is one global record (`store.collections[0].owned`), shared by every muster's shortfall check.
-- **Kingdom page:** Region 1 lists the six capitals with everything each grants; the territory picker shows race · grants. The Kingdom Sheet panel is the book's p217 sheet (name, ruler, emblem, rings) followed by `FigureAccess`, every figure the kingdom can muster, grouped by race; new rows rise in. No Chronicle.
-- **Name rolls:** `NameField` (TextInput + dice) draws from `src/names.mjs`: army and hero pools from the Dragon Rampant 2e builder, plus a realm pool. The big sci-fi pools (Infinity etc.) live in the Xenos Rampant builder's `src/factions.js`.
+- **Kingdom page:** Region 1 lists the six capitals with everything each grants. `TerritoryPicker` shows territories on the left and, on the right, a stat table of the figures the hovered territory grants (New tags for ones the kingdom lacks) plus an Add button. Hovering a region section lights its wedges on the map, and hovering a wedge lights its section. The Kingdom Sheet panel is the book's p217 sheet (name, ruler, emblem, rings) followed by `FigureAccess`, every figure the kingdom can muster, grouped by race; new rows rise in. No Chronicle.
+- **Name rolls:** `NameField` (TextInput + dice) draws from `src/names.mjs`. **Only names printed in published books the owner has, cited by page**: *Oathmark* 2e and *Dragon Rampant* 2e. Never invented names. An empty pool hides its dice.
 - **Experience** shows game-icons rank-1/2/3 chevrons (`Level.jsx`).
 - **New kingdom modal:** name, ruler, experience and emblem. **New army modal:** the p218 roster header (Army Name, Army Commander, Total Points) plus the Kingdom, with a Roll button for the p33 Random Points table.
 

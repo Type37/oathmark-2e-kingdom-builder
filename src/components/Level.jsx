@@ -16,6 +16,8 @@ export default function Level({ level, size = 16 }) {
   );
 }
 
+// The chevrons alone, named for screen readers.
 export function LevelIcon({ level, size = 20 }) {
-  return <Icon icon={RANK[LEVEL_LABEL[level] ? level : "moderate"]} width={size} height={size} />;
+  const key = LEVEL_LABEL[level] ? level : "moderate";
+  return <Icon icon={RANK[key]} width={size} height={size} role="img" aria-label={LEVEL_LABEL[key]} />;
 }

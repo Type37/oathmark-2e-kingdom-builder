@@ -289,6 +289,11 @@ export const marchesTheme = {
         "fontFamily": "var(--font-family-ui)"
       }
     },
+    "dropdown-menu-item": {
+      "base": {
+        "fontFamily": "var(--font-family-ui)"
+      }
+    },
     "side-nav-section": {
       "base": {
         "fontFamily": "var(--font-family-ui)"

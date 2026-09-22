@@ -7,7 +7,7 @@ function radii(count) {
   return Array.from({ length: count }, (_, i) => Math.round(step * (i + 1)));
 }
 
-export default function RegionMap({ regions, picks, activeRegion, hoverKey, onSlotHover, onSlotClick }) {
+export default function RegionMap({ regions, picks, activeRegion, litRegion, hoverKey, onSlotHover, onRegionHover, onSlotClick }) {
   // Animate only the slot that just arrived, not every filled slot on re-render.
   const [claimed, setClaimed] = React.useState(null);
   const prev = React.useRef(picks.length);
@@ -42,7 +42,8 @@ export default function RegionMap({ regions, picks, activeRegion, hoverKey, onSl
               const a1 = ((i + 1) * step - 90) * (Math.PI / 180);
               const pick = pickAt(region, i);
               const key = pick ? `${pick.region}-${pick.name}-${i}` : null;
-              const isActive = region === activeRegion;
+              const isLit = region === litRegion;
+              const isActive = region === activeRegion || isLit;
               const isHovered = key && key === hoverKey;
               const d =
                 region === 1
@@ -64,12 +65,13 @@ export default function RegionMap({ regions, picks, activeRegion, hoverKey, onSl
                     d={d}
                     fill={pick ? `var(--color-background-${hueOf(pick.list)})`
                       : isActive ? "var(--color-accent-muted)" : "var(--color-background-card)"}
-                    stroke={pick ? `var(--color-border-${hueOf(pick.list)})`
+                    stroke={isLit ? "var(--color-accent)"
+                      : pick ? `var(--color-border-${hueOf(pick.list)})`
                       : isActive ? "var(--color-accent)" : "var(--color-border-emphasized)"}
-                    strokeWidth={isHovered ? 3 : isActive || pick ? 2 : 1}
+                    strokeWidth={isHovered || isLit ? 3 : isActive || pick ? 2 : 1}
                     style={{ cursor: "pointer" }}
-                    onMouseEnter={() => onSlotHover?.(key)}
-                    onMouseLeave={() => onSlotHover?.(null)}
+                    onMouseEnter={() => { onSlotHover?.(key); onRegionHover?.(region); }}
+                    onMouseLeave={() => { onSlotHover?.(null); onRegionHover?.(null); }}
                     onClick={() => onSlotClick?.(region, i, pick)}
                   >
                     <title>{pick ? `Region ${region}: ${pick.name}` : `Region ${region}`}</title>

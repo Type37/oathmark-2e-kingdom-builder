@@ -428,6 +428,10 @@
     font-family: var(--font-family-ui);
   }
 
+  .astryx-dropdown-menu-item {
+    font-family: var(--font-family-ui);
+  }
+
   .astryx-side-nav-section {
     font-family: var(--font-family-ui);
   }
