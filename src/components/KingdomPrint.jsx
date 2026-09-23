@@ -65,9 +65,11 @@ export default function KingdomPrint({ value }) {
                 {mine.map((p, i) => (
                   <div key={`${p.name}-${i}`} className="om-print-terr">
                     <h3>
-                      <span className={`om-print-box${p.occupied ? " is-on" : ""}`} />
                       {p.name}
-                      <em>({territory(p.list, p.name)?.rarity}) {RACE[p.list]}</em>
+                      <em>
+                        ({territory(p.list, p.name)?.rarity}) {RACE[p.list]}
+                        {p.occupied ? " — occupied" : ""}
+                      </em>
                     </h3>
                     <ul className="om-print-grants">
                       {grantList(p.list, p.name, { asCapital: r === 1 }).map((g) => (
@@ -78,7 +80,7 @@ export default function KingdomPrint({ value }) {
                 ))}
                 {Array.from({ length: blanks }, (_, i) => (
                   <div key={`blank-${i}`} className="om-print-terr">
-                    <h3><span className="om-print-box" /><span className="om-print-rule" /></h3>
+                    <h3><span className="om-print-rule" /></h3>
                   </div>
                 ))}
               </section>

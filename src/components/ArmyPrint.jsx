@@ -88,8 +88,9 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
                 </p>
               )}
 
-              {/* One box per figure: strike them off as they are removed. */}
+              {/* One box per figure, under its own heading, to strike off. */}
               <div className="om-print-losses">
+                <span className="om-print-losses-label">Casualties</span>
                 {Array.from({ length: figures }, (_, i) => (
                   <span key={i} className="om-print-box" />
                 ))}
