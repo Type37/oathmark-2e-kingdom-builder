@@ -122,11 +122,18 @@ body {
 }
 
 /* react-easy-crop fills its parent, so the stage must have a definite size. */
-.om-crop-stage { position: absolute; inset: 0; background-color: var(--color-background-muted); }
-.om-crop-stage .reactEasyCrop_CropArea {
-  border: var(--border-width) solid var(--color-accent);
-  color: color-mix(in srgb, var(--color-text-primary) 62%, transparent);
+/* The crop stage is a block in the dialog's flow. It was left absolute from
+   react-easy-crop, which is why the controls sat on top of the picture. */
+.om-crop-stage {
+  display: block;
+  background-color: var(--color-background-muted);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--spacing-1);
+  overflow: hidden;
+  line-height: 0;
 }
+.om-crop-stage canvas { display: block; cursor: grab; touch-action: none; }
+.om-crop-stage canvas:active { cursor: grabbing; }
 
 /* Stat buttons sit on the dark header bar and take its pale text. */
 .astryx-table-header-cell .astryx-button,
@@ -176,13 +183,10 @@ body {
   @page { size: A4 portrait; margin: 12mm; }
 
   body { background: none; color: #000; }
-  body * { visibility: hidden; }
-  .om-print, .om-print * { visibility: visible; }
+  /* The app is taken out of the flow entirely; only the sheet has height. */
+  body > *:not(.om-print) { display: none !important; }
   .om-print {
     display: block;
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
     font-family: var(--font-family-body);
     font-size: 9.5pt;
     line-height: 1.35;
@@ -261,6 +265,22 @@ body {
   }
   .om-print h3 em { font-weight: normal; font-size: 9pt; }
   .om-print p { margin: 0 0 0 6mm; }
+  /* What the territory unlocks: an aside, two up, not a wall of body copy. */
+  .om-print-grants {
+    columns: 2;
+    column-gap: 5mm;
+    margin: 0.5mm 0 0 6mm;
+    padding: 0;
+    list-style: none;
+    font-size: 7pt;
+    line-height: 1.3;
+  }
+  .om-print-grants li {
+    break-inside: avoid;
+    padding-inline-start: 2.5mm;
+    text-indent: -2.5mm;
+  }
+  .om-print-grants li::before { content: "• "; }
 
   /* A box to tick when a territory falls, and a rule to write a new one on. */
   .om-print-box {
@@ -560,4 +580,17 @@ body[data-view="work"] .wlf { display: none; }
   font-family: var(--font-family-heading);
   font-size: var(--font-size-xl);
   line-height: 1;
+}
+
+/* Removing something is destructive, not urgent: the red arrives on approach. */
+.om-remove.astryx-button {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+.om-remove.astryx-button:hover,
+.om-remove.astryx-button:focus-visible {
+  background-color: var(--color-background-red);
+  border-color: var(--color-text-error);
+  color: var(--color-text-error);
 }

@@ -1,11 +1,13 @@
 import React from "react";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FileInput,
-  HStack, VStack, Button, Slider, Text,
+  HStack, VStack, Button, Slider,
 } from "@astryxdesign/core";
 import AvatarEditor from "react-avatar-editor";
+import { GAP } from "../layout.mjs";
 
-const SIZE = 512;
+const SIZE = 512;   // what gets saved
+const STAGE = 360;  // what you drag on
 
 // Big photographs make the canvas crawl, so the source is scaled down first.
 function downscale(file, max = 1600) {
@@ -61,31 +63,29 @@ export default function EmblemDialog({ isOpen, onOpenChange, onDone }) {
   }
 
   return (
-    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={560} purpose="form">
+    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={STAGE + 40 + 64} purpose="form">
       <Layout
         header={<DialogHeader title="Emblem" onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
             {src ? (
-              <VStack gap={4} align="center">
+              <VStack gap={GAP.group} align="center">
                 <div className="om-crop-stage">
                   <AvatarEditor
                     ref={editor}
                     image={src}
-                    width={SIZE / 2}
-                    height={SIZE / 2}
-                    border={24}
+                    width={STAGE}
+                    height={STAGE}
+                    border={20}
                     borderRadius={0}
                     color={[92, 89, 83, 0.55]}
                     scale={scale}
                     rotate={rotate}
                   />
                 </div>
-                <HStack gap={4} align="center" width="100%">
-                  <Text type="label">Zoom</Text>
-                  <Slider label="Zoom" isLabelHidden value={scale} min={1} max={5} step={0.02}
-                          onChange={setScale} />
-                  <Button label="Rotate" size="sm" variant="secondary"
+                <HStack gap={GAP.group} align="center" width="100%">
+                  <Slider label="Zoom" value={scale} min={1} max={5} step={0.02} onChange={setScale} />
+                  <Button label="Rotate" variant="secondary"
                           onClick={() => setRotate((r) => (r + 90) % 360)} />
                 </HStack>
               </VStack>

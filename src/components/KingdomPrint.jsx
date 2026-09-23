@@ -1,4 +1,5 @@
 import React from "react";
+import PrintSheet from "./PrintSheet.jsx";
 import RegionMap from "./RegionMap.jsx";
 import { useEmblem } from "../emblem.mjs";
 import { LEVELS, REGION_SIZES, territory, grantList, figurePool, figureById } from "../rules/kingdom.mjs";
@@ -30,7 +31,7 @@ export default function KingdomPrint({ value }) {
     .filter((g) => g.rows.length);
 
   return (
-    <div className="om-print" aria-hidden="true">
+    <PrintSheet>
       <header className="om-print-head">
         {emblem && <img className="om-print-emblem" src={emblem} alt="" />}
         <div className="om-print-title">
@@ -65,7 +66,11 @@ export default function KingdomPrint({ value }) {
                       {p.name}
                       <em>({territory(p.list, p.name)?.rarity}) {RACE[p.list]}</em>
                     </h3>
-                    <p>{grantList(p.list, p.name, { asCapital: r === 1 }).map((g) => g.label).join(", ") || "—"}</p>
+                    <ul className="om-print-grants">
+                      {grantList(p.list, p.name, { asCapital: r === 1 }).map((g) => (
+                        <li key={g.figureId}>{g.label}</li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
                 {Array.from({ length: blanks }, (_, i) => (
@@ -130,6 +135,6 @@ export default function KingdomPrint({ value }) {
           </table>
         ))}
       </section>
-    </div>
+    </PrintSheet>
   );
 }

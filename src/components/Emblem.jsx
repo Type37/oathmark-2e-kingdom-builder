@@ -7,6 +7,10 @@ export default function Emblem({ emblemKey, blob, name, size = "md" }) {
   const stored = useEmblem(blob ? null : emblemKey);
   const draft = useObjectUrl(blob);
   const src = draft ?? stored;
-  if (!src) return null;
-  return <Avatar src={src} alt={name ? `${name} emblem` : "Emblem"} shape="square" size={size} />;
+  // No emblem yet: Avatar falls back to the kingdom's initials, so the button
+  // you click to add one is never an empty square.
+  return (
+    <Avatar src={src ?? undefined} name={name || "Emblem"}
+            alt={name ? `${name} emblem` : "Emblem"} shape="square" size={size} />
+  );
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import PrintSheet from "./PrintSheet.jsx";
 import { useEmblem } from "../emblem.mjs";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
@@ -16,7 +17,7 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
   const spent = units.reduce((n, u) => n + unitCost(u), 0);
 
   return (
-    <div className="om-print" aria-hidden="true">
+    <PrintSheet>
       <header className="om-print-head">
         {emblem && <img className="om-print-emblem" src={emblem} alt="" />}
         <div className="om-print-title">
@@ -112,7 +113,7 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
           )}
         </dl>
       </section>
-    </div>
+    </PrintSheet>
   );
 }
 
