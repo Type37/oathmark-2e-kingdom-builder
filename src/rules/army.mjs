@@ -1,7 +1,9 @@
 // How a unit is put together on the table (pp44-45, 81-85). The kingdom decides
 // what you may take; this decides what a unit looks like once you have taken it.
 import { figureById } from "./kingdom.mjs";
-import { variantFor, attrLevel } from "./stats.mjs";
+import { variantFor, attrLevel, isCharacter, figuresIn } from "./stats.mjs";
+
+export { isCharacter };
 
 // Unit sizes by base, p44.
 export const UNIT_SIZE = {
@@ -12,6 +14,7 @@ export const UNIT_SIZE = {
 };
 
 export function sizeRule(fig) {
+  if (isCharacter(fig)) return { max: 1, rank: 1 };
   const base = fig?.variants?.[0]?.base ?? "";
   return UNIT_SIZE[base] ?? { max: fig?.unitMax ?? 1, rank: fig?.rankWidth ?? 1 };
 }
@@ -21,7 +24,7 @@ export function formation(fig, count) {
   const { rank } = sizeRule(fig);
   const full = Math.floor(count / rank);
   const rest = count % rank;
-  if (count <= 0) return "";
+  if (count <= 1) return "";
   if (full === 0) return `1 rank of ${rest}`;
   const head = `${full} rank${full > 1 ? "s" : ""} of ${rank}`;
   return rest ? `${head} + ${rest}` : head;
@@ -31,8 +34,6 @@ export const isArtillery = (fig) =>
   Boolean(fig?.variants?.[0]?.attributes?.some((a) => a.startsWith("Artillery")));
 export const isMonster = (fig) =>
   Boolean(fig?.variants?.[0]?.attributes?.includes("Monster"));
-export const isCharacter = (fig) =>
-  Boolean(fig?.variants?.some((v) => v.attributes.includes("Magic Items")));
 
 // Artillery units are a piece plus a fixed crew, p84.
 export function crewOf(fig) {
@@ -53,6 +54,15 @@ export function canJoin(hostFig, charFig) {
   if (champion && charFig.list !== hostFig.list)
     return { ok: false, why: "A champion only joins its own race" };
   return { ok: true, why: "" };
+}
+
+// What canJoin allows, said once for the card that offers the choice.
+export function joinRule(charFig) {
+  const v = charFig?.variants?.[0];
+  if (!v) return "";
+  const race = v.attributes.includes("Champion")
+    ? `${charFig.list[0].toUpperCase()}${charFig.list.slice(1)} units` : "Units";
+  return `${race} on ${v.base}mm bases, not artillery or monsters`;
 }
 
 // A character is bought in its own right and then joins a unit, where it counts
@@ -86,7 +96,7 @@ export function unitProfile(unit, units, entry) {
   const guest = joinedTo(units, unit);
   const charFig = guest ? figureById.get(guest.figureId) : null;
   const charV = charFig ? variantFor(charFig, guest) : null;
-  const bodies = (unit.count ?? 1) + (charFig ? 1 : 0);
+  const bodies = figuresIn(unit) + (charFig ? 1 : 0);
   const move = charV ? Math.min(v.M, charV.M) : v.M;
   const activation = charV && attrLevel(charV, "Command") ? Math.max(v.A, charV.A) : v.A;
   return {

@@ -1,6 +1,6 @@
 import { figurePool, figureById, chariotUnlocked } from "./kingdom.mjs";
 import { canJoin, unitProfile } from "./army.mjs";
-import { attrLevel } from "./stats.mjs";
+import { attrLevel, figuresIn } from "./stats.mjs";
 
 // Random Points Value Table, p33. Rows 11–12 are only reachable at Expert.
 export const RANDOM_POINTS = [500, 750, 1000, 1500, 1750, 2000, 2500, 2750, 3000, 3500, 4000, 6000];
@@ -34,7 +34,7 @@ export function unitCost(unit) {
   const fig = figureById.get(unit.figureId);
   if (!fig) return 0;
   const v = variantFor(fig, unit);
-  const n = unit.count ?? 1;
+  const n = figuresIn(unit);
   const upgrades = (unit.upgrades ?? []).reduce((s, u) => s + (u.pts ?? 0), 0);
   const item = unit.magicItem?.pts ?? 0;
   return v.pts * n + upgrades + item;
@@ -80,7 +80,7 @@ export function validateArmy(kingdom, army) {
     if (entry.maxUnits != null && list.length > entry.maxUnits)
       errors.push(`${name}: max ${entry.maxUnits} units`);
     if (entry.maxFigures != null) {
-      const n = list.reduce((s, u) => s + (u.count ?? 1), 0);
+      const n = list.reduce((s, u) => s + figuresIn(u), 0);
       if (n > entry.maxFigures) errors.push(`${name}: max ${entry.maxFigures}`);
     }
     if (entry.armyMax != null && list.length > entry.armyMax)
@@ -89,7 +89,7 @@ export function validateArmy(kingdom, army) {
       if (entry.levels && u.level != null && !entry.levels.includes(u.level))
         errors.push(`${name}: Level ${u.level} unavailable`);
       const max = fig?.unitMax ?? 1;
-      if ((u.count ?? 1) > max) errors.push(`${name}: max ${max} figures`);
+      if (figuresIn(u) > max) errors.push(`${name}: max ${max} figures`);
     }
     // Mutually exclusive grants from the same territory. The pair is seen from
     // both ends, so name it in one fixed order and say it once.

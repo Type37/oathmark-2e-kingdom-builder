@@ -1,4 +1,5 @@
 import { figureById } from "./kingdom.mjs";
+import { figuresIn } from "./stats.mjs";
 
 // collection: { [figureId]: number of figures owned }
 
@@ -10,7 +11,7 @@ export function owned(collection, figureId) {
 export function demand(units = []) {
   const need = new Map();
   for (const u of units) {
-    need.set(u.figureId, (need.get(u.figureId) ?? 0) + (u.count ?? 1));
+    need.set(u.figureId, (need.get(u.figureId) ?? 0) + figuresIn(u));
   }
   return need;
 }

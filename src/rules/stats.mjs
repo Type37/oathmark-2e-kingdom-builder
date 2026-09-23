@@ -1,5 +1,12 @@
 import { figureById } from "./kingdom.mjs";
 
+// A character is one figure, bought and fielded alone; the unit it joins is
+// its own (p81). Whatever count was saved against it, it is one body.
+export const isCharacter = (fig) =>
+  Boolean(fig?.variants?.some((v) => v.attributes.includes("Magic Items")));
+export const figuresIn = (unit) =>
+  (isCharacter(figureById.get(unit.figureId)) ? 1 : unit.count ?? 1);
+
 // Missile and artillery ranges, p72.
 export const RANGES = {
   Bow: [null, 20],
@@ -120,14 +127,18 @@ export function attrLevel(v, name) {
   return m ? Number(m[1]) : 1;
 }
 
+// The data spells it "Elf bow"; a catapult or ballista is the weapon itself,
+// named in the figure; a dragon breathes fire as an ability.
 export function weaponsOf(fig) {
-  let eq = fig.equipment.join(", ");
+  let text = [fig.name, ...(fig.equipment ?? []), ...(fig.variants?.[0]?.attributes ?? [])]
+    .join(", ").toLowerCase();
   const found = [];
   // Longest name first: "Elf Bow" must win before plain "Bow" can match it.
   for (const w of Object.keys(RANGES).sort((a, b) => b.length - a.length)) {
-    if (!eq.includes(w)) continue;
+    const key = w.toLowerCase();
+    if (!new RegExp(`(^|[^a-z])${key}([^a-z]|$)`).test(text)) continue;
     found.push(w);
-    eq = eq.split(w).join("");
+    text = text.split(key).join("");
   }
   return found;
 }
@@ -136,7 +147,7 @@ export function unitStats(unit) {
   const fig = figureById.get(unit.figureId);
   if (!fig) return null;
   const v = variantFor(fig, unit);
-  const count = unit.count ?? 1;
+  const count = figuresIn(unit);
   return {
     fig,
     variant: v,

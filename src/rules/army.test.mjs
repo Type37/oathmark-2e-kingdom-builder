@@ -81,3 +81,21 @@ test("a campaign territory must share a border with unoccupied ground, p37", asy
     capitalList: "elf", region: 5, list: "elf", name: "Hill Caves", founded: true, kingdom: cut,
   }).ok, false);
 });
+
+test("a character is one figure, whatever count was saved, p81", async () => {
+  const { unitCost } = await import("./muster.mjs");
+  assert.equal(sizeRule(general).max, 1);
+  const saved = { uid: "g", figureId: "human-general", count: 20 };
+  assert.equal(unitCost(saved), general.variants[0].pts);
+  assert.equal(unitProfile(saved, [saved]).bodies, 1);
+  assert.equal(unitProfile(saved, [saved]).formation, "");
+});
+
+test("every shooter knows its weapon, whatever the data calls it, p72", async () => {
+  const { weaponsOf } = await import("./stats.mjs");
+  assert.deepEqual(weaponsOf(figureById.get("elf-rangers")), ["Elf Bow"]);
+  assert.deepEqual(weaponsOf(catapult), ["Light Catapult"]);
+  assert.deepEqual(weaponsOf(figureById.get("dragon")), ["Fire Breath"]);
+  const blind = [...figureById.values()].filter((f) => f.variants[0].S > 0 && weaponsOf(f).length === 0);
+  assert.deepEqual(blind.map((f) => f.id), []);
+});
