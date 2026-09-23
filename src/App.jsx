@@ -239,6 +239,7 @@ export default function App() {
           <KingdomPane value={kingdom} onChange={update("kingdoms")} settings={store.settings ?? {}}
                        onPrint={() => window.print()}
                        onEmblem={(blob) => setEmblem(kingdom, blob)}
+                       onMuster={kingdom.capitalList ? () => setMustering(true) : undefined}
                        shell={{ ...shell, actions: recordActions("kingdoms", kingdom) }} />
         )}
         {page === "musters" && (

@@ -523,6 +523,11 @@ body {
   background-color: var(--color-background-body);
   padding: var(--spacing-2) var(--spacing-6);
 }
+/* On a phone the credits wrap to several lines; pinned, they would eat the
+   screen, so there they close the page instead. */
+@media (max-width: 767px) {
+  .om-footer { position: static; padding: var(--spacing-3) var(--spacing-4); }
+}
 
 /* A roll tumbles the dice once and lands with a bounce. */
 @keyframes om-roll {

@@ -3,6 +3,8 @@ import {
   VStack, HStack, Text, Button, List, ListItem,
   Token, Tooltip,
 } from "@astryxdesign/core";
+import { Icon } from "@iconify/react";
+import { MUSTER } from "../icons/game.mjs";
 import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
 import RegionMap from "../components/RegionMap.jsx";
@@ -15,6 +17,7 @@ import Level from "../components/Level.jsx";
 import Capital from "../components/Capital.jsx";
 import Emblem from "../components/Emblem.jsx";
 import EmblemDialog from "../components/EmblemDialog.jsx";
+import Chronicle from "../components/Chronicle.jsx";
 import { GAP, DENSITY } from "../layout.mjs";
 import {
   LEVELS, REGION_SIZES, CAPITAL_LISTS, allTerritories, canPlace,
@@ -31,7 +34,7 @@ import { hasLore, rollLore } from "../lore.mjs";
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
 
 // Every region is visible at once. No stepper, so nothing advances underfoot.
-export default function KingdomPane({ value, onChange, onEmblem, settings, onPrint, shell }) {
+export default function KingdomPane({ value, onChange, onEmblem, onMuster, settings, onPrint, shell }) {
   const { level, capitalList, territories: picks } = value;
   const [picking, setPicking] = React.useState(null);
   const [openFigure, setOpenFigure] = React.useState(null);
@@ -149,6 +152,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
                onSlotClick={(r, _i, pick) => { if (!pick && (r === 1 || capitalList)) setPicking(r); }} />
   );
   const access = <FigureAccess kingdom={value} onOpen={setOpenFigure} />;
+  const chronicle = <Chronicle entries={value.chronicle ?? []} onChange={(chronicle) => patch({ chronicle })} />;
 
   // The book's Kingdom Sheet (p217): name, ruler, the rings; then what they grant.
   const detail = (
@@ -174,6 +178,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
         </VStack>
       )}
       {map}
+      {chronicle}
       {settings?.lore && hasLore && <KingdomLore value={value} onChange={onChange} />}
       {access}
     </VStack>
@@ -211,8 +216,11 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       onPrint={onPrint}
       title={value.name || "Untitled"}
       onRename={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
-      inlineDetail={<VStack gap={GAP.group}>{map}{access}</VStack>}
-      meta={null}
+      inlineDetail={<VStack gap={GAP.group}>{map}{chronicle}{access}</VStack>}
+      meta={onMuster && (
+        <Button label={value.name ? `Muster an Army of ${value.name}` : "Muster an Army"}
+                variant="primary" icon={<Icon icon={MUSTER} width={20} height={20} />} onClick={onMuster} />
+      )}
       detail={detail}
       detailTitle="Kingdom Sheet"
       content={(
