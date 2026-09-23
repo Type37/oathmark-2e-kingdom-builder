@@ -67,6 +67,16 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
         content={
           <LayoutContent>
             <VStack gap={GAP.group}>
+              {/* Whose army it is comes first; then the campaign turn's steps in
+                  the book's order, battle type and then points. */}
+              <HStack gap={GAP.group} align="end" wrap="wrap">
+                <Selector label="Kingdom" width={200} value={kingdomId} onChange={setKingdomId}
+                          options={kingdoms.map((k) => ({ value: k.id, label: k.name || "Untitled" }))} />
+                <NameField label="Army Commander" width={230} value={commander} onChange={setCommander}
+                           pool={rulerPool(kingdom?.culture)} />
+                <NameField label="Army Name" width={260} value={name} onChange={setName} />
+              </HStack>
+
               <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
                 <Text type="label">Battle Type</Text>
                 <RollButton label="Roll for Battle Type" size="sm"
@@ -88,14 +98,7 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
                 ))}
               </Grid>
 
-              <HStack gap={GAP.group} align="end" wrap="wrap">
-                <Selector label="Kingdom" width={200} value={kingdomId} onChange={setKingdomId}
-                          options={kingdoms.map((k) => ({ value: k.id, label: k.name || "Untitled" }))} />
-                <NameField label="Army Commander" width={230} value={commander} onChange={setCommander}
-                           pool={rulerPool(kingdom?.culture)} />
-                <NameField label="Army Name" width={260} value={name} onChange={setName} />
-              </HStack>
-
+              <HStack justify="center" className="om-plate"><Text type="label">Points Value</Text></HStack>
               <HStack gap={GAP.group} align="end" wrap="wrap">
                 <NumberInput label="Total Points" size="lg" width={150} value={points} min={0} step={50}
                              onChange={(p) => { setPoints(p || 0); setPointsRoll(null); setSides(null); }} />
