@@ -28,7 +28,7 @@ export function roleOf(fig) {
 }
 
 // What the kingdom's territories allow, by the role it plays on the table.
-export default function AddUnits({ isOpen, onOpenChange, pool, units, collection, onAdd, onOpenFigure }) {
+export default function AddUnits({ isOpen, onOpenChange, pool, units, collection, useCollection, onAdd, onOpenFigure }) {
   const [openAttr, setOpenAttr] = React.useState(null);
   const [role, setRole] = React.useState("infantry");
 
@@ -61,7 +61,7 @@ export default function AddUnits({ isOpen, onOpenChange, pool, units, collection
         entry.levels ? `Levels ${entry.levels[0]}–${entry.levels.at(-1)}` : null,
         entry.maxUnits ? `${unitCap} units` : `max ${entry.maxFigures ?? sizeRule(fig).max}`,
         crewOf(fig) ? `crew ${crewOf(fig)}` : null,
-        have ? `own ${have}` : null,
+        useCollection && have ? `own ${have}` : null,
       ].filter(Boolean).join(", "),
       entry, fig,
     };

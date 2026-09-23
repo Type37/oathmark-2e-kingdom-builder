@@ -2,6 +2,7 @@ import React from "react";
 import {
   Layout, LayoutHeader, LayoutContent, LayoutPanel,
   HStack, Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider,
+  Breadcrumbs, BreadcrumbItem,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import Ico from "./components/Ico.jsx";
@@ -10,7 +11,7 @@ import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 // Per-page frame: one bar holding the way back, the record's name, and every
 // action in a single menu. Navigation lives in App (SideNav / MobileNav).
 export default function Shell({
-  title, leading, subtitle, meta, actions, appActions, onOptions, onPrint, onRename,
+  title, leading, subtitle, crumbs, meta, actions, appActions, onOptions, onPrint, onRename,
   content, detail, detailTitle, inlineDetail, width,
   onBack, backLabel, onMenu,
 }) {
@@ -27,6 +28,14 @@ export default function Shell({
     ...(appActions ?? []),
   ];
 
+  const titleNode = onRename ? (
+    <TextInput label="Name" isLabelHidden value={title === "Untitled" ? "" : title}
+               placeholder="Untitled" width={260} className="om-title-input"
+               onChange={(e) => onRename(e.target?.value ?? e)} />
+  ) : (
+    <Heading level={1}>{title}</Heading>
+  );
+
   const header = (
     <LayoutHeader>
       <SizeProvider value="lg">
@@ -42,13 +51,16 @@ export default function Shell({
                     icon={<Ico name="menu" size={20} />} onClick={onMenu} />
           )}
           {leading}
-          {onRename ? (
-            <TextInput label="Name" isLabelHidden value={title === "Untitled" ? "" : title}
-                       placeholder="Untitled" width={260} className="om-title-input"
-                       onChange={(e) => onRename(e.target?.value ?? e)} />
-          ) : (
-            <Heading level={1}>{title}</Heading>
-          )}
+          {/* Where the record lives, then the record. The parent carries its own
+              emblem, so nothing in the bar is an unlabelled stray word. */}
+          {crumbs?.length ? (
+            <Breadcrumbs label="Trail">
+              {crumbs.map((c) => (
+                <BreadcrumbItem key={c.label} startIcon={c.icon} onClick={c.onClick}>{c.label}</BreadcrumbItem>
+              ))}
+              <BreadcrumbItem isCurrent>{titleNode}</BreadcrumbItem>
+            </Breadcrumbs>
+          ) : titleNode}
           {subtitle}
         </HStack>
         <HStack gap={GAP.item} align="center" wrap="wrap">

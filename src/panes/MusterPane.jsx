@@ -6,6 +6,7 @@ import FigureCard from "../components/FigureCard.jsx";
 import UnitCard from "../components/UnitCard.jsx";
 import AddUnits from "../components/AddUnits.jsx";
 import Ico from "../components/Ico.jsx";
+import Emblem from "../components/Emblem.jsx";
 import Shell from "../Shell.jsx";
 import { figurePool, figureById } from "../rules/kingdom.mjs";
 import { validateArmy } from "../rules/muster.mjs";
@@ -17,7 +18,7 @@ import { GAP } from "../layout.mjs";
 
 // The Army Roster (p218): the units you have bought, what they cost, and what
 // the muster rules (p35) say about them.
-export default function MusterPane({ kingdom, collection = {}, settings = {}, value, onChange, ready, shell }) {
+export default function MusterPane({ kingdom, collection = {}, settings = {}, value, onChange, ready, onOpenKingdom, shell }) {
   const [openFigure, setOpenFigure] = React.useState(null);
   const [adding, setAdding] = React.useState(false);
   const points = value.points ?? 1000;
@@ -57,6 +58,11 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       {...shell}
       title={value.name || "Untitled"}
       onRename={(name) => onChange({ ...value, name })}
+      crumbs={kingdom?.id ? [{
+        label: kingdom.name || "Untitled",
+        icon: <Emblem emblemKey={kingdom.emblem} name={kingdom.name} size="sm" />,
+        onClick: () => onOpenKingdom?.(kingdom.id),
+      }] : null}
       meta={(
         <HStack gap={GAP.item} align="center" wrap="wrap">
           {battle && <Token label={battle.name} color="pink" />}
@@ -127,7 +133,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
                     icon={<Ico name="plus" size={20} />} />
           </div>
           <AddUnits isOpen={adding} onOpenChange={setAdding} pool={pool} units={units}
-                    collection={collection} onAdd={add} onOpenFigure={setOpenFigure} />
+                    collection={collection} useCollection={settings.useCollection} onAdd={add} onOpenFigure={setOpenFigure} />
           {openFigure && (
             <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)}
                         owns={(name) => (kingdom.territories ?? []).some((t) => t.name === name)} />

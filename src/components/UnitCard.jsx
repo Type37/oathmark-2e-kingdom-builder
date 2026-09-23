@@ -46,13 +46,12 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
     <Card padding={4} variant={charFig ? "pink" : undefined}>
       <VStack gap={GAP.item}>
         <HStack gap={GAP.item} align="baseline" justify="between" wrap="wrap">
-          <VStack gap={0} align="start">
-            <HStack gap={GAP.item} align="baseline" wrap="wrap">
-              <Button variant="ghost" size="sm" label={fig.name} onClick={() => onOpenFigure(fig.id)}>
-                <Text type="large">{fig.name}</Text>
-              </Button>
-              <Text type="large">{unitCost(unit)}pts</Text>
-            </HStack>
+          {/* Name, cost and how they stand are one sentence, not three lines. */}
+          <HStack gap={GAP.item} align="baseline" wrap="wrap">
+            <Button variant="ghost" size="sm" label={fig.name} onClick={() => onOpenFigure(fig.id)}>
+              <Text type="large">{fig.name}</Text>
+            </Button>
+            <Text type="large">{unitCost(unit)}pts</Text>
             <Text type="supporting">
               {[
                 p.formation,
@@ -64,7 +63,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                 unit.joinedTo ? "fighting inside a unit" : null,
               ].filter(Boolean).join(" · ")}
             </Text>
-          </VStack>
+          </HStack>
           <HStack gap={GAP.item} align="center">
             {!isArtillery(fig) && p.max > 1 && (
               <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
@@ -113,8 +112,6 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                         onChoose={(item) => patch({ magicItem: item })} />
           </>
         )}
-        <HStack gap={GAP.group} align="end" wrap="wrap">
-        </HStack>
 
         <Upgrades kingdom={kingdom} figureId={unit.figureId} level={unit.level}
                   chosen={unit.upgrades ?? []}

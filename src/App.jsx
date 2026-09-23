@@ -250,9 +250,8 @@ export default function App() {
             value={muster}
             onChange={update("musters")}
             ready={Boolean(musterKingdom?.capitalList && validateKingdom(musterKingdom).ok)}
-            shell={{ ...shell, actions: recordActions("musters", muster),
-                     leading: <Emblem emblemKey={musterKingdom?.emblem} name={musterKingdom?.name} size="lg" />,
-                     subtitle: musterKingdom ? <Text type="label">{musterKingdom.name}</Text> : null }}
+            onOpenKingdom={(id) => open("kingdoms", id)}
+            shell={{ ...shell, actions: recordActions("musters", muster) }}
           />
         )}
         {page === "collection" && (
