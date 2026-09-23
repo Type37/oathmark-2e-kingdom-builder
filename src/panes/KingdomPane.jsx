@@ -1,7 +1,7 @@
 import React from "react";
 import {
   VStack, HStack, Text, Button, List, ListItem,
-  Token, Tooltip, Field,
+  Token, Tooltip,
 } from "@astryxdesign/core";
 import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
@@ -154,17 +154,15 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
   const detail = (
     <VStack gap={GAP.group}>
       <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
-      <Field label="Emblem">
-        <HStack gap={GAP.item} align="center">
-          <Emblem emblemKey={value.emblem} name={value.name} size="lg" />
-          <Button label={value.emblem ? "Change emblem" : "Add an emblem"} variant="secondary" size="sm"
-                  onClick={() => setCropping(true)} />
-          {value.emblem && (
-            <Button className="om-remove" label="Remove emblem" size="sm" variant="destructive" isIconOnly
-                    icon={<Ico name="times" />} onClick={() => onEmblem(null)} />
-          )}
-        </HStack>
-      </Field>
+      <HStack gap={GAP.item} align="center">
+        <Emblem emblemKey={value.emblem} name={value.name} size="lg" />
+        <Button label="Emblem" variant="secondary" size="sm"
+                onClick={() => setCropping(true)} />
+        {value.emblem && (
+          <Button className="om-remove" label="Remove emblem" size="sm" variant="destructive" isIconOnly
+                  icon={<Ico name="times" />} onClick={() => onEmblem(null)} />
+        )}
+      </HStack>
       <NameField label="Current Ruler" size="sm" value={value.ruler} pool={rulerPool(value.culture)}
                  onChange={(ruler) => patch({ ruler })} />
       {lore?.ruler && (

@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FormLayout, Field,
+  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FormLayout,
   RadioList, RadioListItem, HStack, Button, Tooltip,
 } from "@astryxdesign/core";
 import Emblem from "./Emblem.jsx";
@@ -60,14 +60,12 @@ export default function FoundKingdom({ isOpen, onOpenChange, onFound }) {
                     </Tooltip>
                   ))}
                 </RadioList>
-                <Field label="Emblem">
-                  <HStack gap={3} align="center">
-                    <Emblem blob={emblem} name={name} size={96} />
-                    <Button label={emblem ? "Change" : "Add Emblem"} variant="secondary"
-                            onClick={() => setCropping(true)} />
-                    {emblem && <Button label="Remove" variant="ghost" onClick={() => setEmblem(null)} />}
-                  </HStack>
-                </Field>
+                <HStack gap={3} align="center">
+                  <Emblem blob={emblem} name={name} size={96} />
+                  <Button label="Emblem" variant="secondary"
+                          onClick={() => setCropping(true)} />
+                  {emblem && <Button label="Remove" variant="ghost" onClick={() => setEmblem(null)} />}
+                </HStack>
               </FormLayout>
             </LayoutContent>
           }

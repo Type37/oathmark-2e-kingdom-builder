@@ -13,7 +13,7 @@ import { figurePool, figureById } from "../rules/kingdom.mjs";
 import { validateArmy } from "../rules/muster.mjs";
 import { armyStats } from "../rules/stats.mjs";
 import { shortfalls } from "../rules/collection.mjs";
-import { sizeRule, crewOf, isArtillery, unitProfile } from "../rules/army.mjs";
+import { sizeRule, crewOf, isArtillery, isCharacter, unitProfile } from "../rules/army.mjs";
 import { battleTypeById } from "../rules/battle.mjs";
 import { GAP } from "../layout.mjs";
 
@@ -48,6 +48,8 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       count: isArtillery(r.fig) ? (crew ?? 1) : max,
       level: r.entry.levels ? r.entry.levels[0] : undefined,
     }]);
+    // A character is set up on its card (joins, items, spells), so go straight there.
+    if (isCharacter(r.fig)) setAdding(false);
   };
 
   if (!ready) {

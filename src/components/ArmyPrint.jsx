@@ -5,8 +5,8 @@ import { lookupAttribute } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { applyUpgrades } from "../rules/upgrades.mjs";
 import { unitProfile, crewOf } from "../rules/army.mjs";
-import { STAT_KEYS, statText, baseText, attrLevel } from "../rules/stats.mjs";
-import { spells as ALL_SPELLS, magicItems as ALL_ITEMS } from "../rules/magic.mjs";
+import { STAT_KEYS, statText, baseText, attrLevel, figuresIn, weaponsOf, rangeText } from "../rules/stats.mjs";
+import { spells as ALL_SPELLS, magicItems as ALL_ITEMS, spellsKnown } from "../rules/magic.mjs";
 
 const byName = (a, b) => a.name.localeCompare(b.name);
 const COLS = STAT_KEYS.filter((k) => k !== "pts");
@@ -23,7 +23,13 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
     const p = unitProfile(unit, units, pool.get(unit.figureId));
     if (!p) return null;
     const v = applyUpgrades(p.variant, unit.upgrades ?? []);
-    return { unit, p, v, figures: crewOf(p.fig) ?? (unit.count ?? 1) };
+    const caster = attrLevel(v, "Spellcaster");
+    return {
+      unit, p, v,
+      figures: crewOf(p.fig) ?? figuresIn(unit),
+      range: weaponsOf(p.fig).map((w) => `${w} ${rangeText(w)}`).join(", "),
+      knows: caster ? spellsKnown(unit.level ?? caster) : 0,
+    };
   }).filter(Boolean);
 
   const spent = rows.reduce((n, r) => n + unitCost(r.unit), 0);
@@ -47,37 +53,41 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
         {emblem && <img className="om-print-emblem" src={emblem} alt="" />}
         <div className="om-print-title">
           <h1>{value.name || "Untitled Army"}</h1>
-          <p className="om-print-sub">
-            {[
-              `${spent} of ${points}pts`,
-              `${rows.length} ${rows.length === 1 ? "unit" : "units"}`,
-              value.commander || null,
-              kingdom?.name || null,
-              battle?.name || null,
-            ].filter(Boolean).join(" · ")}
-          </p>
+          <dl className="om-print-facts">
+            <dt>Points</dt><dd>{spent} of {points}</dd>
+            {value.commander && <><dt>Commander</dt><dd>{value.commander}</dd></>}
+            {kingdom?.name && <><dt>Kingdom</dt><dd>{kingdom.name}</dd></>}
+            {stats.command > 0 && (
+              <><dt>Command</dt><dd>{stats.command}, giving {stats.extraActivations} extra activations</dd></>
+            )}
+            {stats.champions > 0 && <><dt>Champion dice</dt><dd>{stats.champions}</dd></>}
+            {stats.shootingDice > 0 && (
+              <><dt>Shooting</dt><dd>{stats.shootingDice} dice to {stats.ranges.map((r) => `${r}"`).join(", ")}</dd></>
+            )}
+            {battle && <><dt>Battle</dt><dd>{battle.name}</dd></>}
+          </dl>
         </div>
       </header>
+      {battle && <p className="om-print-battle">{battle.text}</p>}
 
-      <h2 className="om-print-section">Units</h2>
       <table className="om-print-units">
         <thead>
           <tr>
             <th>Figure</th>
             {COLS.map((k) => <th key={k}>{k}</th>)}
             <th>Base</th>
-            <th>Casualties</th>
+            <th>Range</th>
+            <th>Figures</th>
             <th>Pts</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ unit, p, v, figures }) => (
+          {rows.map(({ unit, p, v, figures, range, knows }) => (
             <tr key={unit.uid}>
               <td className="om-print-unit-name">
                 <strong>{p.fig.name}</strong>
                 <span>
                   {[
-                    p.formation,
                     p.penalty?.occupied ? "occupied ground, activates one worse" : null,
                     p.penalty?.unreliable ? "borderlands, Unreliable" : null,
                     p.charFig ? `led by ${p.charFig.name}` : null,
@@ -85,14 +95,23 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
                     ...(v.attributes ?? []),
                     ...(unit.upgrades ?? []).map((u) => u.name),
                     unit.magicItem ? `carries ${unit.magicItem.name}` : null,
-                    ...(unit.spells ?? []).map((s) => `${s.name} (CN${s.cn})`),
                   ].filter(Boolean).join(", ")}
                 </span>
+                {knows > 0 && (
+                  <span className="om-print-spells">
+                    <b>Spells</b>
+                    {(unit.spells ?? []).map((s) => <i key={s.name}>{s.name} CN{s.cn}</i>)}
+                    {Array.from({ length: Math.max(0, knows - (unit.spells ?? []).length) },
+                      (_, i) => <span key={i} className="om-print-rule" />)}
+                  </span>
+                )}
               </td>
               {COLS.map((k) => <td key={k}>{k === "CD" ? v[k] : statText(k, v[k])}</td>)}
               <td>{baseText(v.base)}</td>
-              <td className="om-print-losses">
-                {Array.from({ length: figures }, (_, i) => <span key={i} className="om-print-box" />)}
+              <td>{range}</td>
+              <td className="om-print-figures-cell">
+                {figures}
+                {p.formation && <small>{p.formation}</small>}
               </td>
               <td>{unitCost(unit)}</td>
             </tr>
@@ -100,18 +119,6 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
         </tbody>
       </table>
 
-      <section className="om-print-army">
-        <dl>
-          {stats.command > 0 && (
-            <><dt>Command</dt><dd>{stats.command}, giving {stats.extraActivations} extra activations</dd></>
-          )}
-          {stats.champions > 0 && <><dt>Champion dice</dt><dd>{stats.champions}</dd></>}
-          {stats.shootingDice > 0 && (
-            <><dt>Shooting</dt><dd>{stats.shootingDice} dice to {stats.ranges.map((r) => `${r}"`).join(", ")}</dd></>
-          )}
-          {battle && <><dt>{battle.name}</dt><dd>{battle.text}</dd></>}
-        </dl>
-      </section>
 
       {attributes.length > 0 && (
         <>

@@ -11,11 +11,11 @@ import { StatBar } from "./StatLine.jsx";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { upgradeCost, applyUpgrades } from "../rules/upgrades.mjs";
-import { unitProfile, canJoin, isCharacter, crewOf, isArtillery } from "../rules/army.mjs";
+import { unitProfile, canJoin, isCharacter, crewOf, isArtillery, joinRule } from "../rules/army.mjs";
 import { spellsKnown } from "../rules/magic.mjs";
 import MagicItems, { CarriedItem } from "./MagicItems.jsx";
 import SpellPicker, { SpellList } from "./SpellPicker.jsx";
-import { attrLevel } from "../rules/stats.mjs";
+import { attrLevel, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { GAP } from "../layout.mjs";
 
 // One entry on the Army Roster: who they are, how many, and what they carry.
@@ -54,7 +54,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
             <Text type="large">{unitCost(unit)}pts</Text>
             <Text type="supporting">
               {[
-                p.formation,
+                ...weaponsOf(fig).map((w) => `${w} ${rangeText(w)}`),
                 p.penalty?.occupied ? "from occupied ground, activates one worse" : null,
                 p.penalty?.unreliable ? "from the borderlands, Unreliable" : null,
                 p.unitOfOne ? "unit-of-one" : null,
@@ -66,8 +66,11 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
           </HStack>
           <HStack gap={GAP.item} align="center">
             {!isArtillery(fig) && p.max > 1 && (
-              <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
-                       max={p.max - (charFig ? 1 : 0)} onChange={(n) => patch({ count: n })} />
+              <>
+                {p.formation && <Text type="supporting">{p.formation}</Text>}
+                <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
+                         max={p.max - (charFig ? 1 : 0)} onChange={(n) => patch({ count: n })} />
+              </>
             )}
             <Button className="om-remove" label="Remove unit" size="sm" variant="destructive" isIconOnly
                     icon={<Ico name="times" />} onClick={onRemove} />
@@ -91,8 +94,9 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                       onChange={(v) => patch({ level: Number(v), spells: [] })}
                       options={levels.map((l) => ({ value: String(l), label: `Level ${l}` }))} />
           )}
-          {isCharacter(fig) && hosts.length > 0 && (
-            <Selector label="Joins" width={240} value={unit.joinedTo ?? ""}
+          {isCharacter(fig) && (
+            <Selector label="Joins" width={320} value={unit.joinedTo ?? ""}
+                      description={joinRule(fig)} isDisabled={hosts.length === 0}
                       onChange={(v) => onJoin(v || null)}
                       options={[{ value: "", label: "Fights alone" },
                                 ...hosts.map((u) => ({
