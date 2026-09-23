@@ -26,6 +26,7 @@ export const KingdomSchema = z.object({
   emblem: z.string().nullable().optional(),
   culture: z.string().nullable().optional(),
   founded: z.boolean().optional(),
+  regionNames: z.record(z.string(), z.string()).optional().default({}),
   lore: z.object({}).passthrough().nullable().optional(),
   saved: z.string().optional(),
 });

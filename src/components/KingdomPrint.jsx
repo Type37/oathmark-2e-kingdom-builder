@@ -54,7 +54,10 @@ export default function KingdomPrint({ value }) {
             const blanks = Math.max(0, REGION_SIZES[r] - mine.length);
             return (
               <section key={r} className="om-print-region">
-                <h2>Region {r}<span>{mine.length} of {REGION_SIZES[r]}</span></h2>
+                <h2>
+                  {value.regionNames?.[r]?.trim() || `Region ${r}`}
+                  <span>{mine.length} of {REGION_SIZES[r]}</span>
+                </h2>
                 {mine.map((p, i) => (
                   <div key={`${p.name}-${i}`} className="om-print-terr">
                     <h3>

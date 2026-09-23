@@ -310,6 +310,81 @@ body {
   .om-print th:last-child, .om-print td:last-child { text-align: start; }
   .om-print td { text-align: center; padding: 1pt 2pt; border-block-end: 0.25pt solid #bbb; }
   .om-print-special { font-size: 7.5pt; }
+
+  /* The Army Roster: the terms of the battle, then one block per unit. */
+  .om-print-battle {
+    margin: 0 0 4mm;
+    font-size: 8.5pt;
+    line-height: 1.35;
+  }
+  .om-print-roster {
+    columns: 2;
+    column-gap: 8mm;
+  }
+  .om-print-unit {
+    break-inside: avoid;
+    margin-block-end: 4mm;
+    padding-block-end: 2mm;
+    border-block-end: 0.5pt solid #bbb;
+  }
+  .om-print-unit h3 {
+    display: flex;
+    align-items: baseline;
+    gap: 2mm;
+    margin: 0 0 1mm;
+    font-size: 10pt;
+  }
+  .om-print-unit h3 em {
+    flex: 1;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 7.5pt;
+    color: #444;
+  }
+  .om-print-pts { font-weight: normal; }
+  .om-print-stats { inline-size: 100%; margin-block-end: 1mm; }
+  .om-print-stats th {
+    font-size: 6.5pt;
+    padding: 0.5pt 1pt;
+  }
+  .om-print-stats td {
+    font-size: 9pt;
+    border-block-end: 0;
+    padding: 0.5pt 1pt;
+  }
+  .om-print-attrs, .om-print-opts {
+    margin: 0 0 0.5mm;
+    font-size: 7.5pt;
+    line-height: 1.3;
+  }
+  .om-print-opts { color: #444; }
+  /* One box per figure, to strike off as they fall. */
+  .om-print-losses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8mm;
+    margin-block-start: 1mm;
+  }
+  .om-print-losses .om-print-box { inline-size: 3mm; block-size: 3mm; }
+
+  .om-print-totals {
+    break-inside: avoid;
+    margin-block-start: 3mm;
+    padding-block-start: 2mm;
+    border-block-start: 1pt solid #000;
+  }
+  .om-print-totals dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5mm 3mm;
+    margin: 0;
+  }
+  .om-print-totals dt {
+    font-size: 7pt;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .om-print-totals dd { margin: 0; font-size: 9pt; }
   .om-print tr { break-inside: avoid; }
 }
 
@@ -379,6 +454,34 @@ body {
   block-size: auto;
   display: block;
 }
+.om-brand-line {
+  display: block;
+  margin-block-start: var(--spacing-1);
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* A region takes a name. It reads as the plate's label until you point at it. */
+.om-region-name {
+  appearance: none;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--spacing-1);
+  background: none;
+  padding: 0 var(--spacing-1);
+  margin-inline-start: calc(var(--spacing-1) * -1);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.om-region-name .astryx-icon { opacity: 0; }
+.om-region-name:hover { border-color: var(--color-border); }
+.om-region-name:hover .astryx-icon,
+.om-region-name:focus-visible .astryx-icon { opacity: 0.7; }
+.om-region-ord { opacity: 0.55; }
+.om-region-input { margin-block: calc(var(--spacing-1) * -1); }
 
 /* The credit line: the game on the left, this builder on the right. */
 .om-footer {

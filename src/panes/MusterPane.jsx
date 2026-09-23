@@ -7,6 +7,7 @@ import UnitCard from "../components/UnitCard.jsx";
 import AddUnits from "../components/AddUnits.jsx";
 import Ico from "../components/Ico.jsx";
 import Emblem from "../components/Emblem.jsx";
+import ArmyPrint from "../components/ArmyPrint.jsx";
 import Shell from "../Shell.jsx";
 import { figurePool, figureById } from "../rules/kingdom.mjs";
 import { validateArmy } from "../rules/muster.mjs";
@@ -112,6 +113,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       )}
       content={(
         <VStack gap={GAP.group} className="om-page">
+          <ArmyPrint value={value} kingdom={kingdom} pool={pool} stats={agg} battle={battle} />
           {units.map((u) => (
             <UnitCard key={u.uid} kingdom={kingdom} unit={u} pool={pool} units={units}
                       onChange={(next) => patchUnit(u.uid, next)}

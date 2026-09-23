@@ -11,7 +11,7 @@ import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 // Per-page frame: one bar holding the way back, the record's name, and every
 // action in a single menu. Navigation lives in App (SideNav / MobileNav).
 export default function Shell({
-  title, leading, subtitle, crumbs, meta, actions, appActions, onOptions, onPrint, onRename,
+  title, titleAction, leading, subtitle, crumbs, meta, actions, appActions, onOptions, onPrint, onRename,
   content, detail, detailTitle, inlineDetail, width,
   onBack, backLabel, onMenu,
 }) {
@@ -35,6 +35,9 @@ export default function Shell({
   ) : (
     <Heading level={1}>{title}</Heading>
   );
+  const titleBlock = titleAction
+    ? <HStack gap={GAP.tight} align="center">{titleNode}{titleAction}</HStack>
+    : titleNode;
 
   const header = (
     <LayoutHeader>
@@ -58,9 +61,9 @@ export default function Shell({
               {crumbs.map((c) => (
                 <BreadcrumbItem key={c.label} startIcon={c.icon} onClick={c.onClick}>{c.label}</BreadcrumbItem>
               ))}
-              <BreadcrumbItem isCurrent>{titleNode}</BreadcrumbItem>
+              <BreadcrumbItem isCurrent>{titleBlock}</BreadcrumbItem>
             </Breadcrumbs>
-          ) : titleNode}
+          ) : titleBlock}
           {subtitle}
         </HStack>
         <HStack gap={GAP.item} align="center" wrap="wrap">

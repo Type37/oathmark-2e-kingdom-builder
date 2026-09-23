@@ -169,8 +169,9 @@ export default function App() {
   );
   const sideNav = section === "home" ? undefined : (
     <SideNav header={
-      <a href="#/" className="om-brand" aria-label="Oathmark, home">
+      <a href="#/" className="om-brand" aria-label="Oathmark Unofficial Builder, home">
         <img src={`${import.meta.env.BASE_URL}art/oathmark-logo.png`} alt="Oathmark" />
+        <span className="om-brand-line">Oathmark Unofficial Builder</span>
       </a>
     }>{navItems}</SideNav>
   );
@@ -251,6 +252,7 @@ export default function App() {
             onChange={update("musters")}
             ready={Boolean(musterKingdom?.capitalList && validateKingdom(musterKingdom).ok)}
             onOpenKingdom={(id) => open("kingdoms", id)}
+            onPrint={() => window.print()}
             shell={{ ...shell, actions: recordActions("musters", muster) }}
           />
         )}

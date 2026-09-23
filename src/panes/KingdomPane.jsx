@@ -10,6 +10,8 @@ import FigureCard from "../components/FigureCard.jsx";
 import FigureAccess from "../components/FigureAccess.jsx";
 import TerritoryPicker from "../components/TerritoryPicker.jsx";
 import NameField from "../components/NameField.jsx";
+import RollButton from "../components/RollButton.jsx";
+import RegionName from "../components/RegionName.jsx";
 import Level from "../components/Level.jsx";
 import Capital from "../components/Capital.jsx";
 import Emblem from "../components/Emblem.jsx";
@@ -64,7 +66,8 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       <VStack key={r} gap={GAP.item} className={`${lit === r ? "om-region-lit" : ""}${live ? "" : " om-region-closed"}`.trim() || undefined}
               onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}>
         <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
-          <Text type="label">Region {r}</Text>
+          <RegionName region={r} value={value.regionNames?.[r]}
+                      onChange={(name) => patch({ regionNames: { ...(value.regionNames ?? {}), [r]: name } })} />
           <HStack gap={GAP.item} align="center">
             {r === openBorderRegion(value) && (
               <Defined bare def={borderNote}><Token label="Open borders" size="sm" /></Defined>
@@ -136,9 +139,6 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
   const detail = (
     <VStack gap={GAP.group}>
       <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
-      <NameField label="Kingdom Name" size="sm" value={value.name}
-                 onChange={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
-                 onRoll={() => patch(rollKingdom(value.name))} />
       <NameField label="Current Ruler" size="sm" value={value.ruler} pool={rulerPool(value.culture)}
                  onChange={(ruler) => patch({ ruler })} />
       {map}
@@ -178,7 +178,8 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       {...shell}
       onPrint={onPrint}
       title={value.name || "Untitled"}
-      onRename={(name) => patch({ name })}
+      onRename={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
+      titleAction={<RollButton label="Roll a kingdom name" isIconOnly onClick={() => patch(rollKingdom(value.name))} />}
       leading={
         <Button label={value.emblem ? "Change emblem" : "Add an emblem"} variant="ghost" isIconOnly
                 onClick={() => setCropping(true)}>
