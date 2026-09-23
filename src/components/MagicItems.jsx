@@ -2,12 +2,12 @@ import React from "react";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, Text, Button, List, ListItem,
 } from "@astryxdesign/core";
-import { itemsFor } from "../rules/magic.mjs";
+import { itemsFor, itemFits } from "../rules/magic.mjs";
 import { GAP } from "../layout.mjs";
 
 // Appendix C, p204: only characters carry items, one each, one of a kind per
 // army. You pick by reading what the item does, not by its name.
-export default function MagicItems({ isOpen, onOpenChange, taken = [], chosen, onChoose }) {
+export default function MagicItems({ isOpen, onOpenChange, taken = [], chosen, variant, onChoose }) {
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width="min(760px, 94vw)" maxHeight="88dvh">
       <Layout
@@ -20,19 +20,22 @@ export default function MagicItems({ isOpen, onOpenChange, taken = [], chosen, o
                           onClick={() => { onChoose(null); onOpenChange(false); }} />
                 {itemsFor().map((item) => {
                   const used = taken.includes(item.name) && chosen !== item.name;
+                  const fits = variant ? itemFits(item, variant) : { ok: true, why: "" };
+                  const blocked = used || !fits.ok;
                   return (
                     <ListItem
                       key={item.name}
                       label={item.name}
                       isSelected={chosen === item.name}
-                      isDisabled={used}
+                      isDisabled={blocked}
                       description={
                         <Text type="supporting">
                           {item.text}{used ? " Already carried by another character." : ""}
+                          {!fits.ok ? ` ${fits.why}.` : ""}
                         </Text>
                       }
                       endContent={<Text type="label">{item.pts}pts</Text>}
-                      onClick={() => { if (!used) { onChoose(item); onOpenChange(false); } }}
+                      onClick={() => { if (!blocked) { onChoose(item); onOpenChange(false); } }}
                     />
                   );
                 })}

@@ -1,6 +1,7 @@
 import { figurePool, figureById, chariotUnlocked } from "./kingdom.mjs";
 import { canJoin, unitProfile } from "./army.mjs";
 import { attrLevel, figuresIn } from "./stats.mjs";
+import { itemFits } from "./magic.mjs";
 
 // Random Points Value Table, p33. Rows 11–12 are only reachable at Expert.
 export const RANDOM_POINTS = [500, 750, 1000, 1500, 1750, 2000, 2500, 2750, 3000, 3500, 4000, 6000];
@@ -128,6 +129,8 @@ export function validateArmy(kingdom, army) {
     const fig = figureById.get(u.figureId);
     if (!fig?.variants.some((v) => v.attributes.includes("Magic Items")))
       errors.push(`${fig?.name} is not a character`);
+    const fits = itemFits(u.magicItem, variantFor(fig, u));
+    if (!fits.ok) warnings.push(`${fig?.name}: ${u.magicItem.name} does nothing here (${fits.why.toLowerCase()})`);
     itemCounts.set(u.magicItem.name, (itemCounts.get(u.magicItem.name) ?? 0) + 1);
   }
   for (const [item, n] of itemCounts)

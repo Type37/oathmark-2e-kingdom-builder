@@ -1,4 +1,5 @@
 import { figureById } from "./kingdom.mjs";
+import { spellsKnown } from "./magic.mjs";
 
 // A character is one figure, bought and fielded alone; the unit it joins is
 // its own (p81). Whatever count was saved against it, it is one body.
@@ -166,6 +167,7 @@ export function unitStats(unit) {
     command: attrLevel(v, "Command"),
     champion: v.attributes.includes("Champion") || attrLevel(v, "Champion") > 0,
     spellcaster: attrLevel(v, "Spellcaster"),
+    spellsKnown: attrLevel(v, "Spellcaster") ? spellsKnown(attrLevel(v, "Spellcaster"), unit.magicItem) : 0,
     shielding: attrLevel(v, "Shielding"),
     courage: attrLevel(v, "Courage"),
     weapons: weaponsOf(fig),
@@ -191,7 +193,7 @@ export function armyStats(units = []) {
     health += r.health;
     figures += r.count;
     for (const w of r.weapons) ranges.add(RANGES[w][1]);
-    if (r.spellcaster) casters.push({ level: r.spellcaster, spells: r.spellcaster + 2 });
+    if (r.spellcaster) casters.push({ level: r.spellcaster, spells: r.spellsKnown });
   }
 
   const acts = rows.map((r) => r.variant.A);

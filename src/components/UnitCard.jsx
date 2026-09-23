@@ -14,6 +14,7 @@ import { upgradeCost, applyUpgrades } from "../rules/upgrades.mjs";
 import { unitProfile, canJoin, isCharacter, crewOf, isArtillery, joinRule } from "../rules/army.mjs";
 import { spellsKnown } from "../rules/magic.mjs";
 import MagicItems, { CarriedItem } from "./MagicItems.jsx";
+import { applyItem } from "../rules/magic.mjs";
 import SpellPicker, { SpellList } from "./SpellPicker.jsx";
 import { attrLevel, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { GAP } from "../layout.mjs";
@@ -25,9 +26,9 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
   if (!p) return null;
   const { fig, variant, charFig, guest } = p;
   const crew = crewOf(fig);
-  const variantAfter = applyUpgrades(variant, unit.upgrades ?? []);
+  const variantAfter = applyItem(applyUpgrades(variant, unit.upgrades ?? []), unit.magicItem);
   const caster = attrLevel(variantAfter, "Spellcaster");
-  const knows = caster ? spellsKnown(unit.level ?? caster) : 0;
+  const knows = caster ? spellsKnown(unit.level ?? caster, unit.magicItem) : 0;
   const chosenSpells = unit.spells ?? [];
   const levels = entry?.levels ?? null;
 
@@ -41,6 +42,11 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
   const [spelling, setSpelling] = React.useState(false);
   const [attr, setAttr] = React.useState(null);
   const patch = (next) => onChange({ ...unit, ...next });
+  // Taking the ring off can leave one spell too many; the last one chosen goes.
+  const carry = (magicItem) => patch({
+    magicItem,
+    spells: caster ? chosenSpells.slice(0, spellsKnown(unit.level ?? caster, magicItem)) : unit.spells,
+  });
 
   return (
     <Card padding={4} variant={charFig ? "pink" : undefined}>
@@ -109,11 +115,12 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
         {isCharacter(fig) && (
           <>
             <CarriedItem item={unit.magicItem} onOpen={() => setPicking(true)}
-                         onClear={() => patch({ magicItem: null })} />
+                         onClear={() => carry(null)} />
             <MagicItems isOpen={picking} onOpenChange={setPicking}
                         chosen={unit.magicItem?.name}
+                        variant={applyUpgrades(variant, unit.upgrades ?? [])}
                         taken={units.map((u) => u.magicItem?.name).filter(Boolean)}
-                        onChoose={(item) => patch({ magicItem: item })} />
+                        onChoose={carry} />
           </>
         )}
 
@@ -130,7 +137,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
           <>
             <SpellList spells={chosenSpells} knows={knows} onOpen={() => setSpelling(true)} />
             <SpellPicker isOpen={spelling} onOpenChange={setSpelling}
-                         race={fig.list} level={unit.level ?? caster} chosen={chosenSpells}
+                         race={fig.list} level={unit.level ?? caster} magicItem={unit.magicItem} chosen={chosenSpells}
                          onChange={(spells) => patch({ spells })} />
           </>
         )}

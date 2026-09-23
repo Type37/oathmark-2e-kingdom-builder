@@ -7,8 +7,8 @@ import { GAP } from "../layout.mjs";
 
 // A spellcaster knows its level plus two (p83), chosen before the battle from
 // its own race's list and the General list.
-export default function SpellPicker({ isOpen, onOpenChange, race, level, chosen = [], onChange }) {
-  const knows = spellsKnown(level);
+export default function SpellPicker({ isOpen, onOpenChange, race, level, magicItem, chosen = [], onChange }) {
+  const knows = spellsKnown(level, magicItem);
   const full = chosen.length >= knows;
 
   const toggle = (name) => {

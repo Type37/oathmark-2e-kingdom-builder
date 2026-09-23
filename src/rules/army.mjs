@@ -4,6 +4,7 @@ import { figureById } from "./kingdom.mjs";
 import { variantFor, attrLevel, isCharacter, figuresIn } from "./stats.mjs";
 
 import { applyUpgrades } from "./upgrades.mjs";
+import { applyGuestItem } from "./magic.mjs";
 
 export { isCharacter };
 
@@ -111,7 +112,7 @@ export function unitProfile(unit, units, entry) {
   const move = charV ? Math.min(v.M, charV.M) : v.M;
   const activation = charV && attrLevel(charV, "Command") ? Math.max(v.A, charV.A) : v.A;
   return {
-    fig, variant: v, guest, charFig, charVariant: charV, penalty,
+    fig, variant: applyGuestItem(v, guest?.magicItem), guest, charFig, charVariant: charV, penalty,
     bodies,
     max: sizeRule(fig).max,
     formation: formation(fig, bodies),

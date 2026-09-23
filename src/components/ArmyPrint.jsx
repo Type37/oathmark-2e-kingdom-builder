@@ -6,7 +6,7 @@ import { unitCost } from "../rules/muster.mjs";
 import { applyUpgrades } from "../rules/upgrades.mjs";
 import { unitProfile, crewOf } from "../rules/army.mjs";
 import { STAT_KEYS, statText, baseText, attrLevel, figuresIn, weaponsOf, rangeText } from "../rules/stats.mjs";
-import { spells as ALL_SPELLS, magicItems as ALL_ITEMS, spellsKnown } from "../rules/magic.mjs";
+import { spells as ALL_SPELLS, magicItems as ALL_ITEMS, spellsKnown, applyItem } from "../rules/magic.mjs";
 
 const byName = (a, b) => a.name.localeCompare(b.name);
 const COLS = STAT_KEYS.filter((k) => k !== "pts");
@@ -22,13 +22,13 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
   const rows = units.map((unit) => {
     const p = unitProfile(unit, units, pool.get(unit.figureId));
     if (!p) return null;
-    const v = applyUpgrades(p.variant, unit.upgrades ?? []);
+    const v = applyItem(applyUpgrades(p.variant, unit.upgrades ?? []), unit.magicItem);
     const caster = attrLevel(v, "Spellcaster");
     return {
       unit, p, v,
       figures: crewOf(p.fig) ?? figuresIn(unit),
       range: weaponsOf(p.fig).map((w) => `${w} ${rangeText(w)}`).join(", "),
-      knows: caster ? spellsKnown(unit.level ?? caster) : 0,
+      knows: caster ? spellsKnown(unit.level ?? caster, unit.magicItem) : 0,
     };
   }).filter(Boolean);
 
