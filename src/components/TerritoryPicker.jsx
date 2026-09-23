@@ -3,12 +3,12 @@ import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutPanel,
   VStack, HStack, List, ListItem, Token, Text, Heading, Button, Table, Link, useMediaQuery,
 } from "@astryxdesign/core";
-import { proportional } from "@astryxdesign/core/Table";
+import { pixel, proportional } from "@astryxdesign/core/Table";
 import { territory, figureById, rarityNote } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
-import { STAT_KEYS } from "../rules/stats.mjs";
+import { STAT_KEYS, statText } from "../rules/stats.mjs";
 import { hueOf } from "../race.mjs";
-import { BREAK, GAP } from "../layout.mjs";
+import { BREAK, GAP, statWidth } from "../layout.mjs";
 
 const RACE = {
   dwarf: "Dwarf", elf: "Elf", goblin: "Goblin", human: "Human",
@@ -16,11 +16,8 @@ const RACE = {
 };
 const letter = (k) => (k === "pts" ? "Pts" : k);
 
-// The book's words for the choice in front of you, p17 (capital) and p18 (terrain).
-const NOTE = {
-  capital: "Your choice of capital determines the race of your ruler and/or royal family and has a strong influence on the make-up of any army you muster.",
-  terrain: "Each terrain type states which figures that terrain type grants the kingdom access to when mustering an army.",
-};
+// The book's words on what the capital decides, p17.
+const CAPITAL_NOTE = "Your choice of capital determines the race of your ruler and/or royal family and has a strong influence on the make-up of any army you muster.";
 
 // Each figure a territory grants, with its stat line, marked New when the kingdom lacks it.
 function Grants({ t, pool, region, onOpenFigure }) {
@@ -45,8 +42,9 @@ function Grants({ t, pool, region, onOpenFigure }) {
       </HStack>
     ) },
     ...STAT_KEYS.map((k) => ({
-      key: k, header: letter(k), width: proportional(1), align: "center",
-      renderCell: (r) => <Text>{r[k]}</Text>,
+      key: k, header: letter(k), width: pixel(statWidth(k)), align: "center",
+      // Fight and Shoot read as subtractions, Defence as a target, as on every other table.
+      renderCell: (r) => <Text>{k === "pts" || k === "CD" ? r[k] : statText(k, r[k])}</Text>,
     })),
   ];
   return <Table data={rows} columns={columns} idKey="id" density="compact" dividers="rows" />;
@@ -103,15 +101,16 @@ export default function TerritoryPicker({ region, candidates, capitalList, found
   return (
     <Dialog isOpen={isOpen} onOpenChange={close} width="min(1280px, 94vw)" maxHeight="92dvh">
       <Layout
+        contentWidth="100%"
         header={<DialogHeader title={`Region ${region}`} onOpenChange={close} />}
         start={narrow ? undefined : <LayoutPanel width={340} hasDivider isScrollable>{list}</LayoutPanel>}
         isScrollable
         content={
           <LayoutContent>
-            <VStack gap={GAP.group} style={{ blockSize: "78dvh", overflowY: "auto" }}>
-              <HStack className="om-callout">
-                <Text>{region === 1 ? NOTE.capital : NOTE.terrain}</Text>
-              </HStack>
+            <VStack gap={GAP.group} style={{ minBlockSize: "78dvh" }}>
+              {region === 1 && (
+                <HStack className="om-callout"><Text>{CAPITAL_NOTE}</Text></HStack>
+              )}
               {narrow ? (preview ?? list) : preview}
             </VStack>
           </LayoutContent>

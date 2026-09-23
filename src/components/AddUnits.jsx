@@ -59,7 +59,10 @@ export default function AddUnits({ isOpen, onOpenChange, pool, units, collection
       atCap: taken >= unitCap,
       cap: [
         entry.levels ? `Levels ${entry.levels[0]}–${entry.levels.at(-1)}` : null,
-        entry.maxUnits ? `${unitCap} units` : `max ${entry.maxFigures ?? sizeRule(fig).max}`,
+        // "1 of 2 units": how many are in the army against how many it may have.
+        entry.maxUnits || taken
+          ? `${taken ? `${taken} of ` : ""}${unitCap} ${unitCap === 1 ? "unit" : "units"}`
+          : `max ${entry.maxFigures ?? sizeRule(fig).max}`,
         crewOf(fig) ? `crew ${crewOf(fig)}` : null,
         useCollection && have ? `own ${have}` : null,
       ].filter(Boolean).join(", "),
@@ -69,11 +72,11 @@ export default function AddUnits({ isOpen, onOpenChange, pool, units, collection
 
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width="min(1280px, 94vw)" maxHeight="92dvh">
-      <Layout
+      <Layout contentWidth="100%"
         header={<DialogHeader title="Add Units" onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
-            <VStack gap={GAP.item} style={{ blockSize: "76dvh", overflowY: "auto" }}>
+            <VStack gap={GAP.item} style={{ minBlockSize: "76dvh" }}>
               <TabList value={active} onChange={setRole}>
                 {roles.map((r) => <Tab key={r} value={r} label={ROLE_LABEL[r]} />)}
               </TabList>

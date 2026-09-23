@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Table, HStack, VStack, Text, Button, Badge, Popover, Link, useMediaQuery,
+  Table, HStack, VStack, Text, Button, Popover, Link, useMediaQuery,
 } from "@astryxdesign/core";
 import { pixel, proportional } from "@astryxdesign/core/Table";
 import { stats, baseRule } from "../rules/kingdom.mjs";
@@ -71,7 +71,6 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
             <Link isStandalone onClick={() => onOpen?.(r.figureId)}>{r.name}</Link>
             {r.cap && (
               <HStack gap={2} align="center">
-                {r.taken ? <Badge label={String(r.taken)} /> : null}
                 <Text type="supporting" color="secondary">{r.cap}</Text>
               </HStack>
             )}
