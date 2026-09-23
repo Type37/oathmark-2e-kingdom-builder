@@ -33,7 +33,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
 
   // A character already in the army may lead a unit instead of standing alone.
   const hosts = isCharacter(fig)
-    ? units.filter((u) => u.uid !== unit.uid && canJoin(figureById.get(u.figureId), fig).ok
+    ? units.filter((u) => u.uid !== unit.uid && canJoin(figureById.get(u.figureId), fig, u, unit).ok
                           && !units.some((x) => x.joinedTo === u.uid && x.uid !== unit.uid))
     : [];
 
@@ -96,7 +96,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
           )}
           {isCharacter(fig) && (
             <Selector label="Joins" width={320} value={unit.joinedTo ?? ""}
-                      description={joinRule(fig)} isDisabled={hosts.length === 0}
+                      description={joinRule(fig, unit)} isDisabled={hosts.length === 0}
                       onChange={(v) => onJoin(v || null)}
                       options={[{ value: "", label: "Fights alone" },
                                 ...hosts.map((u) => ({

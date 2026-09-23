@@ -108,7 +108,7 @@ export function validateArmy(kingdom, army) {
     if (budget > 0 && c > budget * 0.2) {
       const need = Math.ceil(c / 0.2);
       const name = figureById.get(u.figureId)?.name ?? u.figureId;
-      errors.push(`${name} at ${c}pts is over 20%, needing ${need}pts`);
+      errors.push(`${name} costs ${c}pts, over a fifth of ${budget}pts: it needs an army of ${need}pts`);
     }
   }
 
@@ -140,7 +140,7 @@ export function validateArmy(kingdom, army) {
     const hostFig = host && figureById.get(host.figureId);
     const char = figureById.get(u.figureId);
     if (!host || !hostFig || !char) continue;
-    const join = canJoin(hostFig, char);
+    const join = canJoin(hostFig, char, host, u);
     if (!join.ok) errors.push(`${char.name} cannot join ${hostFig.name}: ${join.why}`);
     if (units.filter((x) => x.joinedTo === host.uid).length > 1)
       errors.push(`${hostFig.name}: a unit may contain only one character`);

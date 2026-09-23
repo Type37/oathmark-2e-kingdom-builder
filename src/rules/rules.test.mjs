@@ -193,7 +193,7 @@ test("the 20% rule uses the book's knucker example", () => {
     territories: [...goblinKingdom.territories, { region: 5, list: "goblin", name: "Poisonous Swamps" }] };
   const knucker = [{ figureId: "knucker", count: 1 }];
   assert.match(validateArmy(withSwamp, { points: 2000, units: knucker }).errors.join(" "),
-    /is over 20%, needing 2500pts/);
+    /over a fifth of .*needs an army of 2500pts/);
   assert.deepEqual(validateArmy(withSwamp, { points: 2500, units: knucker }).errors, []);
 });
 

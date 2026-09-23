@@ -3,7 +3,13 @@
 import { figureById } from "./kingdom.mjs";
 import { variantFor, attrLevel, isCharacter, figuresIn } from "./stats.mjs";
 
+import { applyUpgrades } from "./upgrades.mjs";
+
 export { isCharacter };
+
+// The base a figure stands on once a horse or chariot is bought; p81 compares these.
+export const baseOf = (fig, unit) =>
+  applyUpgrades(variantFor(fig, unit ?? {}), unit?.upgrades ?? []).base;
 
 // Unit sizes by base, p44.
 export const UNIT_SIZE = {
@@ -42,13 +48,16 @@ export function crewOf(fig) {
 
 // A character may join a unit of the same base size; champions only join their
 // own race; monsters and artillery never take one (pp81, 83, 84).
-export function canJoin(hostFig, charFig) {
+export function canJoin(hostFig, charFig, hostUnit, charUnit) {
   if (!hostFig || !charFig) return { ok: false, why: "" };
   if (isArtillery(hostFig)) return { ok: false, why: "Artillery takes no character" };
   if (isMonster(hostFig)) return { ok: false, why: "Monsters fight alone" };
+  if (isCharacter(hostFig)) return { ok: false, why: "A unit may contain only one character" };
   if (hostFig.id === charFig.id) return { ok: false, why: "" };
-  const hostBase = hostFig.variants[0].base;
-  const charBase = charFig.variants[0].base;
+  const hostBase = baseOf(hostFig, hostUnit);
+  const charBase = baseOf(charFig, charUnit);
+  // The character takes one of the unit's places, so a unit of one has none to give.
+  if (sizeRule(hostFig).max < 2) return { ok: false, why: `A ${hostBase} unit holds one figure` };
   if (hostBase !== charBase) return { ok: false, why: `Base ${charBase} does not match ${hostBase}` };
   const champion = charFig.variants[0].attributes.includes("Champion");
   if (champion && charFig.list !== hostFig.list)
@@ -57,12 +66,14 @@ export function canJoin(hostFig, charFig) {
 }
 
 // What canJoin allows, said once for the card that offers the choice.
-export function joinRule(charFig) {
+export function joinRule(charFig, charUnit) {
   const v = charFig?.variants?.[0];
   if (!v) return "";
+  const base = baseOf(charFig, charUnit);
+  if (sizeRule({ variants: [{ base, attributes: [] }] }).max < 2) return `None: on a ${base}mm base it fights alone`;
   const race = v.attributes.includes("Champion")
     ? `${charFig.list[0].toUpperCase()}${charFig.list.slice(1)} units` : "Units";
-  return `${race} on ${v.base}mm bases, not artillery or monsters`;
+  return `${race} on ${base}mm bases, not artillery or monsters`;
 }
 
 // A character is bought in its own right and then joins a unit, where it counts

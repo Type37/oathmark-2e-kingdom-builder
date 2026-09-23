@@ -58,7 +58,7 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
             {value.commander && <><dt>Commander</dt><dd>{value.commander}</dd></>}
             {kingdom?.name && <><dt>Kingdom</dt><dd>{kingdom.name}</dd></>}
             {stats.command > 0 && (
-              <><dt>Command</dt><dd>{stats.command}, giving {stats.extraActivations} extra activations</dd></>
+              <><dt>Command</dt><dd>up to {stats.extraActivations} extra {stats.extraActivations === 1 ? "activation" : "activations"}</dd></>
             )}
             {stats.champions > 0 && <><dt>Champion dice</dt><dd>{stats.champions}</dd></>}
             {stats.shootingDice > 0 && (

@@ -86,7 +86,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
               the progress bar; unit and figure counts serve no rule at all. */}
           <MetadataList>
             {agg.command > 0 && (
-              <MetadataListItem label="Command">{agg.command}, {agg.extraActivations} extra activations</MetadataListItem>
+              <MetadataListItem label="Command">up to {agg.extraActivations} extra {agg.extraActivations === 1 ? "activation" : "activations"}</MetadataListItem>
             )}
             {agg.champions > 0 && <MetadataListItem label="Champion dice">{agg.champions}</MetadataListItem>}
             {agg.shootingDice > 0 && (

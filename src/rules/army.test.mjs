@@ -99,3 +99,17 @@ test("every shooter knows its weapon, whatever the data calls it, p72", async ()
   const blind = [...figureById.values()].filter((f) => f.variants[0].S > 0 && weaponsOf(f).length === 0);
   assert.deepEqual(blind.map((f) => f.id), []);
 });
+
+test("a mounted character joins by its new base, pp81, 84", async () => {
+  const { joinRule } = await import("./army.mjs");
+  const horse = { uid: "g", figureId: "human-general", upgrades: [{ name: "Horse", base: "25 x 50" }] };
+  const chariot = { uid: "g", figureId: "human-general", upgrades: [{ name: "Chariot", base: "50 x 100" }] };
+  const knights = [...figureById.values()].find((f) => f.list === "human" && f.variants[0].base === "25 x 50"
+    && !f.variants[0].attributes.includes("Magic Items"));
+  assert.equal(canJoin(soldiers, general, {}, horse).ok, false);
+  assert.equal(canJoin(knights, general, {}, horse).ok, true);
+  assert.equal(canJoin(knights, general).ok, false);
+  assert.equal(canJoin(general, figureById.get("human-champion")).ok, false);
+  assert.match(joinRule(general, horse), /25 x 50mm/);
+  assert.match(joinRule(general, chariot), /fights alone/);
+});
