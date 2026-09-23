@@ -69,7 +69,7 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
                     {STAT_KEYS.map((k) => (
                       <td key={k}>{k === "CD" ? v[k] : statText(k, v[k])}</td>
                     ))}
-                    <td>{baseText(v.base)}mm</td>
+                    <td>{baseText(v.base)}</td>
                   </tr>
                 </tbody>
               </table>

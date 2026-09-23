@@ -104,7 +104,7 @@ function Option({ u, owns }) {
       {(changes.length > 0 || u.base) && (
         <HStack gap={GAP.group} wrap="wrap">
           {changes.map((c) => <Text key={c}>{c}</Text>)}
-          {u.base && <Text>Base {baseText(u.base)}mm</Text>}
+          {u.base && <Text>Base {baseText(u.base)}</Text>}
         </HStack>
       )}
       {u.adds?.length > 0 && <Attributes variant={{ attributes: u.adds }} />}

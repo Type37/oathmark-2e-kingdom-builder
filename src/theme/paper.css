@@ -135,6 +135,9 @@ body {
 .om-crop-stage canvas { display: block; cursor: grab; touch-action: none; }
 .om-crop-stage canvas:active { cursor: grabbing; }
 
+/* A figure's name wraps to a second line; it should stay left, not centre. */
+.astryx-table-cell .astryx-link { text-align: start; justify-content: flex-start; }
+
 /* Stat buttons sit on the dark header bar and take its pale text. */
 .astryx-table-header-cell .astryx-button,
 .astryx-table-header-cell .astryx-button * { color: inherit; }

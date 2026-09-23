@@ -41,7 +41,7 @@ export default function Upgrades({ kingdom, figureId, level, chosen = [], onChan
                     {Object.entries(u.changes)
                       .map(([k, v]) => `${k === "pts" ? "Pts" : k} ${statText(k, v)}`)
                       .join(", ")}
-                    {u.base ? `, base ${baseText(u.base)}mm` : ""}
+                    {u.base ? `, base ${baseText(u.base)}` : ""}
                   </Text>
                 )}
                 {u.adds && <Text>{u.adds.join(", ")}</Text>}

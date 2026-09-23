@@ -2,7 +2,7 @@ import React from "react";
 import {
   Table, HStack, VStack, Text, Button, Badge, Popover, Link, useMediaQuery,
 } from "@astryxdesign/core";
-import { pixel } from "@astryxdesign/core/Table";
+import { pixel, proportional } from "@astryxdesign/core/Table";
 import { stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
 import Ico from "./Ico.jsx";
@@ -33,7 +33,7 @@ function Head({ statKey }) {
       <Button variant="ghost" size="sm" label={def?.name ?? letter}>
         <HStack gap={1} align="center">
           {statKey === "CD" && <Icon icon={D10} width={16} height={16} />}
-          <Text type="label">{letter}</Text>
+          <Text type="label" color="inherit">{letter}</Text>
         </HStack>
       </Button>
     </Popover>
@@ -61,8 +61,9 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
   const columns = [
     {
       key: "name",
-      header: sortable("name", <Text type="label">Figure</Text>),
-      width: pixel(COL.name),
+      header: sortable("name", <Text type="label" color="inherit">Figure</Text>),
+      width: proportional(2),
+      align: "start",
       renderCell: (r) => (
         <VStack gap={0}>
           <Link isStandalone onClick={() => onOpen?.(r.figureId)}>{r.name}</Link>
@@ -83,7 +84,7 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
       renderCell: (r) => <Text type="large">{k === "CD" ? r[k] : statText(k, r[k])}</Text>,
     })),
     ...(isNarrow ? [] : [
-      { key: "special", header: "Special", width: pixel(COL.special),
+      { key: "special", header: "Special", width: proportional(2), align: "start",
         renderCell: (r) => {
           const attrs = r.fig?.variants?.[0]?.attributes ?? [];
           if (!attrs.length) return null;
@@ -102,10 +103,10 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
         } },
       { key: "base", header: (
           <Defined def={{ title: baseRule.name, text: baseRule.text, note: baseRule.note, page: baseRule.page }}>
-            <Text type="label">Base</Text>
+            <Text type="label" color="inherit">Base</Text>
           </Defined>
         ), width: pixel(COL.base), align: "center",
-        renderCell: (r) => <Text>{baseText(r.fig?.variants?.[0]?.base)}mm</Text> },
+        renderCell: (r) => <Text>{baseText(r.fig?.variants?.[0]?.base)}</Text> },
     ]),
     actionColumn
       ? {

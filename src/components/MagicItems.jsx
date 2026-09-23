@@ -47,7 +47,9 @@ export default function MagicItems({ isOpen, onOpenChange, taken = [], chosen, o
 
 // What the character is carrying, in the book's words, with a way out.
 export function CarriedItem({ item, onOpen, onClear }) {
-  if (!item) return <Button label="Choose a magic item" size="sm" variant="secondary" onClick={onOpen} />;
+  // Nothing in the rules says a character carries one (p94), so the way in is
+  // quiet: spells are a count you owe, a magic item is not.
+  if (!item) return <Button label="Add a magic item" size="sm" variant="ghost" onClick={onOpen} />;
   return (
     <VStack gap={0} align="start">
       <HStack gap={GAP.item} align="baseline" wrap="wrap">

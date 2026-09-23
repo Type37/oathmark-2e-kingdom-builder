@@ -99,7 +99,7 @@ export function StatBar({ variant, keys = STAT_KEYS }) {
               {k === "pts" ? "Pts" : k === "base" ? "Base" : k}
             </button>
             <span className="om-statbar-value">
-              {k === "base" ? `${baseText(variant.base)}mm` : k === "CD" ? variant[k] : statText(k, variant[k])}
+              {k === "base" ? baseText(variant.base) : k === "CD" ? variant[k] : statText(k, variant[k])}
             </span>
           </div>
         ))}
