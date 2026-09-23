@@ -27,7 +27,7 @@ import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
 import KingdomLore from "../components/KingdomLore.jsx";
 import Defined from "../components/Defined.jsx";
 import KingdomPrint from "../components/KingdomPrint.jsx";
-import { hasLore } from "../lore.mjs";
+import { hasLore, rollLore } from "../lore.mjs";
 
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
 
@@ -54,6 +54,17 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
         a.t.rarity - b.t.rarity || a.t.name.localeCompare(b.t.name));
   }, [picking, capitalList]);
 
+  // Lore and Detail fills itself in: the realm, the ruler and every region.
+  React.useEffect(() => {
+    if (!settings?.lore || !hasLore || value.lore) return;
+    const rolled = rollLore();
+    if (rolled) onChange({ ...value, lore: rolled });
+  }, [settings?.lore, value.lore]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Lore rolled before regions and rulers existed still fills in the new parts.
+  const lore = value.lore;
+  const regionLore = settings?.lore && hasLore ? lore?.regions : null;
+
   const founded = Boolean(value.founded);
   const started = startComplete(value);
   const openRegions = founded ? [1, 2, 3, 4, 5, 6] : regions;
@@ -76,6 +87,11 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
             <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
           </HStack>
         </HStack>
+        {regionLore?.[r] && (
+          <Text type="supporting" className="om-region-lore">
+            {regionLore[r].name}{regionLore[r].text ? ` ${regionLore[r].text}` : ""}
+          </Text>
+        )}
         <List density={DENSITY.data}>
           {mine.map(({ p, i }) => (
             <ListItem
@@ -152,6 +168,14 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       </Field>
       <NameField label="Current Ruler" size="sm" value={value.ruler} pool={rulerPool(value.culture)}
                  onChange={(ruler) => patch({ ruler })} />
+      {lore?.ruler && (
+        <VStack gap={GAP.tight}>
+          <Text type="supporting">Holds to {lore.ruler.holds.toLowerCase()}.</Text>
+          <Text type="supporting">
+            Their reign is marked by {lore.ruler.marked.name.toLowerCase()}. {lore.ruler.marked.text}
+          </Text>
+        </VStack>
+      )}
       {map}
       {settings?.lore && hasLore && <KingdomLore value={value} onChange={onChange} />}
       {access}
