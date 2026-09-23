@@ -1,108 +1,75 @@
 import React from "react";
 import {
-  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, FileInput,
-  HStack, VStack, Button, Slider,
+  Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, HStack, Button,
 } from "@astryxdesign/core";
-import AvatarEditor from "react-avatar-editor";
-import { GAP } from "../layout.mjs";
+import Uppy from "@uppy/core";
+import Dashboard from "@uppy/dashboard";
+import ImageEditor from "@uppy/image-editor";
 
-const SIZE = 512;   // what gets saved
-const STAGE = 360;  // what you drag on
+const SIZE = 512;    // what gets saved
+const STAGE_W = 680; // what Uppy draws in
+const STAGE_H = 460;
 
-// Big photographs make the canvas crawl, so the source is scaled down first.
-function downscale(file, max = 1600) {
-  return new Promise((resolve) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      const scale = Math.min(1, max / Math.max(img.width, img.height));
-      if (scale === 1) { resolve(url); return; }
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob((blob) => {
-        URL.revokeObjectURL(url);
-        resolve(URL.createObjectURL(blob));
-      }, "image/png");
-    };
-    img.onerror = () => resolve(url);
-    img.src = url;
-  });
-}
-
-// Drag the picture, scroll or drag the slider to zoom, turn it if it needs it.
+// Uppy owns both halves of this: the Dashboard takes the picture in (drop it,
+// paste it, browse for it, or shoot it on a webcam) and the ImageEditor frames
+// it. Saving the crop is the whole gesture, so that is what closes the dialog.
 export default function EmblemDialog({ isOpen, onOpenChange, onDone }) {
-  const [file, setFile] = React.useState(null);
-  const [src, setSrc] = React.useState(null);
-  const [scale, setScale] = React.useState(1.2);
-  const [rotate, setRotate] = React.useState(0);
-  const [busy, setBusy] = React.useState(false);
-  const editor = React.useRef(null);
+  const mount = React.useRef(null);
+  const done = React.useRef(onDone);
+  done.current = onDone;
 
   React.useEffect(() => {
-    if (!isOpen) { setFile(null); setBusy(false); }
+    if (!isOpen) return undefined;
+    const target = mount.current;
+    if (!target) return undefined;
+
+    const uppy = new Uppy({
+      autoProceed: false,
+      restrictions: { maxNumberOfFiles: 1, allowedFileTypes: ["image/*"] },
+    })
+      .use(Dashboard, {
+        target,
+        inline: true,
+        width: STAGE_W,
+        height: STAGE_H,
+        theme: "auto",
+        autoOpen: "imageEditor",
+        hideUploadButton: true,
+        disableStatusBar: true,
+        proudlyDisplayPoweredByUppy: false,
+      })
+      .use(ImageEditor, {
+        quality: 0.92,
+        // A square emblem, locked, cut straight to the size we store.
+        cropperOptions: {
+          aspectRatio: 1,
+          viewMode: 1,
+          croppedCanvasOptions: { width: SIZE, height: SIZE },
+        },
+        // The ratio is fixed, so the ratio buttons would do nothing.
+        actions: {
+          revert: true, rotate: true, granularRotate: true, flip: true,
+          zoomIn: true, zoomOut: true,
+          cropSquare: false, cropWidescreen: false, cropWidescreenVertical: false,
+        },
+      });
+
+    uppy.on("file-editor:complete", (file) => {
+      if (file?.data) done.current(file.data);
+    });
+
+    return () => uppy.destroy();
   }, [isOpen]);
 
-  React.useEffect(() => {
-    let dead = false;
-    setScale(1.2);
-    setRotate(0);
-    if (!file) { setSrc(null); return undefined; }
-    downscale(file).then((url) => { if (!dead) setSrc(url); });
-    return () => { dead = true; };
-  }, [file]);
-
-  async function done() {
-    if (!editor.current) return;
-    setBusy(true);
-    const canvas = editor.current.getImageScaledToCanvas();
-    const blob = await new Promise((r) => canvas.toBlob(r, "image/png"));
-    setBusy(false);
-    if (blob) onDone(blob);
-  }
-
   return (
-    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={STAGE + 40 + 64} purpose="form">
+    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={STAGE_W + 64} purpose="form">
       <Layout
         header={<DialogHeader title="Emblem" onOpenChange={onOpenChange} />}
-        content={
-          <LayoutContent>
-            {src ? (
-              <VStack gap={GAP.group} align="center">
-                <div className="om-crop-stage">
-                  <AvatarEditor
-                    ref={editor}
-                    image={src}
-                    width={STAGE}
-                    height={STAGE}
-                    border={20}
-                    borderRadius={0}
-                    color={[92, 89, 83, 0.55]}
-                    scale={scale}
-                    rotate={rotate}
-                  />
-                </div>
-                <HStack gap={GAP.group} align="center" width="100%">
-                  <Slider label="Zoom" value={scale} min={1} max={5} step={0.02} onChange={setScale} />
-                  <Button label="Rotate" variant="secondary"
-                          onClick={() => setRotate((r) => (r + 90) % 360)} />
-                </HStack>
-              </VStack>
-            ) : (
-              <FileInput label="Emblem" isLabelHidden accept="image/*" mode="dropzone"
-                         value={file} onChange={(f) => setFile(Array.isArray(f) ? f[0] ?? null : f)} />
-            )}
-          </LayoutContent>
-        }
+        content={<LayoutContent><div ref={mount} className="om-crop-stage" /></LayoutContent>}
         footer={
           <LayoutFooter>
-            <HStack gap={2} justify="between">
-              {src ? <Button label="Change Image" variant="secondary" onClick={() => setFile(null)} /> : <span />}
-              <HStack gap={2}>
-                <Button label="Cancel" variant="secondary" onClick={() => onOpenChange(false)} />
-                <Button label="Done" variant="primary" isDisabled={!src} isLoading={busy} onClick={done} />
-              </HStack>
+            <HStack gap={2} justify="end">
+              <Button label="Cancel" variant="secondary" onClick={() => onOpenChange(false)} />
             </HStack>
           </LayoutFooter>
         }

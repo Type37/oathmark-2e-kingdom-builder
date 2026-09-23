@@ -19,12 +19,12 @@
     "@astryxdesign/theme-neutral": "^0.6.2",
     "@iconify-json/pepicons-print": "^1.2.2",
     "@iconify/react": "^6.0.2",
-    "@stylexjs/stylex": "^0.19.1",
+    "@uppy/core": "^6.0.1",
+    "@uppy/dashboard": "^6.0.0",
+    "@uppy/image-editor": "^5.0.0",
     "idb-keyval": "^6.3.0",
     "react": "^19.3.0",
-    "react-avatar-editor": "^15.1.0",
     "react-dom": "^19.3.0",
-    "react-easy-crop": "^6.2.3",
     "zod": "^4.6.5"
   },
   "devDependencies": {

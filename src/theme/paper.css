@@ -121,19 +121,8 @@ body {
   .astryx-side-nav { display: none; }
 }
 
-/* react-easy-crop fills its parent, so the stage must have a definite size. */
-/* The crop stage is a block in the dialog's flow. It was left absolute from
-   react-easy-crop, which is why the controls sat on top of the picture. */
-.om-crop-stage {
-  display: block;
-  background-color: var(--color-background-muted);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--spacing-1);
-  overflow: hidden;
-  line-height: 0;
-}
-.om-crop-stage canvas { display: block; cursor: grab; touch-action: none; }
-.om-crop-stage canvas:active { cursor: grabbing; }
+/* Uppy's Dashboard sizes itself; the stage just holds it in the dialog's flow. */
+.om-crop-stage { display: block; line-height: 0; }
 
 /* A figure's name wraps to a second line; it should stay left, not centre. */
 .astryx-table-cell .astryx-link { text-align: start; justify-content: flex-start; }
