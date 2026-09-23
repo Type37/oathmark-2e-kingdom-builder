@@ -10,7 +10,6 @@ import FigureCard from "../components/FigureCard.jsx";
 import FigureAccess from "../components/FigureAccess.jsx";
 import TerritoryPicker from "../components/TerritoryPicker.jsx";
 import NameField from "../components/NameField.jsx";
-import RollButton from "../components/RollButton.jsx";
 import RegionName from "../components/RegionName.jsx";
 import Level from "../components/Level.jsx";
 import Capital from "../components/Capital.jsx";
@@ -23,7 +22,7 @@ import {
   startComplete, occupiedNote,
 } from "../rules/kingdom.mjs";
 import { hueOf } from "../race.mjs";
-import { rollKingdom, rulerPool, cultureOf } from "../names.mjs";
+import { rulerPool, cultureOf } from "../names.mjs";
 import KingdomLore from "../components/KingdomLore.jsx";
 import Defined from "../components/Defined.jsx";
 import KingdomPrint from "../components/KingdomPrint.jsx";
@@ -214,11 +213,6 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       onPrint={onPrint}
       title={value.name || "Untitled"}
       onRename={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
-      titleAction={<RollButton label="Roll a kingdom name" isIconOnly onClick={() => patch(rollKingdom(value.name))} />}
-      leading={value.emblem ? (
-        <Button label="Change emblem" variant="ghost" isIconOnly onClick={() => setCropping(true)}
-                icon={<Emblem emblemKey={value.emblem} name={value.name} size="md" />} />
-      ) : null}
       inlineDetail={<VStack gap={GAP.group}>{map}{access}</VStack>}
       meta={null}
       detail={detail}

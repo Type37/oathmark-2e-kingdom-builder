@@ -13,8 +13,12 @@ export default function OptionsDialog({ isOpen, onOpenChange, value = {}, onChan
         content={
           <LayoutContent>
             <VStack gap={GAP.group} align="start">
-              <Switch label="Lore and Detail" value={Boolean(value.lore)} isDisabled={!hasLore}
-                      onChange={(lore) => onChange({ ...value, lore })} />
+              {/* Without the tables in the build there is nothing to switch on,
+                  so the switch is absent rather than dead. */}
+              {hasLore && (
+                <Switch label="Lore and Detail" value={Boolean(value.lore)}
+                        onChange={(lore) => onChange({ ...value, lore })} />
+              )}
               <Switch label="Muster from my collection" value={Boolean(value.useCollection)}
                       onChange={(useCollection) => onChange({ ...value, useCollection })} />
             </VStack>
