@@ -1,20 +1,45 @@
 import React from "react";
 import PrintSheet from "./PrintSheet.jsx";
 import { useEmblem } from "../emblem.mjs";
-import { figureById } from "../rules/kingdom.mjs";
+import { lookupAttribute } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { applyUpgrades } from "../rules/upgrades.mjs";
-import { unitProfile, isCharacter, crewOf } from "../rules/army.mjs";
+import { unitProfile, crewOf } from "../rules/army.mjs";
 import { STAT_KEYS, statText, baseText, attrLevel } from "../rules/stats.mjs";
-import { spellsKnown } from "../rules/magic.mjs";
+import { spells as ALL_SPELLS, magicItems as ALL_ITEMS } from "../rules/magic.mjs";
 
-// The Army Roster as paper (p218): the crest and the terms of the battle, then
-// one block per unit with a box for every figure, to strike off as they fall.
+const byName = (a, b) => a.name.localeCompare(b.name);
+const COLS = STAT_KEYS.filter((k) => k !== "pts");
+
+// The Army Roster as paper: one table of units, then every rule this army
+// actually uses, in full, so the book can stay in the bag.
 export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
   const emblem = useEmblem(kingdom?.emblem);
   const units = value.units ?? [];
   const points = value.points ?? 0;
-  const spent = units.reduce((n, u) => n + unitCost(u), 0);
+
+  // Resolve each unit once; the table and the glossaries both read from this.
+  const rows = units.map((unit) => {
+    const p = unitProfile(unit, units, pool.get(unit.figureId));
+    if (!p) return null;
+    const v = applyUpgrades(p.variant, unit.upgrades ?? []);
+    return { unit, p, v, figures: crewOf(p.fig) ?? (unit.count ?? 1) };
+  }).filter(Boolean);
+
+  const spent = rows.reduce((n, r) => n + unitCost(r.unit), 0);
+
+  // Levelled abilities share one entry: Shielding (1) and Shielding (2) are one rule.
+  const attributes = [...new Set(rows.flatMap((r) => r.v.attributes ?? []))]
+    .map((label) => lookupAttribute(label))
+    .filter(Boolean)
+    .reduce((out, def) => (out.some((x) => x.name === def.name) ? out : [...out, def]), [])
+    .sort(byName);
+
+  const spellNames = new Set(rows.flatMap((r) => (r.unit.spells ?? []).map((s) => s.name)));
+  const known = ALL_SPELLS.filter((s) => spellNames.has(s.name)).sort(byName);
+
+  const itemNames = new Set(rows.map((r) => r.unit.magicItem?.name).filter(Boolean));
+  const carried = ALL_ITEMS.filter((i) => itemNames.has(i.name)).sort(byName);
 
   return (
     <PrintSheet>
@@ -22,107 +47,113 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
         {emblem && <img className="om-print-emblem" src={emblem} alt="" />}
         <div className="om-print-title">
           <h1>{value.name || "Untitled Army"}</h1>
-          <dl>
-            <dt>Commander</dt><dd>{value.commander || "—"}</dd>
-            <dt>Kingdom</dt><dd>{kingdom?.name || "—"}</dd>
-            <dt>Points</dt><dd>{spent} of {points}</dd>
-            {battle && <><dt>Battle</dt><dd>{battle.name}</dd></>}
-          </dl>
+          <p className="om-print-sub">
+            {[
+              `${spent} of ${points}pts`,
+              `${rows.length} ${rows.length === 1 ? "unit" : "units"}`,
+              value.commander || null,
+              kingdom?.name || null,
+              battle?.name || null,
+            ].filter(Boolean).join(" · ")}
+          </p>
         </div>
       </header>
 
-      {battle && <p className="om-print-battle">{battle.text}</p>}
+      <h2 className="om-print-section">Units</h2>
+      <table className="om-print-units">
+        <thead>
+          <tr>
+            <th>Figure</th>
+            {COLS.map((k) => <th key={k}>{k}</th>)}
+            <th>Base</th>
+            <th>Casualties</th>
+            <th>Pts</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(({ unit, p, v, figures }) => (
+            <tr key={unit.uid}>
+              <td className="om-print-unit-name">
+                <strong>{p.fig.name}</strong>
+                <span>
+                  {[
+                    p.formation,
+                    p.penalty?.occupied ? "occupied ground, activates one worse" : null,
+                    p.penalty?.unreliable ? "borderlands, Unreliable" : null,
+                    p.charFig ? `led by ${p.charFig.name}` : null,
+                    unit.joinedTo ? "fights inside a unit" : null,
+                    ...(v.attributes ?? []),
+                    ...(unit.upgrades ?? []).map((u) => u.name),
+                    unit.magicItem ? `carries ${unit.magicItem.name}` : null,
+                    ...(unit.spells ?? []).map((s) => `${s.name} (CN${s.cn})`),
+                  ].filter(Boolean).join(", ")}
+                </span>
+              </td>
+              {COLS.map((k) => <td key={k}>{k === "CD" ? v[k] : statText(k, v[k])}</td>)}
+              <td>{baseText(v.base)}</td>
+              <td className="om-print-losses">
+                {Array.from({ length: figures }, (_, i) => <span key={i} className="om-print-box" />)}
+              </td>
+              <td>{unitCost(unit)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      <section className="om-print-roster">
-        {units.map((unit) => {
-          const p = unitProfile(unit, units, pool.get(unit.figureId));
-          if (!p) return null;
-          const { fig, variant, charFig } = p;
-          const v = applyUpgrades(variant, unit.upgrades ?? []);
-          const caster = attrLevel(v, "Spellcaster");
-          const figures = crewOf(fig) ?? (unit.count ?? 1);
-          const notes = [
-            p.formation,
-            p.penalty?.occupied ? "occupied ground, activates one worse" : null,
-            p.penalty?.unreliable ? "borderlands, Unreliable" : null,
-            charFig ? `led by ${charFig.name}` : null,
-            unit.joinedTo ? "fights inside a unit" : null,
-          ].filter(Boolean).join(" · ");
-
-          return (
-            <article key={unit.uid} className="om-print-unit">
-              <h3>
-                {fig.name}
-                <em>{notes}</em>
-                <span className="om-print-pts">{unitCost(unit)}pts</span>
-              </h3>
-
-              <table className="om-print-stats">
-                <thead>
-                  <tr>
-                    {STAT_KEYS.map((k) => <th key={k}>{k === "pts" ? "Pts" : k}</th>)}
-                    <th>Base</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    {STAT_KEYS.map((k) => (
-                      <td key={k}>{k === "CD" ? v[k] : statText(k, v[k])}</td>
-                    ))}
-                    <td>{baseText(v.base)}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {(v.attributes ?? []).length > 0 && (
-                <p className="om-print-attrs">{v.attributes.join(", ")}</p>
-              )}
-              {(unit.upgrades ?? []).length > 0 && (
-                <p className="om-print-opts">{unit.upgrades.map((u) => u.name).join(", ")}</p>
-              )}
-              {unit.magicItem && <p className="om-print-opts">Carries {unit.magicItem.name}</p>}
-              {caster > 0 && (
-                <p className="om-print-opts">
-                  {(unit.spells ?? []).map((s) => `${s.name} (CN${s.cn})`).join(", ")
-                    || `${spellsKnown(unit.level ?? caster)} spells to choose`}
-                </p>
-              )}
-
-              {/* One box per figure, under its own heading, to strike off. */}
-              <div className="om-print-losses">
-                <span className="om-print-losses-label">Casualties</span>
-                {Array.from({ length: figures }, (_, i) => (
-                  <span key={i} className="om-print-box" />
-                ))}
-              </div>
-            </article>
-          );
-        })}
-      </section>
-
-      <section className="om-print-totals">
+      <section className="om-print-army">
         <dl>
           {stats.command > 0 && (
-            <><dt>Command</dt><dd>{stats.command}, {stats.extraActivations} extra activations</dd></>
+            <><dt>Command</dt><dd>{stats.command}, giving {stats.extraActivations} extra activations</dd></>
           )}
           {stats.champions > 0 && <><dt>Champion dice</dt><dd>{stats.champions}</dd></>}
           {stats.shootingDice > 0 && (
             <><dt>Shooting</dt><dd>{stats.shootingDice} dice to {stats.ranges.map((r) => `${r}"`).join(", ")}</dd></>
           )}
-          {stats.casters.length > 0 && (
-            <><dt>Spells</dt><dd>{stats.spellsKnown} known across {stats.casters.length}</dd></>
-          )}
+          {battle && <><dt>{battle.name}</dt><dd>{battle.text}</dd></>}
         </dl>
       </section>
+
+      {attributes.length > 0 && (
+        <>
+          <h2 className="om-print-section">Special Abilities</h2>
+          <div className="om-print-glossary">
+            {attributes.map((def) => (
+              <div key={def.name} className="om-print-entry">
+                <h3>{def.name}<em>p{def.page}</em></h3>
+                <p>{def.text}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {known.length > 0 && (
+        <>
+          <h2 className="om-print-section">Spells</h2>
+          <div className="om-print-glossary">
+            {known.map((s) => (
+              <div key={s.name} className="om-print-entry">
+                <h3>{s.name}<em>CN{s.cn}</em></h3>
+                <p>{s.text}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {carried.length > 0 && (
+        <>
+          <h2 className="om-print-section">Magic Items</h2>
+          <div className="om-print-glossary">
+            {carried.map((i) => (
+              <div key={i.name} className="om-print-entry">
+                <h3>{i.name}<em>{i.pts}pts</em></h3>
+                <p>{i.text}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </PrintSheet>
   );
 }
-
-// A character bought in its own right still prints as a unit; nothing here
-// needs to know the difference, but the roster reads better with them first.
-export const rosterOrder = (units) =>
-  [...units].sort((a, b) => {
-    const ca = isCharacter(figureById.get(a.figureId)) ? 0 : 1;
-    const cb = isCharacter(figureById.get(b.figureId)) ? 0 : 1;
-    return ca - cb;
-  });

@@ -51,11 +51,14 @@ export default function SpellPicker({ isOpen, onOpenChange, race, level, chosen 
 
 // What the caster has memorised, and the way in.
 export function SpellList({ spells = [], knows, onOpen }) {
+  // A caster knows its spells or it is not finished, so the way in carries the
+  // accent until the count is met, then steps back.
+  const owed = spells.length < knows;
   return (
     <VStack gap={0} align="start">
       <HStack gap={GAP.item} align="baseline" wrap="wrap">
-        <Button label={spells.length ? "Change spells" : "Add spells"} size="sm" variant="secondary"
-                onClick={onOpen} />
+        <Button label={spells.length ? "Change spells" : "Add spells"} size="sm"
+                variant={owed ? "primary" : "secondary"} onClick={onOpen} />
         <Text type="label">{spells.length} of {knows}</Text>
       </HStack>
       {spells.length > 0 && <Text type="supporting">{spells.join(", ")}</Text>}
