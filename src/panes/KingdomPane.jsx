@@ -1,7 +1,7 @@
 import React from "react";
 import {
   VStack, HStack, Text, Button, List, ListItem,
-  Token, Tooltip,
+  Token, Tooltip, Field,
 } from "@astryxdesign/core";
 import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
@@ -139,6 +139,17 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
   const detail = (
     <VStack gap={GAP.group}>
       <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
+      <Field label="Emblem">
+        <HStack gap={GAP.item} align="center">
+          <Emblem emblemKey={value.emblem} name={value.name} size="lg" />
+          <Button label={value.emblem ? "Change emblem" : "Add an emblem"} variant="secondary" size="sm"
+                  onClick={() => setCropping(true)} />
+          {value.emblem && (
+            <Button className="om-remove" label="Remove emblem" size="sm" variant="destructive" isIconOnly
+                    icon={<Ico name="times" />} onClick={() => onEmblem(null)} />
+          )}
+        </HStack>
+      </Field>
       <NameField label="Current Ruler" size="sm" value={value.ruler} pool={rulerPool(value.culture)}
                  onChange={(ruler) => patch({ ruler })} />
       {map}
@@ -180,12 +191,10 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       title={value.name || "Untitled"}
       onRename={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
       titleAction={<RollButton label="Roll a kingdom name" isIconOnly onClick={() => patch(rollKingdom(value.name))} />}
-      leading={
-        <Button label={value.emblem ? "Change emblem" : "Add an emblem"} variant="ghost" isIconOnly
-                onClick={() => setCropping(true)}>
-          <Emblem emblemKey={value.emblem} name={value.name} size="lg" />
-        </Button>
-      }
+      leading={value.emblem ? (
+        <Button label="Change emblem" variant="ghost" isIconOnly onClick={() => setCropping(true)}
+                icon={<Emblem emblemKey={value.emblem} name={value.name} size="md" />} />
+      ) : null}
       inlineDetail={<VStack gap={GAP.group}>{map}{access}</VStack>}
       meta={null}
       detail={detail}
