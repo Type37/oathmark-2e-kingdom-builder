@@ -172,7 +172,7 @@ body {
 .om-print { display: none; }
 
 @media print {
-  @page { size: A4 portrait; margin: 12mm; }
+  @page { size: A4 portrait; margin: 10mm; }
 
   body { background: none; color: #000; }
   /* The app is taken out of the flow entirely; only the sheet has height. */
@@ -292,7 +292,8 @@ body {
   .om-print-box.is-on { background: repeating-linear-gradient(45deg, #000 0 1pt, transparent 1pt 2.5pt); }
   .om-print-rule { flex: 1; border-block-end: 0.5pt solid #999; align-self: center; }
 
-  .om-print-realm { break-inside: avoid; margin-block-start: 5mm; }
+  .om-print-realm { break-inside: avoid; margin-block-start: 3mm; }
+  .om-print-realm p { margin: 0 0 1.5mm; font-size: 9pt; line-height: 1.35; }
   .om-print-realm dl {
     display: grid;
     grid-template-columns: 22mm 1fr;
@@ -301,20 +302,29 @@ body {
   }
 
   /* The roster of figures, by race, overleaf. */
-  .om-print-figures { break-before: page; }
+  .om-print-figures { margin-block-start: 3mm; font-size: 8pt; line-height: 1.2; }
+  .om-print-figures td { padding-block: 0.5pt; }
+  .om-print-race th {
+    text-align: start;
+    font-size: 8pt;
+    letter-spacing: 0.08em;
+    padding-block-start: 2mm;
+    border-block-end: 0.5pt solid #000;
+  }
+  .om-print-chronicle { break-inside: avoid; margin-block-start: 3mm; }
+  .om-print-chronicle dl {
+    display: grid;
+    grid-template-columns: 16mm 1fr;
+    gap: 0.8mm 3mm;
+    margin: 0;
+  }
+  .om-print-chronicle dt { font-family: var(--font-family-ui); font-size: 7.5pt; }
+  .om-print-chronicle dd { margin: 0; }
   .om-print table {
     inline-size: 100%;
     border-collapse: collapse;
     font-size: 8.5pt;
     margin-block-end: 4mm;
-  }
-  .om-print caption {
-    font-family: var(--font-family-ui);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 8pt;
-    text-align: start;
-    padding-block-end: 1mm;
   }
   .om-print th {
     font-family: var(--font-family-ui);

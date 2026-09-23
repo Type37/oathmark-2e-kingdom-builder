@@ -12,7 +12,8 @@ const RACE = {
 const RACE_ORDER = ["dwarf", "elf", "goblin", "human", "orc", "necropolis", "unaligned"];
 
 // The Kingdom Sheet as paper: crest and rings beside the region ledger, the
-// realm's character underneath, and the figures it may muster overleaf.
+// realm's character and its chronicle underneath, then the figures it may
+// muster, on the same page whenever they fit.
 export default function KingdomPrint({ value }) {
   const emblem = useEmblem(value.emblem);
   const level = value.level ?? "moderate";
@@ -20,6 +21,9 @@ export default function KingdomPrint({ value }) {
   const picks = value.territories ?? [];
   const regions = [...new Set([...start, ...picks.map((p) => p.region)])].sort((a, b) => a - b);
   const lore = value.lore;
+  const chronicle = [...(value.chronicle ?? [])]
+    .filter((e) => e.title?.trim() || e.body?.trim())
+    .sort((a, b) => a.year - b.year);
 
   const byRace = RACE_ORDER
     .map((list) => ({
@@ -111,41 +115,53 @@ export default function KingdomPrint({ value }) {
         </section>
       )}
 
-      <section className="om-print-figures">
+      {chronicle.length > 0 && (
+        <section className="om-print-chronicle">
+          <h2>Chronicle</h2>
+          <dl>
+            {chronicle.map((e, i) => (
+              <React.Fragment key={i}>
+                <dt>Year {e.year}</dt>
+                <dd>{e.title && <strong>{e.title}</strong>}{e.title && e.body ? " " : ""}{e.body}</dd>
+              </React.Fragment>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      <table className="om-print-figures">
+        <thead>
+          <tr>
+            <th>Figure</th>
+            <th>Max</th>
+            {STAT_KEYS.map((k) => <th key={k}>{k === "pts" ? "Pts" : k}</th>)}
+            <th>Base</th>
+            <th>Special</th>
+          </tr>
+        </thead>
         {byRace.map(({ list, rows }) => (
-          <table key={list}>
-            <caption>{RACE[list]}</caption>
-            <thead>
-              <tr>
-                <th>Figure</th>
-                <th>Max</th>
-                {STAT_KEYS.map((k) => <th key={k}>{k === "pts" ? "Pts" : k}</th>)}
-                <th>Base</th>
-                <th>Special</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(({ fig, entry }) => {
-                const v = fig.variants[0] ?? {};
-                const pts = fig.variants.length > 1
-                  ? `${fig.variants[0].pts}–${fig.variants.at(-1).pts}`
-                  : v.pts;
-                return (
-                  <tr key={fig.id}>
-                    <td>{fig.name}</td>
-                    <td>{entry.unlimited ? "Any" : entry.max ?? "—"}</td>
-                    {STAT_KEYS.map((k) => (
-                      <td key={k}>{k === "pts" ? pts : k === "CD" ? v[k] : statText(k, v[k])}</td>
-                    ))}
-                    <td>{baseText(v.base)}</td>
-                    <td className="om-print-special">{(v.attributes ?? []).join(", ")}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <tbody key={list}>
+            <tr className="om-print-race"><th colSpan={STAT_KEYS.length + 4}>{RACE[list]}</th></tr>
+            {rows.map(({ fig, entry }) => {
+              const v = fig.variants[0] ?? {};
+              const pts = fig.variants.length > 1
+                ? `${fig.variants[0].pts}–${fig.variants.at(-1).pts}`
+                : v.pts;
+              return (
+                <tr key={fig.id}>
+                  <td>{fig.name}</td>
+                  <td>{entry.unlimited ? "Any" : entry.max ?? "—"}</td>
+                  {STAT_KEYS.map((k) => (
+                    <td key={k}>{k === "pts" ? pts : k === "CD" ? v[k] : statText(k, v[k])}</td>
+                  ))}
+                  <td>{baseText(v.base)}</td>
+                  <td className="om-print-special">{(v.attributes ?? []).join(", ")}</td>
+                </tr>
+              );
+            })}
+          </tbody>
         ))}
-      </section>
+      </table>
     </PrintSheet>
   );
 }
