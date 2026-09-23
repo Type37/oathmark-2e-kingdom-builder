@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Layout, LayoutHeader, LayoutContent, LayoutPanel,
-  HStack, Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader,
+  HStack, Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import Ico from "./components/Ico.jsx";
@@ -29,15 +29,16 @@ export default function Shell({
 
   const header = (
     <LayoutHeader>
+      <SizeProvider value="lg">
       <HStack gap={GAP.group} align="center" justify="between" wrap="wrap">
         <HStack gap={GAP.item} align="center">
           {/* Back is always the first thing in the bar, so it never moves between pages. */}
           {onBack && (
-            <Button className="om-back" label={backLabel ?? "Back"} size="md" variant="ghost"
+            <Button className="om-back" label={backLabel ?? "Back"} variant="ghost"
                     icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
           )}
           {onMenu && (
-            <Button className="om-menu-btn" label="Menu" size="md" variant="ghost" isIconOnly
+            <Button className="om-menu-btn" label="Menu" variant="ghost" isIconOnly
                     icon={<Ico name="menu" size={20} />} onClick={onMenu} />
           )}
           {leading}
@@ -53,16 +54,17 @@ export default function Shell({
         <HStack gap={GAP.item} align="center" wrap="wrap">
           {meta}
           {onPrint && !narrow && (
-            <Button label="Print" variant="secondary" size="md"
+            <Button label="Print" variant="secondary"
                     icon={<Ico name="printer" size={20} />} onClick={onPrint} />
           )}
           {noPanels && detail && (
-            <Button label={detailTitle ?? "Details"} size="md" variant="secondary"
+            <Button label={detailTitle ?? "Details"} variant="secondary"
                     onClick={() => setDetailOpen(true)} />
           )}
           {menuItems.length > 0 && <MoreMenu alignment="end" items={menuItems} />}
         </HStack>
       </HStack>
+      </SizeProvider>
     </LayoutHeader>
   );
 

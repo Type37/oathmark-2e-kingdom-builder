@@ -55,14 +55,6 @@ body {
   background-color: var(--color-background-body);
 }
 
-/* One height for everything in the bar. Four different ones is what made it
-   look like sediment; the touch target comes from the height, not from a
-   special case on one button. */
-.om-topbar :is(button, input) {
-  min-block-size: var(--om-bar-control);
-}
-.om-topbar { --om-bar-control: 40px; }
-
 /* One page scroll. The kingdom sheet rides along, pinned under the nav. */
 .om-sticky {
   position: sticky;
@@ -450,13 +442,19 @@ body {
 body[data-view="work"] .wlf { display: none; }
 
 /* The record's name is a heading you can type in. */
-.om-title-input input {
-  block-size: var(--om-bar-control);
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-2xl);
+/* The name reads as the page's title until you point at it, then it is a field.
+   Astryx owns the box and its height; the heading face and size are ours. */
+.om-title-input.astryx-text-input {
   border-color: transparent;
   background-color: transparent;
-  padding-inline: var(--spacing-1);
 }
-.om-title-input input:hover { border-color: var(--color-border); }
-.om-title-input input:focus { border-color: var(--color-accent); background-color: var(--color-background-card); }
+.om-title-input.astryx-text-input:hover { border-color: var(--color-border); }
+.om-title-input.astryx-text-input:focus-within {
+  border-color: var(--color-accent);
+  background-color: var(--color-background-card);
+}
+.om-title-input input {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xl);
+  line-height: 1;
+}

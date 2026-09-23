@@ -180,7 +180,7 @@ export default function KingdomPane({ value, onChange, onEmblem, settings, onPri
       title={value.name || "Untitled"}
       onRename={(name) => patch({ name })}
       leading={
-        <Button label={value.emblem ? "Change emblem" : "Add an emblem"} variant="ghost" size="sm" isIconOnly
+        <Button label={value.emblem ? "Change emblem" : "Add an emblem"} variant="ghost" isIconOnly
                 onClick={() => setCropping(true)}>
           <Emblem emblemKey={value.emblem} name={value.name} size="lg" />
         </Button>
