@@ -62,19 +62,40 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
     {
       key: "name",
       header: sortable("name", <Text type="label" color="inherit">Figure</Text>),
-      width: proportional(2),
+      width: proportional(1),
       align: "start",
-      renderCell: (r) => (
-        <VStack gap={0}>
-          <Link isStandalone onClick={() => onOpen?.(r.figureId)}>{r.name}</Link>
-          {r.cap && (
-            <HStack gap={2} align="center">
-              {r.taken ? <Badge label={String(r.taken)} /> : null}
-              <Text type="supporting" color="secondary">{r.cap}</Text>
-            </HStack>
-          )}
-        </VStack>
-      ),
+      renderCell: (r) => {
+        const attrs = r.fig?.variants?.[0]?.attributes ?? [];
+        return (
+          <VStack gap={0}>
+            <Link isStandalone onClick={() => onOpen?.(r.figureId)}>{r.name}</Link>
+            {r.cap && (
+              <HStack gap={2} align="center">
+                {r.taken ? <Badge label={String(r.taken)} /> : null}
+                <Text type="supporting" color="secondary">{r.cap}</Text>
+              </HStack>
+            )}
+            {/* The abilities read under the name, as on a unit card: a column of
+                their own was squeezed to a word per line. Each comma stays with
+                the ability before it. */}
+            {attrs.length > 0 && (
+              <Text type="supporting">
+                {attrs.map((a, i) => (
+                  <React.Fragment key={a}>
+                    <span className="om-attr">
+                      {onOpenAttribute
+                        ? <Link className="om-attr-link" onClick={() => onOpenAttribute(a)}>{a}</Link>
+                        : a}
+                      {i < attrs.length - 1 && ","}
+                    </span>
+                    {i < attrs.length - 1 && " "}
+                  </React.Fragment>
+                ))}
+              </Text>
+            )}
+          </VStack>
+        );
+      },
     },
     ...statKeys.map((k) => ({
       key: k,
@@ -84,23 +105,6 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
       renderCell: (r) => <Text type="large">{k === "CD" ? r[k] : statText(k, r[k])}</Text>,
     })),
     ...(isNarrow ? [] : [
-      { key: "special", header: "Special", width: proportional(2), align: "start",
-        renderCell: (r) => {
-          const attrs = r.fig?.variants?.[0]?.attributes ?? [];
-          if (!attrs.length) return null;
-          return onOpenAttribute
-            ? (
-              <Text>
-                {attrs.map((a, i) => (
-                  <React.Fragment key={a}>
-                    {i > 0 && ", "}
-                    <Link className="om-attr-link" onClick={() => onOpenAttribute(a)}>{a}</Link>
-                  </React.Fragment>
-                ))}
-              </Text>
-            )
-            : <Text>{attrs.join(", ")}</Text>;
-        } },
       { key: "base", header: (
           <Defined def={{ title: baseRule.name, text: baseRule.text, note: baseRule.note, page: baseRule.page }}>
             <Text type="label" color="inherit">Base</Text>

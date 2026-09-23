@@ -453,6 +453,8 @@ body {
   text-underline-offset: 3px;
 }
 .om-attr-link:hover, .om-attr-link:hover * { text-decoration-color: currentColor; }
+/* An ability and its comma never part across a line break. */
+.om-attr { white-space: nowrap; }
 
 /* Regions the kingdom has not reached yet are present but set back. */
 .om-region-closed { opacity: 0.5; }
@@ -626,3 +628,8 @@ body[data-view="work"] .wlf { display: none; }
   margin-inline-start: var(--spacing-3);
   font-style: italic;
 }
+
+/* Every list stays in view: on a phone the race tabs wrap to a second row
+   rather than scroll half of them off the edge. */
+.om-sticky-tabs .astryx-tab-strip { flex-wrap: wrap; }
+.om-card-controls { margin-inline-start: auto; }

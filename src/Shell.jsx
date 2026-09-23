@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Layout, LayoutHeader, LayoutContent, LayoutPanel,
-  HStack, Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider,
+  HStack, VStack, Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider,
   Breadcrumbs, BreadcrumbItem,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
@@ -30,7 +30,7 @@ export default function Shell({
 
   const titleNode = onRename ? (
     <TextInput label="Name" isLabelHidden value={title === "Untitled" ? "" : title}
-               placeholder="Untitled" width={260} className="om-title-input"
+               placeholder="Untitled" width={narrow ? "100%" : 260} className="om-title-input"
                onChange={(e) => onRename(e.target?.value ?? e)} />
   ) : (
     <Heading level={1}>{title}</Heading>
@@ -38,47 +38,58 @@ export default function Shell({
   const titleBlock = titleAction
     ? <HStack gap={GAP.tight} align="center">{titleNode}{titleAction}</HStack>
     : titleNode;
+  // On a phone an editable name cannot share the bar with Back and the trail
+  // without running off the edge, so it takes the full width underneath.
+  const titleBelow = narrow && Boolean(onRename);
+
+  const lead = (
+    <HStack gap={GAP.item} align="center">
+      {/* Back is always the first thing in the bar, so it never moves between pages. */}
+      {onBack && (
+        <Button className="om-back" label={backLabel ?? "Back"} variant="ghost"
+                icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
+      )}
+      {onMenu && (
+        <Button className="om-menu-btn" label="Menu" variant="ghost" isIconOnly
+                icon={<Ico name="menu" size={20} />} onClick={onMenu} />
+      )}
+      {leading}
+      {/* Where the record lives, then the record. The parent carries its own
+          emblem, so nothing in the bar is an unlabelled stray word. */}
+      {crumbs?.length ? (
+        <Breadcrumbs label="Trail">
+          {crumbs.map((c) => (
+            <BreadcrumbItem key={c.label} startIcon={c.icon} onClick={c.onClick}>{c.label}</BreadcrumbItem>
+          ))}
+          {!titleBelow && <BreadcrumbItem isCurrent>{titleBlock}</BreadcrumbItem>}
+        </Breadcrumbs>
+      ) : !titleBelow && titleBlock}
+      {subtitle}
+    </HStack>
+  );
+  const tools = (
+    <HStack gap={GAP.item} align="center" wrap="wrap">
+      {meta}
+      {onPrint && !narrow && (
+        <Button label="Print" variant="secondary"
+                icon={<Ico name="printer" size={20} />} onClick={onPrint} />
+      )}
+      {noPanels && detail && (
+        <Button label={detailTitle ?? "Details"} variant="secondary"
+                onClick={() => setDetailOpen(true)} />
+      )}
+      {menuItems.length > 0 && <MoreMenu alignment="end" items={menuItems} />}
+    </HStack>
+  );
 
   const header = (
     <LayoutHeader>
       <SizeProvider value="lg">
-      <HStack gap={GAP.group} align="center" justify="between" wrap="wrap">
-        <HStack gap={GAP.item} align="center">
-          {/* Back is always the first thing in the bar, so it never moves between pages. */}
-          {onBack && (
-            <Button className="om-back" label={backLabel ?? "Back"} variant="ghost"
-                    icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
-          )}
-          {onMenu && (
-            <Button className="om-menu-btn" label="Menu" variant="ghost" isIconOnly
-                    icon={<Ico name="menu" size={20} />} onClick={onMenu} />
-          )}
-          {leading}
-          {/* Where the record lives, then the record. The parent carries its own
-              emblem, so nothing in the bar is an unlabelled stray word. */}
-          {crumbs?.length ? (
-            <Breadcrumbs label="Trail">
-              {crumbs.map((c) => (
-                <BreadcrumbItem key={c.label} startIcon={c.icon} onClick={c.onClick}>{c.label}</BreadcrumbItem>
-              ))}
-              <BreadcrumbItem isCurrent>{titleBlock}</BreadcrumbItem>
-            </Breadcrumbs>
-          ) : titleBlock}
-          {subtitle}
-        </HStack>
-        <HStack gap={GAP.item} align="center" wrap="wrap">
-          {meta}
-          {onPrint && !narrow && (
-            <Button label="Print" variant="secondary"
-                    icon={<Ico name="printer" size={20} />} onClick={onPrint} />
-          )}
-          {noPanels && detail && (
-            <Button label={detailTitle ?? "Details"} variant="secondary"
-                    onClick={() => setDetailOpen(true)} />
-          )}
-          {menuItems.length > 0 && <MoreMenu alignment="end" items={menuItems} />}
-        </HStack>
-      </HStack>
+      {titleBelow ? (
+        <VStack gap={GAP.item}>{lead}{titleBlock}{tools}</VStack>
+      ) : (
+        <HStack gap={GAP.group} align="center" justify="between" wrap="wrap">{lead}{tools}</HStack>
+      )}
       </SizeProvider>
     </LayoutHeader>
   );

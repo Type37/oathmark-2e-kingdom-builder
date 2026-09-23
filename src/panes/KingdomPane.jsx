@@ -18,6 +18,7 @@ import Capital from "../components/Capital.jsx";
 import Emblem from "../components/Emblem.jsx";
 import EmblemDialog from "../components/EmblemDialog.jsx";
 import Chronicle from "../components/Chronicle.jsx";
+import { Switch } from "@astryxdesign/core/Switch";
 import { GAP, DENSITY } from "../layout.mjs";
 import {
   LEVELS, REGION_SIZES, CAPITAL_LISTS, allTerritories, canPlace,
@@ -91,7 +92,8 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
         </HStack>
         {regionLore?.[r] && (
           <Text type="supporting" className="om-region-lore">
-            {regionLore[r].name}{regionLore[r].text ? ` ${regionLore[r].text}` : ""}
+            <Text type="inherit" weight="semibold">{regionLore[r].name}.</Text>
+            {regionLore[r].text ? ` ${regionLore[r].text}` : ""}
           </Text>
         )}
         <List density={DENSITY.data}>
@@ -115,12 +117,12 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
               }
               endContent={
                 <HStack gap={GAP.item} align="center">
-                  <Defined bare def={occupiedNote}>
-                    <Token label="Occupied" size="sm" color={p.occupied ? "red" : "gray"}
-                           onClick={() => patch({
-                             territories: picks.map((x, j) => (j === i ? { ...x, occupied: !x.occupied } : x)),
-                           })} />
-                  </Defined>
+                  <Tooltip content={occupiedNote.text}>
+                    <Switch label="Occupied" size="sm" labelPosition="start" value={Boolean(p.occupied)}
+                            onChange={(on) => patch({
+                              territories: picks.map((x, j) => (j === i ? { ...x, occupied: on } : x)),
+                            })} />
+                  </Tooltip>
                   <Button className="om-remove" label="Remove" size="sm" variant="destructive" isIconOnly
                           icon={<Ico name="times" />}
                           onClick={() => patch(r === 1

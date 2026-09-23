@@ -42,6 +42,15 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
   const [spelling, setSpelling] = React.useState(false);
   const [attr, setAttr] = React.useState(null);
   const patch = (next) => onChange({ ...unit, ...next });
+  const notes = [
+    ...weaponsOf(fig).map((w) => `${w} ${rangeText(w)}`),
+    p.penalty?.occupied ? "from occupied ground, activates one worse" : null,
+    p.penalty?.unreliable ? "from the borderlands, Unreliable" : null,
+    p.unitOfOne ? "unit-of-one" : null,
+    crew ? `crew of ${crew}` : null,
+    charFig ? `led by ${charFig.name}` : null,
+    unit.joinedTo ? "fighting inside a unit" : null,
+  ].filter(Boolean).join(" · ");
   // Taking the ring off can leave one spell too many; the last one chosen goes.
   const carry = (magicItem) => patch({
     magicItem,
@@ -51,29 +60,20 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
   return (
     <Card padding={4} variant={charFig ? "pink" : undefined}>
       <VStack gap={GAP.item}>
-        <HStack gap={GAP.item} align="baseline" justify="between" wrap="wrap">
-          {/* Name, cost and how they stand are one sentence, not three lines. */}
+        {/* Name and cost on the left, the count and removal always on the right;
+            what the unit is and where it came from reads underneath. */}
+        <HStack gap={GAP.item} align="center" justify="between" wrap="wrap">
           <HStack gap={GAP.item} align="baseline" wrap="wrap">
             <Button variant="ghost" size="sm" label={fig.name} onClick={() => onOpenFigure(fig.id)}>
               <Text type="large">{fig.name}</Text>
             </Button>
             <Text type="large">{unitCost(unit)}pts</Text>
-            <Text type="supporting">
-              {[
-                ...weaponsOf(fig).map((w) => `${w} ${rangeText(w)}`),
-                p.penalty?.occupied ? "from occupied ground, activates one worse" : null,
-                p.penalty?.unreliable ? "from the borderlands, Unreliable" : null,
-                p.unitOfOne ? "unit-of-one" : null,
-                crew ? `crew of ${crew}` : null,
-                charFig ? `led by ${charFig.name}` : null,
-                unit.joinedTo ? "fighting inside a unit" : null,
-              ].filter(Boolean).join(" · ")}
-            </Text>
           </HStack>
-          <HStack gap={GAP.item} align="center">
+          {/* On a phone the controls take the next row, still at the right edge. */}
+          <HStack gap={GAP.item} align="center" className="om-card-controls">
             {!isArtillery(fig) && p.max > 1 && (
               <>
-                {p.formation && <Text type="supporting">{p.formation}</Text>}
+                {p.formation && <Text type="supporting" className="om-attr">{p.formation}</Text>}
                 <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
                          max={p.max - (charFig ? 1 : 0)} onChange={(n) => patch({ count: n })} />
               </>
@@ -82,6 +82,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                     icon={<Ico name="times" />} onClick={onRemove} />
           </HStack>
         </HStack>
+        {notes && <Text type="supporting">{notes}</Text>}
 
         <StatBar variant={variantAfter} />
         <Text type="supporting">

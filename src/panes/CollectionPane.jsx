@@ -8,6 +8,7 @@ import Counter from "../components/Counter.jsx";
 import { figures } from "../rules/kingdom.mjs";
 import { collectionTotals, unitsAffordable } from "../rules/collection.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
+import { sizeRule } from "../rules/army.mjs";
 import { GAP } from "../layout.mjs";
 
 const LISTS = ["dwarf", "elf", "goblin", "human", "orc", "necropolis", "unaligned"];
@@ -42,7 +43,7 @@ export default function CollectionPane({ value, onChange, shell }) {
       figureId: f.id,
       name: f.name,
       ...Object.fromEntries(STAT_KEYS.map((k) => [k, f.variants[0][k]])),
-      cap: `${f.unitMax} per unit`,
+      cap: sizeRule(f).max > 1 ? `${sizeRule(f).max} per unit` : null,
       owned: value?.[f.id] ?? 0,
       units: unitsAffordable(value, f.id),
       fig: f,
@@ -89,7 +90,7 @@ export default function CollectionPane({ value, onChange, shell }) {
                      onChange={(e) => setQuery(e.target?.value ?? e)} />
         </Section>
         <Section paddingBlockEnd={0} className="om-sticky-tabs">
-          <TabList value={list} onChange={jump} isFullBleed>
+          <TabList value={list} onChange={jump} isFullBleed overflow="visible">
             {LISTS.map((l) => <Tab key={l} value={l} label={LABEL[l]} />)}
           </TabList>
         </Section>
@@ -106,10 +107,10 @@ export default function CollectionPane({ value, onChange, shell }) {
               onOpenAttribute={setOpenAttr}
               actionColumn={{
                 header: "Owned",
-                width: 210,
+                width: 190,
                 render: (r) => (
                   <HStack gap={2} align="center" justify="end">
-                    {r.units ? <Text type="supporting">{r.units}u</Text> : null}
+                    {r.units ? <Text type="supporting">{r.units} {r.units === 1 ? "unit" : "units"}</Text> : null}
                     <Counter label={`${r.name} owned`} value={r.owned}
                              onChange={(n) => set(r.figureId, n)} />
                   </HStack>

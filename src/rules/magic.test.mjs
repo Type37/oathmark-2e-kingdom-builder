@@ -68,7 +68,7 @@ test("a legal choice passes", () => {
   assert.deepEqual(validateSpellChoice("dwarf", 1, names).errors, []);
 });
 
-test("the Ring of Spellcasting teaches one more spell, p200", () => {
+test("the Ring of Spellcasting teaches one more spell, p205", () => {
   const ring = magicItems.find((i) => /ring of spellcasting/i.test(i.name));
   assert.equal(spellsKnown(1, ring), 4);
   assert.equal(spellsKnown(1, null), 3);

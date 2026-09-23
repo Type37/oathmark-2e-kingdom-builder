@@ -16,7 +16,7 @@ export function spellsFor(race) {
 }
 
 // Level plus two (p83), and one more for a caster wearing the Ring of
-// Spellcasting (p200).
+// Spellcasting (p205).
 const knowsOneMore = (item) => /^ring of spellcasting$/i.test(item?.name ?? "");
 export function spellsKnown(level, magicItem) {
   return level + 2 + (knowsOneMore(magicItem) ? 1 : 0);

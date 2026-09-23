@@ -21,10 +21,10 @@ export default function ReferencePane({ shell }) {
       : kind === "spells"
         ? spells
             .filter((s) => !q || s.name.toLowerCase().includes(q) || s.text.toLowerCase().includes(q))
-            .map((s) => ({ key: `${s.group}-${s.name}`, label: s.name, badge: `CN${s.cn}`, meta: s.group, text: s.text }))
+            .map((s) => ({ key: `${s.group}-${s.name}`, label: s.name, badge: `CN${s.cn}`, meta: `${s.group} · p${s.page}`, text: s.text }))
         : magicItems
             .filter((i) => !q || i.name.toLowerCase().includes(q) || i.text.toLowerCase().includes(q))
-            .map((i) => ({ key: i.name, label: i.name, badge: `${i.pts}pts`, text: i.text }));
+            .map((i) => ({ key: i.name, label: i.name, badge: `${i.pts}pts`, meta: `p${i.page}`, text: i.text }));
 
   return (
     <Shell

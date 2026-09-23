@@ -118,6 +118,7 @@ export function unitProfile(unit, units, entry) {
     formation: formation(fig, bodies),
     move,
     activation,
-    unitOfOne: bodies === 1,
+    // A character inside a unit is part of it, not a unit of its own (p81).
+    unitOfOne: bodies === 1 && !unit.joinedTo,
   };
 }
