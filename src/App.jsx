@@ -7,6 +7,7 @@ import { marchesTheme } from "./theme/marches.js";
 
 import Landing from "./panes/Landing.jsx";
 import Emblem from "./components/Emblem.jsx";
+import PaneError from "./components/PaneError.jsx";
 import Footer from "./components/Footer.jsx";
 import OptionsDialog from "./components/OptionsDialog.jsx";
 
@@ -188,6 +189,7 @@ export default function App() {
         <MobileNav isOpen={menuOpen} onOpenChange={setMenuOpen} header="Oathmark">
           {navItems}
         </MobileNav>
+        <PaneError key={page}>
         <React.Suspense fallback={null}>
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
 
@@ -266,6 +268,7 @@ export default function App() {
         {page === "reference" && <ReferencePane shell={shell} />}
 
         </React.Suspense>
+        </PaneError>
         <OptionsDialog isOpen={options} onOpenChange={setOptions} value={store.settings ?? {}}
                        onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
       </AppShell>
