@@ -2,9 +2,14 @@ import React from "react";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, HStack, Button,
 } from "@astryxdesign/core";
-import Uppy from "@uppy/core";
-import Dashboard from "@uppy/dashboard";
-import ImageEditor from "@uppy/image-editor";
+// Uppy is fetched the first time the dialog opens, not with every page.
+const loadUppy = () => Promise.all([
+  import("@uppy/core"), import("@uppy/dashboard"), import("@uppy/image-editor"),
+  import("@uppy/core/css/style.css"), import("@uppy/dashboard/css/style.css"),
+  import("@uppy/image-editor/css/style.css"),
+]).then(([core, dashboard, editor]) => ({
+  Uppy: core.default, Dashboard: dashboard.default, ImageEditor: editor.default,
+}));
 
 const SIZE = 512;    // what gets saved
 const STAGE_W = 680; // what Uppy draws in
@@ -22,43 +27,48 @@ export default function EmblemDialog({ isOpen, onOpenChange, onDone }) {
     if (!isOpen) return undefined;
     const target = mount.current;
     if (!target) return undefined;
+    let uppy = null;
+    let dead = false;
 
-    const uppy = new Uppy({
-      autoProceed: false,
-      restrictions: { maxNumberOfFiles: 1, allowedFileTypes: ["image/*"] },
-    })
-      .use(Dashboard, {
-        target,
-        inline: true,
-        width: STAGE_W,
-        height: STAGE_H,
-        theme: "auto",
-        autoOpen: "imageEditor",
-        hideUploadButton: true,
-        disableStatusBar: true,
-        proudlyDisplayPoweredByUppy: false,
+    loadUppy().then(({ Uppy, Dashboard, ImageEditor }) => {
+      if (dead) return;
+      uppy = new Uppy({
+        autoProceed: false,
+        restrictions: { maxNumberOfFiles: 1, allowedFileTypes: ["image/*"] },
       })
-      .use(ImageEditor, {
-        quality: 0.92,
-        // A square emblem, locked, cut straight to the size we store.
-        cropperOptions: {
-          aspectRatio: 1,
-          viewMode: 1,
-          croppedCanvasOptions: { width: SIZE, height: SIZE },
-        },
-        // The ratio is fixed, so the ratio buttons would do nothing.
-        actions: {
-          revert: true, rotate: true, granularRotate: true, flip: true,
-          zoomIn: true, zoomOut: true,
-          cropSquare: false, cropWidescreen: false, cropWidescreenVertical: false,
-        },
-      });
+        .use(Dashboard, {
+          target,
+          inline: true,
+          width: STAGE_W,
+          height: STAGE_H,
+          theme: "auto",
+          autoOpen: "imageEditor",
+          hideUploadButton: true,
+          disableStatusBar: true,
+          proudlyDisplayPoweredByUppy: false,
+        })
+        .use(ImageEditor, {
+          quality: 0.92,
+          // A square emblem, locked, cut straight to the size we store.
+          cropperOptions: {
+            aspectRatio: 1,
+            viewMode: 1,
+            croppedCanvasOptions: { width: SIZE, height: SIZE },
+          },
+          // The ratio is fixed, so the ratio buttons would do nothing.
+          actions: {
+            revert: true, rotate: true, granularRotate: true, flip: true,
+            zoomIn: true, zoomOut: true,
+            cropSquare: false, cropWidescreen: false, cropWidescreenVertical: false,
+          },
+        });
 
-    uppy.on("file-editor:complete", (file) => {
-      if (file?.data) done.current(file.data);
+      uppy.on("file-editor:complete", (file) => {
+        if (file?.data) done.current(file.data);
+      });
     });
 
-    return () => uppy.destroy();
+    return () => { dead = true; uppy?.destroy(); };
   }, [isOpen]);
 
   return (

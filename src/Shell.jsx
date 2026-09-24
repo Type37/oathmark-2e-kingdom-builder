@@ -5,6 +5,7 @@ import {
   Breadcrumbs, BreadcrumbItem,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
+import { VisuallyHidden } from "@astryxdesign/core/VisuallyHidden";
 import Ico from "./components/Ico.jsx";
 import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 
@@ -28,10 +29,15 @@ export default function Shell({
     ...(appActions ?? []),
   ];
 
+  // An editable name is a field, not a heading, so the page's h1 is said once
+  // for screen readers beside it.
   const titleNode = onRename ? (
+    <>
+    <VisuallyHidden as="h1">{title}</VisuallyHidden>
     <TextInput label="Name" isLabelHidden value={title === "Untitled" ? "" : title}
                placeholder="Untitled" width={narrow ? "100%" : 260} className="om-title-input"
                onChange={(e) => onRename(e.target?.value ?? e)} />
+    </>
   ) : (
     <Heading level={1}>{title}</Heading>
   );

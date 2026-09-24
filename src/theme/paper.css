@@ -437,8 +437,11 @@ body {
 
 
 /* On a card the emblem is a mark, not the subject: it sits back from the name. */
-.om-card-emblem { opacity: 0.55; }
-.om-card:hover .om-card-emblem { opacity: 0.85; }
+/* Only a real crest fades; the initials that stand in for one are text and
+   keep their contrast. */
+.om-card-emblem img { opacity: 0.55; }
+.om-card:hover .om-card-emblem img { opacity: 0.85; }
+.om-card-emblem .astryx-avatar-fallback { color: var(--color-text-primary); }
 
 /* A chip that carries a definition still needs a box the popover can measure. */
 .om-defined { display: inline-flex; }
@@ -456,8 +459,9 @@ body {
 /* An ability and its comma never part across a line break. */
 .om-attr { white-space: nowrap; }
 
-/* Regions the kingdom has not reached yet are present but set back. */
-.om-region-closed { opacity: 0.5; }
+/* Regions the kingdom has not reached yet are present but set back: a dashed
+   plate says "not yet" while the text keeps its full contrast. */
+.om-region-closed .om-plate { border-style: dashed; box-shadow: none; }
 
 /* A popover opened from a plate is its own surface: it must not inherit the
    plate's spaced capitals. */
