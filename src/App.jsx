@@ -15,7 +15,6 @@ import { validateKingdom } from "./rules/kingdom.mjs";
 import {
   STORE_KEY, emptyStore, normalise, save, get, remove, duplicate, setActive, activeRecord, toFile,
 } from "./rules/store.mjs";
-import { parseImport } from "./rules/schema.mjs";
 import useSection, { PARENT } from "./useSection.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "./rules/examples.mjs";
 import { saveEmblem, deleteEmblem } from "./emblem.mjs";
@@ -64,6 +63,8 @@ export default function App() {
   const [mustering, setMustering] = React.useState(false);
   const [options, setOptions] = React.useState(false);
   const [deleting, setDeleting] = React.useState(null);
+  const [restoring, setRestoring] = React.useState(null);
+  const count = (list, one, many = `${one}s`) => `${(list ?? []).length} ${(list ?? []).length === 1 ? one : many}`;
   const fileRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -79,7 +80,10 @@ export default function App() {
   const muster = activeRecord(store, "musters");
   const musterKingdom = muster ? get(store, "kingdoms", muster.kingdomId) : null;
   const collection = collectionOf(store);
-  const buildable = store.kingdoms.filter((k) => k.capitalList);
+  // A kingdom musters once its starting regions are filled (p17); before that
+  // the army page would have nothing to draw from.
+  const canMuster = (k) => Boolean(k?.capitalList && validateKingdom(k).ok);
+  const buildable = store.kingdoms.filter(canMuster);
 
   // Every edit writes straight to the store: nothing to save by hand.
   const update = (kind) => (next) => setStore((s) => save(s, kind, next));
@@ -98,8 +102,12 @@ export default function App() {
     if (!file) return;
     setError(null);
     try {
+      // The validator is only needed for a file someone hands us, so it loads then.
+      const { parseImport } = await import("./rules/schema.mjs");
       const { kind, value } = parseImport(await file.text());
-      if (kind === "store") setStore((s) => normalise({ ...s, ...value }));
+      // A whole backup replaces what is here, so it waits for a yes; a single
+      // kingdom or army is added alongside what you have.
+      if (kind === "store") setRestoring(value);
       else setStore((s) => save(s, kind, { ...value, id: undefined }));
     } catch (err) {
       setError(err.message);
@@ -213,6 +221,16 @@ export default function App() {
             go("muster");
           }}
         />
+        {restoring && (
+          <AlertDialog
+            isOpen
+            onOpenChange={(o) => !o && setRestoring(null)}
+            title="Replace everything with this backup?"
+            description={`This replaces your ${count(store.kingdoms, "kingdom")} and ${count(store.musters, "army", "armies")} with the backup's ${count(restoring.kingdoms, "kingdom")} and ${count(restoring.musters, "army", "armies")}.`}
+            actionLabel="Replace"
+            onAction={() => { setStore((s) => normalise({ ...s, ...restoring })); setRestoring(null); }}
+          />
+        )}
         {deleting && (
           <AlertDialog
             isOpen
@@ -239,7 +257,7 @@ export default function App() {
           <KingdomPane value={kingdom} onChange={update("kingdoms")} settings={store.settings ?? {}}
                        onPrint={() => window.print()}
                        onEmblem={(blob) => setEmblem(kingdom, blob)}
-                       onMuster={kingdom.capitalList ? () => setMustering(true) : undefined}
+                       onMuster={canMuster(kingdom) ? () => setMustering(true) : undefined}
                        shell={{ ...shell, actions: recordActions("kingdoms", kingdom) }} />
         )}
         {page === "musters" && (
@@ -253,7 +271,7 @@ export default function App() {
             settings={store.settings ?? {}}
             value={muster}
             onChange={update("musters")}
-            ready={Boolean(musterKingdom?.capitalList && validateKingdom(musterKingdom).ok)}
+            ready={canMuster(musterKingdom)}
             onOpenKingdom={(id) => open("kingdoms", id)}
             onPrint={() => window.print()}
             shell={{ ...shell, actions: recordActions("musters", muster) }}

@@ -1,4 +1,6 @@
 // Named saves for kingdoms, collections and musters, in one versioned record.
+import { spellNamed, itemNamed } from "./magic.mjs";
+
 export const STORE_KEY = "oathmark.v2";
 export const SCHEMA = 2;
 
@@ -16,9 +18,23 @@ export function stamp() {
 
 const KINDS = ["kingdoms", "collections", "musters"];
 
+// A saved army's items and spells are matched back to the book's current
+// entries, so a renamed one keeps its place in the pickers and the print.
+export function currentMagic(muster) {
+  return {
+    ...muster,
+    units: (muster.units ?? []).map((u) => ({
+      ...u,
+      ...(u.magicItem ? { magicItem: itemNamed(u.magicItem) ?? u.magicItem } : {}),
+      ...(u.spells ? { spells: u.spells.map((s) => spellNamed(s)?.name ?? s) } : {}),
+    })),
+  };
+}
+
 export function normalise(raw) {
   const s = { ...emptyStore(), ...(raw ?? {}) };
   for (const k of KINDS) if (!Array.isArray(s[k])) s[k] = [];
+  s.musters = s.musters.map(currentMagic);
   s.active = s.active ?? {};
   s.schema = SCHEMA;
   return s;

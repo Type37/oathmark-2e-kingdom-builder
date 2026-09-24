@@ -6,7 +6,7 @@ import { unitCost } from "../rules/muster.mjs";
 import { applyUpgrades } from "../rules/upgrades.mjs";
 import { unitProfile, crewOf } from "../rules/army.mjs";
 import { STAT_KEYS, statText, baseText, attrLevel, figuresIn, weaponsOf, rangeText } from "../rules/stats.mjs";
-import { spells as ALL_SPELLS, magicItems as ALL_ITEMS, spellsKnown, applyItem } from "../rules/magic.mjs";
+import { magicItems as ALL_ITEMS, spellsKnown, applyItem, spellNamed } from "../rules/magic.mjs";
 
 const byName = (a, b) => a.name.localeCompare(b.name);
 const COLS = STAT_KEYS.filter((k) => k !== "pts");
@@ -41,8 +41,9 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
     .reduce((out, def) => (out.some((x) => x.name === def.name) ? out : [...out, def]), [])
     .sort(byName);
 
-  const spellNames = new Set(rows.flatMap((r) => (r.unit.spells ?? []).map((s) => s.name)));
-  const known = ALL_SPELLS.filter((s) => spellNames.has(s.name)).sort(byName);
+  // A unit keeps its spells by name; the book's entry carries the CN and text.
+  const spellsOf = (unit) => (unit.spells ?? []).map(spellNamed).filter(Boolean);
+  const known = [...new Map(rows.flatMap((r) => spellsOf(r.unit)).map((s) => [s.name, s])).values()].sort(byName);
 
   const itemNames = new Set(rows.map((r) => r.unit.magicItem?.name).filter(Boolean));
   const carried = ALL_ITEMS.filter((i) => itemNames.has(i.name)).sort(byName);
@@ -100,7 +101,7 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
                 {knows > 0 && (
                   <span className="om-print-spells">
                     <b>Spells</b>
-                    {(unit.spells ?? []).map((s) => <i key={s.name}>{s.name} CN{s.cn}</i>)}
+                    {spellsOf(unit).map((s) => <i key={s.name}>{s.name} CN{s.cn}</i>)}
                     {Array.from({ length: Math.max(0, knows - (unit.spells ?? []).length) },
                       (_, i) => <span key={i} className="om-print-rule" />)}
                   </span>

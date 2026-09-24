@@ -11,6 +11,8 @@ import ArmyPrint from "../components/ArmyPrint.jsx";
 import Shell from "../Shell.jsx";
 import { figurePool, figureById } from "../rules/kingdom.mjs";
 import { validateArmy } from "../rules/muster.mjs";
+import { validateKingdom } from "../rules/kingdom.mjs";
+import { EmptyState } from "@astryxdesign/core/EmptyState";
 import { armyStats } from "../rules/stats.mjs";
 import { shortfalls } from "../rules/collection.mjs";
 import { sizeRule, crewOf, isArtillery, isCharacter, unitProfile } from "../rules/army.mjs";
@@ -52,8 +54,22 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
     if (isCharacter(r.fig)) setAdding(false);
   };
 
+  // The kingdom this army draws from has unfilled regions: say which, and
+  // offer the way back to fill them, rather than an empty page.
   if (!ready) {
-    return <Shell {...shell} title={value.name || "Untitled"} content={<Section paddingBlock={GAP.section} />} />;
+    const missing = kingdom?.level ? validateKingdom(kingdom).errors : [];
+    return (
+      <Shell {...shell} title={value.name || "Untitled"} content={(
+        <Section paddingBlock={GAP.section}>
+          <EmptyState
+            title={`${kingdom?.name || "This kingdom"} is not ready to muster`}
+            description={missing.join(" · ")}
+            actions={kingdom?.id && <Button label={`Open ${kingdom.name || "the kingdom"}`} variant="primary"
+                                            onClick={() => onOpenKingdom?.(kingdom.id)} />}
+          />
+        </Section>
+      )} />
+    );
   }
 
   return (

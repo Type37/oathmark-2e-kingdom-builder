@@ -142,3 +142,20 @@ test("a collection file is told apart too", () => {
   assert.equal(kind, "collections");
   assert.equal(value.owned["dwarf-soldiers"], 20);
 });
+
+test("a saved army's old item and spell names find the book's current ones", async () => {
+  const { normalise } = await import("./store.mjs");
+  const s = normalise({ musters: [{ units: [
+    { figureId: "human-spellcaster", magicItem: { name: "Ring Of Spellcasting", pts: 20 }, spells: ["Rain Of Knives", "Seize The Initiative"] },
+  ] }] });
+  const u = s.musters[0].units[0];
+  assert.equal(u.magicItem.name, "Ring of Spellcasting");
+  assert.deepEqual(u.spells, ["Rain of Knives", "Seize the Initiative"]);
+});
+
+test("a spell is found by its name for the print, whatever the case", async () => {
+  const { spellNamed } = await import("./magic.mjs");
+  assert.equal(spellNamed("rain of knives")?.name, "Rain of Knives");
+  assert.ok(spellNamed("Rain of Knives").cn > 0);
+  assert.equal(spellNamed("No Such Spell"), null);
+});

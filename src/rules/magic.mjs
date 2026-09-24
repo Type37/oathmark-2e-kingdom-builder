@@ -3,6 +3,14 @@ import data from "../data/oathmark.json" with { type: "json" };
 export const spells = data.spells;
 export const magicItems = data.magicItems;
 
+// Saves hold a spell by its name and an item as a copy; either may be in an
+// older spelling or case ("Rain Of Knives"), so both are found case-blind.
+const spellIndex = new Map(spells.map((s) => [s.name.toLowerCase(), s]));
+const itemIndex = new Map(magicItems.map((i) => [i.name.toLowerCase(), i]));
+export const spellNamed = (s) =>
+  spellIndex.get(String(typeof s === "string" ? s : s?.name ?? "").toLowerCase()) ?? null;
+export const itemNamed = (i) => itemIndex.get(String(i?.name ?? "").toLowerCase()) ?? null;
+
 // A caster draws from the General list plus its own race, p191. Necromancers
 // use the Necromancer list as their race.
 const RACE_LIST = {
