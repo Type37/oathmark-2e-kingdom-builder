@@ -1,7 +1,9 @@
 // Name pools for the roll buttons. Every entry is printed in a published book
-// the owner has, with its page; nothing here is invented. See notes/name-pools.md.
+// the owner has, with its page, or is a historical name from the owner's
+// research (HN); nothing here is invented. See notes/culture-pools.md.
 //   DR = Dragon Rampant, second edition (Osprey Games), Daniel Mersey
 //   KL = The Book of Knights & Ladies (Pendragon 5th ed., 2007), in bkl-names.mjs
+//   HN = historical British and Saxon names, the owner's research
 // Page numbers are the books' printed page numbers.
 import { BKL_CULTURES, BKL_HOMELANDS } from "./bkl-names.mjs";
 
@@ -51,6 +53,37 @@ const HERO = [
 
 export const SOURCES = { kingdom: KINGDOM, army: ARMY, hero: HERO };
 
+// Historical British and Saxon names from the owner's research (HN), row by row
+// from their d10 × d10 tables.
+// The Britons are the book of Knights & Ladies' Cymri. "Horse" (Saxon 1-4) is
+// left out as a misprint of Horsa, which KL p28 already has.
+const HN = {
+  cymric: [
+    "Caradoc", "Cado", "Malgo", "Tutgal", "Vortiporius", "Cadog", "Medraut", "Pasgen", "Idris", "Pabo",
+    "Cadwallader", "Mor", "Keredic", "Urien", "Arthur", "Pedrog", "Ceido", "Cunedda", "Gwyddno", "Sawyl",
+    "Gwerthefyr", "Gerren", "Cadvan", "Cynfarch", "Senyllt", "Bedwyr", "Einion", "Tutwal", "Gwrin", "Asaph",
+    "Cuneglasus", "Bledric", "Geraint", "Donault", "Uther", "Meurig", "Cadwallon", "Iago", "Meirchion", "Dunaut",
+    "Guoremor", "Clemen", "Yvor", "Selyf", "Ambrosius", "Owain", "Maelgwyn", "Cadfan", "Meilir", "Aneirin",
+    "Gwenddoleu", "Petroc", "Yni", "Aurelius", "Caradocus", "Erb", "Rhun", "Cadfael", "Mael", "Deiniol",
+    "Conomor", "Culmin", "Vortigern", "Riderich", "Solor", "Tewdrig", "Iddon", "Idwal", "Brydw", "Ambrosius",
+    "Constantine", "Donyarth", "Constans", "Morcant", "Glywys", "Athrwys", "Ynyr", "Rhodri", "Tristan", "Cynwyl",
+    "Gwalchafed", "Octavius", "Erbin", "Garcianus", "Gwynllyn", "Lot", "Gadeon", "Cynan", "Gruffudd", "Pawl",
+    "Maximianus", "Custennin", "Dionotus", "Peredur", "Gwallawc", "Conan", "Merchwyn", "Hywel", "Merfyn", "Cadell",
+  ],
+  saxon: [
+    "Cerdic", "Cenwalh", "Aethelwold", "Hlothhere", "Oswiu", "Nodhelm", "Aethelfrith", "Creoda", "Ealdwulf",
+    "Cynric", "Wehha", "Ealdwulf", "Oisc", "Eadric", "Wulfhere", "Esa", "Edwin", "Offa", "Aelfwald",
+    "Ceawlin", "Wuffa", "Aescwine", "Octa", "Icel", "Aethelred", "Eoppa", "Eanfrith", "Aelfwynn", "Hrotha",
+    "Ceol", "Tytila", "Saebert", "Eormenric", "Cnebba", "Aelle", "Ida", "Oswald", "Aart", "Uppinga",
+    "Ceowulf", "Raedwald", "Sexred", "Aedelberht", "Cynewald", "Cissa", "Glappa", "Oswiu", "Cenfus", "Sledda",
+    "Cynegils", "Eorpwald", "Saeward", "Eadbald", "Creoda", "Aedelwealh", "Adda", "Aella", "Aescwine", "Swithelm",
+    "Cwichelm", "Ricberht", "Sigeberht", "Aedwald", "Pybba", "Eadwulf", "Arthelric", "Oswine", "Centwine", "Sigeric",
+    "Cenwalh", "Sigeberht", "Seabbi", "Eorcenberht", "Cearl", "Ecgwald", "Theordric", "Eadwulf", "Ine", "Mul",
+    "Penda", "Ecgric", "Sigered", "Eormenred", "Eowa", "Berhthun", "Frithuwald", "Coenred", "Anna", "Swaefheard",
+    "Cuthwulf", "Aethelhere", "Hengest", "Ecgberht", "Peada", "Andhun", "Hussa", "Icel", "Ealdwold", "Wihtred",
+  ],
+};
+
 // A culture is a homeland's people and the names they give their rulers.
 // Dragon Rampant realms keep that book's heroes.
 const book = (src) => (list) => list.filter(([, cite]) => cite.startsWith(src)).map(([n]) => n);
@@ -59,8 +92,8 @@ export const CULTURES = {
   ...Object.fromEntries(Object.entries(BKL_CULTURES).map(([id, c]) => [id, {
     label: c.label,
     // Pict women take Cymric names (KL p26); Roman women feminize the men's (KL p27).
-    rulers: [...c.male, ...c.female, ...(c.femaleRule ?? []),
-             ...(c.femaleFrom ? BKL_CULTURES[c.femaleFrom].female : [])],
+    rulers: [...new Set([...c.male, ...c.female, ...(c.femaleRule ?? []),
+             ...(c.femaleFrom ? BKL_CULTURES[c.femaleFrom].female : []), ...(HN[id] ?? [])])],
   }])),
 };
 
@@ -98,8 +131,8 @@ export const cultureOf = (name) => byName.get(String(name ?? "").trim().toLowerC
 export const rulerPool = (culture) => CULTURES[culture]?.rulers ?? NAMES.hero;
 
 // The kingdom-name roll: a culture first, then one of its homelands, then a ruler of that culture.
-// Cultures weigh the same, except more Cymric (the heart of the book) and fewer Faerie children.
-const WEIGHT = { cymric: 2, faerie: 0.25 };
+// Cultures weigh the same, except more British (Cymric) and Saxon, and fewer Faerie children.
+const WEIGHT = { cymric: 3, saxon: 2, faerie: 0.25 };
 const CULTURE_IDS = Object.keys(CULTURES).filter((c) => HOMELANDS.some(([, h]) => h === c));
 function rollCulture() {
   const total = CULTURE_IDS.reduce((t, c) => t + (WEIGHT[c] ?? 1), 0);

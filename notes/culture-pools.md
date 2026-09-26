@@ -1,8 +1,8 @@
 # Culture pools
 
-Rolling a kingdom name picks a culture at random (each equally likely), then one of its homelands, then a ruler from that culture.
+Rolling a kingdom name picks a culture at random (each equally likely, except Cymric ×3, Saxon ×2, Children of Faeries ×¼), then one of its homelands, then a ruler from that culture.
 
-KL = Book of Knights & Ladies, DR = Dragon Rampant 2e. Printed page numbers.
+KL = Book of Knights & Ladies, DR = Dragon Rampant 2e, HN = historical British and Saxon names from the owner's research. Printed page numbers.
 
 ## Dragon Rampant
 
@@ -17,6 +17,8 @@ KL = Book of Knights & Ladies, DR = Dragon Rampant 2e. Printed page numbers.
 **Male (93):** Addonwy, Aeron, Afan, Aneirin, Aeddan, Amig, Amlyn, Athrwys, Arddur, Buddfannan, Blaen, Bledri, Bradwen, Bleddig, Cadfannan, Cadfael, Cadwallon, Cilydd, Cynon, Cynfan, Cyfulch, Cynrain, Cunvelyn, Caradoc, Cibno, Ceredig, Cadlew, Cynwal, Clydno, Cynhafal, Dafydd, Defi, Dwyai, Edar, Edern, Eiddef, Erthgi, Elad, Eudaf, Eiffin, Gwefrfawr, Gwegon, Gwion, Gwyn, Gwarddur, Gwern, Gwyleged, Gwrien, Gwraid, Gorthyn, Gwaednerth, Gwengad, Brugyn, Gwenabwy, Gwrfelling, Gwair, Graid, Geriant, Gwanon, Hyfaidd, Hywel, Ieuan, Llywel, Marchlew, Moried, Morien, Madog, Morial, Mynyddog, Merin, Neilyn, Nwython, Nai, Nerthaid, Neddig, Nidian, Owain, Padern, Pedrog, Ricerch, Rhodri, Rhufon, Rhun, Sawel, Seriol, Sywno, Tathal, Tathan, Tudfwich, Tyngyr, Uren, Uwain, Ysgarran
 
 **Female (23):** Adwen, Annest, Angarad, Arianwen, Briant, Duddug, Collwen, Dwynwen, Eleri, Ffraid, Glesig, Glesni, Gwen, Heledd, Indeg, Leri, Lleueu, Lilo, Melangell, Meleri, Nest, Nia, Tydfil
+
+**Also, British (HN, 100 entries, repeats dropped):** the whole British table.
 
 ## Irish (KL p25)
 
@@ -49,6 +51,8 @@ KL = Book of Knights & Ladies, DR = Dragon Rampant 2e. Printed page numbers.
 **Male (48):** Aelfric, Aesewine, Bassa, Beorhtric, Caedwalla, Caewlin, Centwine, Cenwalch, Cerdic, Coelred, Coelric, Coelwulf, Coenhelm, Conerad, Conewalch, Coenwulf, Cuthbert, Cuthred, Cuthwulf, Cyneagils, Cynewulf, Cynric, Eadbald, Eadberht, Eadric, Eardwulf, Edwin, Edgert, Ethilfrith, Ethelheard, Ethelred, Ethelwulf, Hengest, Hlothere, Horsa, Ine, Octa, Oeric, Osric, Oswald, Oswine, Oswulf, Oswy, Peada, Penda, Sigebryht, Wihtred, Wulfhere
 
 **Female (15):** Aelflaed, Aelgifu, Aethelred, Burhred, Cuthburh, Cyneburh, Eadgifu, Eadgyth, Eadhild, Ealhred, Eormenburh, Hereswith, Raedburh, Sexburh, Wihtburh
+
+**Also, Saxon (HN, 100 entries, repeats dropped):** the whole Saxon table, less "Horse" (a misprint of Horsa).
 
 ## Aquitanian (KL p29)
 

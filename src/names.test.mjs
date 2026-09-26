@@ -28,6 +28,13 @@ test("Pict rulers include Cymric women (KL p26), Roman women take -ia (KL p27)",
   assert.ok(!rulerPool("roman").some((n) => n.endsWith("rixia")));
 });
 
+test("British names join the Cymri and Saxon names the Saxons, once each (HN)", () => {
+  assert.ok(rulerPool("cymric").includes("Vortigern"));
+  assert.ok(rulerPool("saxon").includes("Aethelfrith"));
+  assert.ok(!rulerPool("saxon").includes("Horse"));
+  for (const c of ["cymric", "saxon"]) assert.equal(new Set(rulerPool(c)).size, rulerPool(c).length);
+});
+
 test("the roll draws a culture first, so every culture comes up", () => {
   const seen = new Set();
   for (let i = 0; i < 2000; i++) seen.add(rollKingdom().culture);
