@@ -62,10 +62,10 @@ const blobToDataUrl = (blob) => new Promise((resolve) => {
   r.readAsDataURL(blob);
 });
 
-// The app never shows an emblem larger than this, so the cloud copy is
-// shrunk to it: an uploaded photo can be megabytes, the sync's whole document
-// may be under one.
-const EMBLEM_SYNC_PX = 256;
+// The cloud copy of an emblem is shrunk to what the app needs at most: the
+// print sheet's 26mm emblem at 300dpi is 307px, so 320 prints sharp. The
+// stored one is 512px, and the sync's whole document must stay under 900KB.
+const EMBLEM_SYNC_PX = 320;
 
 async function shrink(blob) {
   try {
