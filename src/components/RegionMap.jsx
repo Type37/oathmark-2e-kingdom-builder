@@ -64,15 +64,14 @@ export default function RegionMap({ regions, playable, picks, activeRegion, litR
               return (
                 <g key={i}>
                   <path
-                    className={`om-slot${key && key === claimed ? " om-slot-claimed" : ""}`}
+                    className={`om-slot${key && key === claimed ? " om-slot-claimed" : ""}${isLit ? " om-slot-lit" : ""}`}
                     d={d}
                     fill={pick ? `var(--color-background-${hueOf(pick.list)})`
                       : isActive ? "var(--color-accent-muted)"
                       : live ? "var(--color-background-card)" : "var(--color-background-body)"}
-                    stroke={isLit ? "var(--color-accent)"
-                      : pick ? `var(--color-border-${hueOf(pick.list)})`
+                    stroke={pick ? `var(--color-border-${hueOf(pick.list)})`
                       : isActive ? "var(--color-accent)" : "var(--color-border-emphasized)"}
-                    strokeWidth={isHovered || isLit ? 3 : isActive || pick ? 2 : 1}
+                    strokeWidth={isHovered || isLit ? 3 : pick ? 2 : isActive ? 2 : 1}
                     strokeDasharray={live ? undefined : "4 4"}
                     cursor={live ? "pointer" : "default"} opacity={live ? 1 : 0.55}
                     onMouseEnter={() => { onSlotHover?.(key); onRegionHover?.(region); }}

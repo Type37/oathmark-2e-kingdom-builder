@@ -31,6 +31,9 @@ import { hasLore, rollLore } from "../lore.mjs";
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
 
 // Every region is visible at once. No stepper, so nothing advances underfoot.
+// How long the founding seal takes to land (paper.css, om-found-seal).
+const FOUND_MS = 650;
+
 export default function KingdomPane({ value, onChange, onEmblem, onMuster, settings, onPrint, shell }) {
   const { level, capitalList, territories: picks } = value;
   const [picking, setPicking] = React.useState(null);
@@ -64,6 +67,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
   const lore = value.lore;
   const regionLore = settings?.lore && hasLore ? lore?.regions : null;
 
+  const [sealing, setSealing] = React.useState(false);
   const founded = Boolean(value.founded);
   const started = startComplete(value);
   const openRegions = founded ? [1, 2, 3, 4, 5, 6] : regions;
@@ -73,7 +77,8 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
     const mine = picks.map((p, i) => ({ p, i })).filter(({ p }) => p.region === r);
     const full = mine.length >= REGION_SIZES[r];
     return (
-      <Card key={r} padding={3} variant={lit === r ? "pink" : live ? "default" : "muted"}>
+      <Card key={r} padding={3}
+            variant={lit === r ? (mine.length ? hueOf(mine[0].p.list) : "pink") : live ? "default" : "muted"}>
       <VStack gap={GAP.item} onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}>
         <HStack gap={GAP.item} vAlign="center">
           <StackItem size="fill"><RegionName region={r} value={value.regionNames?.[r]}
@@ -113,12 +118,15 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
               }
               endContent={
                 <HStack gap={GAP.item} align="center">
-                  <Tooltip content={occupiedNote.text}>
-                    <Switch label="Occupied" size="sm" labelPosition="start" value={Boolean(p.occupied)}
-                            onChange={(on) => patch({
-                              territories: picks.map((x, j) => (j === i ? { ...x, occupied: on } : x)),
-                            })} />
-                  </Tooltip>
+                  {/* Territory is only lost once the kingdom is at war, after founding. */}
+                  {founded && (
+                    <Tooltip content={occupiedNote.text}>
+                      <Switch label="Occupied" size="sm" labelPosition="start" value={Boolean(p.occupied)}
+                              onChange={(on) => patch({
+                                territories: picks.map((x, j) => (j === i ? { ...x, occupied: on } : x)),
+                              })} />
+                    </Tooltip>
+                  )}
                   <Button label="Remove" size="sm" variant="ghost" isIconOnly
                           icon={<Icon icon="close" />}
                           onClick={() => patch(r === 1
@@ -217,7 +225,14 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
       onRename={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
       inlineDetail={<VStack gap={GAP.group}>{map}{chronicle}{access}</VStack>}
       meta={started && !founded ? (
-        <Button label="Found the Kingdom" variant="primary" onClick={() => patch({ founded: true })} />
+        <Button label="Found the Kingdom" variant="primary" icon={<Icon icon="app:laurel" />}
+                className={sealing ? "om-found om-found-sealing" : "om-found"}
+                onClick={() => {
+                  if (sealing) return;
+                  setSealing(true);
+                  // The seal lands, then the kingdom is founded.
+                  setTimeout(() => { setSealing(false); patch({ founded: true }); }, FOUND_MS);
+                }} />
       ) : onMuster && (
         <Button label={value.name ? `Muster an Army of ${value.name}` : "Muster an Army"}
                 variant="primary" icon={<Icon icon="app:muster" />} onClick={onMuster} />

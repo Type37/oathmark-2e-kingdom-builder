@@ -13,13 +13,10 @@ export default function Footer() {
         <i>Oathmark: Second Edition</i> by{" "}
         <Link href="https://www.josephamccullough.com" target="_blank">Joseph A. McCullough</Link>
       </Text></StackItem>
-      <HStack gap={GAP.item} vAlign="center" wrap="wrap">
+      <HStack gap={GAP.group} vAlign="center" wrap="wrap">
         <Text type="supporting">Builder by <Link href={WARLORE} target="_blank">WarLore</Link></Text>
-        <Text type="supporting" aria-hidden="true">&middot;</Text>
         <Link href="https://ospreypublishing.com/uk/oathmark-second-edition" target="_blank">Game website</Link>
-        <Text type="supporting" aria-hidden="true">&middot;</Text>
         <Link href={`mailto:${EMAIL}?subject=Oathmark builder`}>Send feedback</Link>
-        <Text type="supporting" aria-hidden="true">&middot;</Text>
         <Link href={SOURCE} target="_blank">Source on GitHub</Link>
       </HStack>
     </HStack>

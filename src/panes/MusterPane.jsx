@@ -85,7 +85,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
         <Section paddingBlock={GAP.section}>
           <EmptyState
             title={`${kingdom?.name || "This kingdom"} is not ready to muster`}
-            description={missing.join(" · ")}
+            description={missing.map((e) => `${e}.`).join(" ")}
             actions={kingdom?.id && <Button label={`Open ${kingdom.name || "the kingdom"}`} variant="primary"
                                             onClick={() => onOpenKingdom?.(kingdom.id)} />}
           />
@@ -108,7 +108,6 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       }] : null}
       meta={(
         <HStack gap={GAP.item} align="center" wrap="wrap">
-          {battle && <Token label={battle.name} color="pink" />}
           <Text type="large" color={over ? "error" : undefined}>{result.points} of</Text>
           <NumberInput label="Total Points" isLabelHidden size="lg" width={110} value={points} min={0} step={50}
                        onChange={(p) => onChange({ ...value, points: p || 0 })} />
@@ -150,7 +149,12 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
               ))}
             </VStack>
           )}
-          {battle && <Text type="supporting">{battle.text}</Text>}
+          {battle && (
+            <VStack gap={1}>
+              <Heading level={3}>{battle.name}</Heading>
+              <Text type="supporting">{battle.text}</Text>
+            </VStack>
+          )}
         </VStack>
       )}
       content={(

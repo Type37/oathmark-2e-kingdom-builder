@@ -41,6 +41,13 @@ body {
 .om-slot {
   cursor: pointer;
 }
+/* The region you are pointing at, here or on its card, pulses in its own colour. */
+@keyframes om-slot-pulse {
+  0%, 100% { stroke-opacity: 1; }
+  50% { stroke-opacity: 0.35; }
+}
+.om-slot-lit { animation: om-slot-pulse 1.2s var(--ease-standard) infinite; }
+@media (prefers-reduced-motion: reduce) { .om-slot-lit { animation: none; } }
 .om-slot:hover {
   fill-opacity: 0.9;
   stroke-width: 3;
@@ -363,3 +370,33 @@ body {
 /* The shared WarLore footer sits on the front screens; a build is no place for it. */
 body[data-view="work"] .wlf { display: none; }
 
+
+/* Founding the kingdom is the moment the start is locked in. The button
+   arrives like a herald, keeps calling until it is answered, and lands like
+   a seal pressed into wax. */
+@keyframes om-found-arrive {
+  0%   { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(2deg); opacity: 1; }
+  80%  { transform: scale(0.96) rotate(-1deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes om-found-call {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 55%, transparent); }
+  50%      { box-shadow: 0 0 0 var(--spacing-2) color-mix(in srgb, var(--color-accent) 0%, transparent); }
+}
+@keyframes om-found-seal {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(0.82) rotate(-3deg); }
+  55%  { transform: scale(1.22) rotate(2deg); box-shadow: 0 0 0 var(--spacing-4) color-mix(in srgb, var(--color-accent) 35%, transparent); }
+  100% { transform: scale(1); box-shadow: 0 0 0 var(--spacing-8) color-mix(in srgb, var(--color-accent) 0%, transparent); }
+}
+.om-found {
+  animation:
+    om-found-arrive 700ms var(--ease-standard) both,
+    om-found-call 1.8s ease-in-out 700ms infinite;
+}
+.om-found:active { transform: scale(0.94); }
+.om-found-sealing { animation: om-found-seal 650ms var(--ease-standard) both; }
+@media (prefers-reduced-motion: reduce) {
+  .om-found, .om-found-sealing { animation: none; }
+}

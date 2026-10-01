@@ -21,8 +21,10 @@ export function Definition({ title, text, note, page, extra }) {
 export default function Defined({ def, children }) {
   if (!def) return children;
   return (
+    // Plain text children get HoverCard's own dashed underline, the system's
+    // sign that hovering says more; a token or icon trigger keeps its own look.
     <HoverCard label={def.title} placement="below" touchTrigger="tap" content={<Definition {...def} />}>
-      <Text type="inherit" color="inherit">{children}</Text>
+      {children}
     </HoverCard>
   );
 }

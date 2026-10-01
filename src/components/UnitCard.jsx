@@ -1,11 +1,12 @@
 import React from "react";
 import {
-  Icon, VStack, HStack, StackItem, Text, Button, Selector, Card, Link, TextInput, List, ListItem,
+  Icon, VStack, HStack, StackItem, Text, Button, Selector, Card, List, ListItem,
   useMediaQuery, NumberInput,
 } from "@astryxdesign/core";
 import { UpgradesDialog } from "./Upgrades.jsx";
 import { StatBar } from "./StatLine.jsx";
 import { AttributeTerms } from "./Defined.jsx";
+import InlineName from "./InlineName.jsx";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { upgradeCost, applyUpgrades, upgradesFor } from "../rules/upgrades.mjs";
@@ -69,9 +70,8 @@ export default function UnitCard({
   ].filter(Boolean);
 
   const name = (
-    <TextInput label={`${fig.name} name`} isLabelHidden size="lg" width="100%"
-               value={unit.name ?? ""} placeholder={fig.name}
-               onChange={(v) => patch({ name: v })} />
+    <InlineName label={`${fig.name} name`} value={unit.name} placeholder={fig.name}
+                onChange={(v) => patch({ name: v })} />
   );
 
   return (
@@ -92,13 +92,14 @@ export default function UnitCard({
 
         <HStack gap={2} vAlign="center" wrap="wrap">
           <StackItem size="fill">
-            <Text type="supporting">
-              <Link onClick={() => onOpenFigure(fig.id)}>{fig.name}</Link>
-              {notes.length > 0 && ` · ${notes.join(" · ")}`}
-            </Text>
+            <HStack gap={3} vAlign="center" wrap="wrap">
+              {unit.name && <Text type="supporting">{fig.name}</Text>}
+              {notes.map((n) => <Text key={n} type="supporting">{n}</Text>)}
+            </HStack>
           </StackItem>
           {counts && (
-            <NumberInput label={`${fig.name} figures`} isLabelHidden hasNumberSteppers isIntegerOnly width={120}
+            <NumberInput label={`${fig.name} figures`} isLabelHidden hasNumberSteppers isIntegerOnly width={170}
+                         units="figures"
                          value={unit.count ?? 1} min={1} max={p.max - (charFig ? 1 : 0)}
                          onChange={(n) => patch({ count: n })} />
           )}

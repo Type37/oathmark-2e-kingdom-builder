@@ -133,7 +133,9 @@ export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange
       <Layout
         header={<DialogHeader title={fig.name} subtitle={`Unlocked from ${fig.terrain}`} onOpenChange={onOpenChange} />}
         content={
-          <LayoutContent>
+          // The stat table runs edge to edge, which needs the content's top
+          // padding to bleed into; without it the letters slide under the header.
+          <LayoutContent padding={4}>
             <VStack gap={GAP.group}>
               <VStack gap={GAP.item}>
                 {shown.map((v, i) => (
