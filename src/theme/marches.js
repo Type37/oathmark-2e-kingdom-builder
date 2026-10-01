@@ -97,20 +97,6 @@ export const marchesTheme = {
   },
   __localTokenLineage: ["marches"],
   components: {
-    "list-item": {
-      "base": {
-        ":hover": {
-          "backgroundColor": "var(--color-background-muted)"
-        }
-      }
-    },
-    "item": {
-      "base": {
-        ":hover": {
-          "backgroundColor": "var(--color-background-muted)"
-        }
-      }
-    },
     "blockquote": {
       "base": {
         "fontStyle": "italic"

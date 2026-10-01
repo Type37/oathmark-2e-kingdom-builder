@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, List, ListItem, Text, Token } from "@astryxdesign/core";
+import { VStack, List, ListItem, Text, Token, Heading } from "@astryxdesign/core";
 import { figurePool, figureById, grantLabel } from "../rules/kingdom.mjs";
 import { hueOf, HUE } from "../race.mjs";
 
@@ -22,8 +22,8 @@ export default function FigureAccess({ kingdom, onOpen }) {
   return (
     <VStack gap={4}>
       {Object.keys(HUE).filter((r) => byRace[r]).map((race) => (
-        <VStack key={race} gap={1}>
-          <Text type="label">{RACE[race]}</Text>
+        <VStack key={race} gap={2}>
+          <Heading level={3}>{RACE[race]}</Heading>
           <List density="compact">
             {byRace[race].map((e) => (
               <ListItem

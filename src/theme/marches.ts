@@ -112,9 +112,6 @@ export default defineTheme({
   },
 
   components: {
-    // Hover says what you are pointing at, on every row.
-    "list-item": { base: { ":hover": { backgroundColor: "var(--color-background-muted)" } } },
-    item: { base: { ":hover": { backgroundColor: "var(--color-background-muted)" } } },
     // The book sets its lore in italic.
     blockquote: { base: { fontStyle: "italic" } },
     card: { base: { borderRadius: "var(--radius-none)" } },

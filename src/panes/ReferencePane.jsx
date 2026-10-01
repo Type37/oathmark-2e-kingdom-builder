@@ -33,7 +33,7 @@ export default function ReferencePane({ shell }) {
       content={
         <VStack gap={0}>
           <Section paddingBlockEnd={2}>
-            <TextInput label="Search" value={query} size="sm"
+            <TextInput label="Search" value={query}
                        onChange={(e) => setQuery(e.target?.value ?? e)} />
           </Section>
           <Section paddingBlockEnd={0}>

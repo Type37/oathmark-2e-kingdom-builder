@@ -7,13 +7,13 @@ import { rollLore } from "../lore.mjs";
 export default function KingdomLore({ value, onChange }) {
   const lore = value.lore;
   return (
-    <VStack gap={2}>
+    <VStack gap={3}>
       <Heading level={2}>The Realm</Heading>
       {lore && (
-        <VStack gap={2}>
-          <VStack gap={0}>
+        <VStack gap={4}>
+          <VStack gap={1}>
             <Heading level={4}>{lore.theme.name}</Heading>
-            <Text type="supporting">{lore.theme.text}</Text>
+            <Text color="secondary">{lore.theme.text}</Text>
           </VStack>
           <MetadataList>
             <MetadataListItem label="Values">{lore.values.map((v) => v.name).join(" and ")}</MetadataListItem>
@@ -27,7 +27,7 @@ export default function KingdomLore({ value, onChange }) {
         </VStack>
       )}
       <HStack justify="end">
-        <RollButton label={lore ? "Reroll the Realm" : "Roll the Realm"} size="sm"
+        <RollButton label={lore ? "Reroll the Realm" : "Roll the Realm"}
                     onClick={() => onChange({ ...value, lore: rollLore() })} />
       </HStack>
     </VStack>

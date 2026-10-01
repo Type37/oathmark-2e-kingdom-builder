@@ -18,20 +18,20 @@ export default function Chronicle({ entries = [], onChange }) {
     <VStack gap={4}>
       <Heading level={2}>Chronicle</Heading>
       {entries.map((e, i) => (
-        <VStack key={i} gap={1}>
-          <HStack gap={2} align="end">
-            <NumberInput label="Year" size="sm" width={88} min={1} value={e.year}
+        <VStack key={i} gap={2}>
+          <HStack gap={2} vAlign="end">
+            <NumberInput label="Year" width={88} min={1} value={e.year}
                          onChange={(y) => set(i, { year: Math.max(1, y || 1) })} />
-            <TextInput label="Event" size="sm" width="100%" value={e.title}
+            <TextInput label="Event" width="100%" value={e.title}
                        onChange={(title) => set(i, { title })} />
-            <Button label="Remove entry" size="sm" variant="ghost" isIconOnly
+            <Button label="Remove entry" variant="ghost" isIconOnly
                     icon={<Icon icon="close" />} onClick={() => onChange(entries.filter((_, j) => j !== i))} />
           </HStack>
-          <TextArea label={`Year ${e.year}`} isLabelHidden size="sm" rows={3} value={e.body ?? ""}
+          <TextArea label={`Year ${e.year}`} isLabelHidden rows={3} value={e.body ?? ""}
                     onChange={(body) => set(i, { body })} />
         </VStack>
       ))}
-      <Button label="Add Entry" variant="secondary" size="sm" icon={<Icon icon="app:plus" />} onClick={add} />
+      <Button label="Add Entry" variant="secondary" icon={<Icon icon="app:plus" />} onClick={add} />
     </VStack>
   );
 }

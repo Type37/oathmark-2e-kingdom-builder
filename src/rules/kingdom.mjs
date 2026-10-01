@@ -140,7 +140,9 @@ export function validateKingdom(k) {
   for (const r of LEVELS[k.level]) {
     const want = REGION_SIZES[r];
     const got = placed.filter((p) => p.region === r).length;
-    if (got !== want) errors.push(`Region ${r}: ${got} of ${want}`);
+    const terr = (n) => `${n} ${n === 1 ? "territory" : "territories"}`;
+    if (got < want) errors.push(`Region ${r} needs ${terr(want - got)} more`);
+    if (got > want) errors.push(`Region ${r} has ${terr(got - want)} too many`);
   }
   // The level sets the starting kingdom (p17). Once founded, a campaign may grow
   // past it, so extra regions are only an error before founding.

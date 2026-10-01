@@ -77,9 +77,9 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
     const mine = picks.map((p, i) => ({ p, i })).filter(({ p }) => p.region === r);
     const full = mine.length >= REGION_SIZES[r];
     return (
-      <Card key={r}
+      <Card key={r} onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}
             variant={lit === r ? (mine.length ? hueOf(mine[0].p.list) : "pink") : live ? "default" : "muted"}>
-      <VStack gap={3} onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}>
+      <VStack gap={3}>
         <HStack gap={2} vAlign="center">
           <StackItem size="fill"><RegionName region={r} value={value.regionNames?.[r]}
                       onChange={(name) => patch({ regionNames: { ...(value.regionNames ?? {}), [r]: name } })} /></StackItem>

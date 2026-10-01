@@ -8,8 +8,8 @@ const ok = (capitalList, region, list, name) => canPlace({ capitalList, region, 
 
 test("p17: Beginner fills 1-2, Moderate 1-3, Expert 1-4", () => {
   const base = { capitalList: "dwarf", territories: [{ region: 1, list: "dwarf", name: "Dwarf City" }] };
-  assert.match(validateKingdom({ ...base, level: "beginner" }).errors.join(), /Region 2: 0 of 2/);
-  assert.match(validateKingdom({ ...base, level: "expert" }).errors.join(), /Region 4: 0 of 4/);
+  assert.match(validateKingdom({ ...base, level: "beginner" }).errors.join(), /Region 2 needs 2 territories more/);
+  assert.match(validateKingdom({ ...base, level: "expert" }).errors.join(), /Region 4 needs 4 territories more/);
 });
 
 test("p17: a territory outside the level's regions is flagged", () => {

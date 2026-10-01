@@ -217,14 +217,6 @@
     --color-highlight: #EC0C6C;
   }
 
-  .astryx-list-item:hover:where(:not(:disabled,[aria-disabled="true"])) {
-    background-color: var(--color-background-muted);
-  }
-
-  .astryx-item:hover:where(:not(:disabled,[aria-disabled="true"])) {
-    background-color: var(--color-background-muted);
-  }
-
   .astryx-blockquote {
     font-style: italic;
   }

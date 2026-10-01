@@ -84,7 +84,7 @@ export default function TerritoryPicker({ region, candidates, capitalList, found
           key={`${c.list}/${c.name}`}
           label={c.name}
           isSelected={focus?.list === c.list && focus?.name === c.name}
-          description={<Text type="supporting">{RACE[c.list]}</Text>}
+          description={<Text color="secondary">{RACE[c.list]}</Text>}
           startContent={<Token label={`Rarity ${c.rarity}`} size="sm" color={hueOf(c.list)} />}
           onMouseEnter={narrow ? undefined : () => setFocus(c)}
           onClick={() => setFocus(c)}

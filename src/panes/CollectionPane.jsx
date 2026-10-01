@@ -81,7 +81,7 @@ export default function CollectionPane({ value, onChange, shell }) {
       content={(
       <VStack gap={0}>
         <Section paddingBlockEnd={2}>
-          <TextInput label="Find a figure" value={query} size="sm"
+          <TextInput label="Find a figure" value={query}
                      onChange={(e) => setQuery(e.target?.value ?? e)} />
         </Section>
         <Section paddingBlockEnd={0}>

@@ -84,7 +84,7 @@ test("a non-capital territory cannot sit in Region 1", () => {
 test("incomplete kingdom reports the shortfall", () => {
   const r = validateKingdom({ ...grundeland, territories: grundeland.territories.slice(0, 2) });
   assert.equal(r.ok, false);
-  assert.match(r.errors.join(" "), /Region 2: 1 of 2/);
+  assert.match(r.errors.join(" "), /Region 2 needs 1 territory more/);
 });
 
 test("Grundeland grants both dwarf and human basic troops", () => {

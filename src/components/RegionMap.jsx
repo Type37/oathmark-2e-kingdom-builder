@@ -27,6 +27,9 @@ export default function RegionMap({ regions, playable, picks, activeRegion, litR
   const inPlay = new Set(playable ?? regions);
   const outer = Math.max(...regions);
   const R = radii(outer);
+  // A lit region takes one colour, its first territory's, on every slot.
+  const litPick = litRegion ? picks.find((p) => p.region === litRegion) : null;
+  const litHue = litPick ? hueOf(litPick.list) : null;
   const pickAt = (region, index) => picks.filter((p) => p.region === region)[index] ?? null;
 
   return (
@@ -67,9 +70,11 @@ export default function RegionMap({ regions, playable, picks, activeRegion, litR
                     className={`om-slot${key && key === claimed ? " om-slot-claimed" : ""}${isLit ? " om-slot-lit" : ""}`}
                     d={d}
                     fill={pick ? `var(--color-background-${hueOf(pick.list)})`
+                      : isLit && litHue ? `var(--color-background-${litHue})`
                       : isActive ? "var(--color-accent-muted)"
                       : live ? "var(--color-background-card)" : "var(--color-background-body)"}
                     stroke={pick ? `var(--color-border-${hueOf(pick.list)})`
+                      : isLit && litHue ? `var(--color-border-${litHue})`
                       : isActive ? "var(--color-accent)" : "var(--color-border-emphasized)"}
                     strokeWidth={isHovered || isLit ? 3 : pick ? 2 : isActive ? 2 : 1}
                     strokeDasharray={live ? undefined : "4 4"}
