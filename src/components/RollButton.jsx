@@ -1,6 +1,7 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
-import { Button } from "@astryxdesign/core";
+import {
+  Icon, Button,
+} from "@astryxdesign/core";
 
 // Every roll in the app: the dice tumble once, then land.
 export default function RollButton({ label, onClick, variant = "secondary", size, isIconOnly }) {

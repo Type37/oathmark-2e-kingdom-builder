@@ -1,7 +1,7 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
 import {
-  Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, Text, Table, Popover, Button,
+  Icon, Heading, Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, Text, Table, Popover,
+  Button,
 } from "@astryxdesign/core";
 import { pixel } from "@astryxdesign/core/Table";
 import { Attributes, StatBar } from "./StatLine.jsx";
@@ -24,7 +24,7 @@ function StatRow({ variants, extra = [] }) {
     ...STAT_KEYS.map((k) => ({
       key: k,
       header: (
-        <Defined label={stats[k]?.name ?? letter(k)}
+        <Defined
                  def={stats[k] && { title: stats[k].name, text: stats[k].text, note: stats[k].note, page: stats[k].page }}>
           <HStack gap={1} align="center">
             {k === "CD" && <Icon icon="app:d10" size="sm" />}
@@ -61,26 +61,15 @@ function Equipment({ lines }) {
   const parts = lines.flatMap((line) => equipmentParts(line)).filter(({ label }) => carriesRule(label));
   if (!parts.length) return null;
   return (
-    <HStack gap={GAP.item} align="center" wrap="wrap">
+    <HStack gap={GAP.item} vAlign="center" wrap="wrap">
       <Text type="label">Equipment</Text>
       {parts.map(({ part, label, entry }, i) => (
         entry ? (
-          <Popover key={`${label}-${i}`} width={340} label={entry.name} placement="below"
-                   content={
-                     <VStack gap={2}>
-                       <HStack gap={2} align="baseline" justify="between">
-                         <Text type="large">{entry.name}</Text>
-                         <Text color="secondary">p{entry.page}</Text>
-                       </HStack>
-                       <Text>{entry.text}</Text>
-                       {entry.range && (
-                         <Text type="label">Range {entry.range.min} to {entry.range.max} (p72)</Text>
-                       )}
-                       {entry.attribute && <Text type="label">See {entry.attribute}</Text>}
-                     </VStack>
-                   }>
-            <Button label={part} size="sm" variant="secondary" />
-          </Popover>
+          <Defined key={`${label}-${i}`} def={{
+            title: entry.name, text: entry.text, page: entry.page,
+            note: [entry.range && `Range ${entry.range.min} to ${entry.range.max} (p72)`,
+                   entry.attribute && `See ${entry.attribute}`].filter(Boolean).join(". ") || undefined,
+          }}>{part}</Defined>
         ) : <Text key={`${label}-${i}`}>{part}</Text>
       ))}
     </HStack>
@@ -159,7 +148,7 @@ export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange
               {fig.equipment.length > 0 && <Equipment lines={fig.equipment} />}
               {fig.upgrades?.length > 0 && (
                 <VStack gap={GAP.item}>
-                  <HStack className="om-plate" justify="center"><Text type="label">Options</Text></HStack>
+                  <Heading level={3}>Options</Heading>
                   {fig.upgrades.map((u) => <Option key={u.index ?? u.name} u={u} owns={owns} />)}
                 </VStack>
               )}

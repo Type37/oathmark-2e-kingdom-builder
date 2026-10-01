@@ -1,7 +1,6 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
 import {
-  VStack, HStack, Grid, Text, Heading, Button,
+  Icon, VStack, HStack, Grid, Text, Heading, Button,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { ClickableCard } from "@astryxdesign/core/ClickableCard";

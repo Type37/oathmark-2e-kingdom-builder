@@ -1,6 +1,7 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
-import { HStack, Text } from "@astryxdesign/core";
+import {
+  Icon, HStack, Text,
+} from "@astryxdesign/core";
 
 export const LEVEL_LABEL = { beginner: "Beginner", moderate: "Moderate", expert: "Expert" };
 

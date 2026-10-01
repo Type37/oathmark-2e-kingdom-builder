@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutFooter, Grid,
-  Selector, NumberInput, HStack, VStack, Button, Text, Switch, Token, SelectableCard, Banner,
+  Selector, NumberInput, HStack, VStack, Button, Text, Switch, Token, SelectableCard, Banner, Heading, StackItem
 } from "@astryxdesign/core";
 import { rollPoints, battleScale } from "../rules/muster.mjs";
 import {
@@ -77,8 +77,8 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
                 <NameField label="Army Name" width={260} value={name} onChange={setName} />
               </HStack>
 
-              <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
-                <Text type="label">Battle Type</Text>
+              <HStack gap={GAP.item} vAlign="center">
+                <StackItem size="fill"><Heading level={3}>Battle Type</Heading></StackItem>
                 <RollButton label="Roll for Battle Type" size="sm"
                             onClick={() => setBattle(rollBattleType(d10()).id)} />
               </HStack>
@@ -98,7 +98,7 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
                 ))}
               </Grid>
 
-              <HStack justify="center" className="om-plate"><Text type="label">Points Value</Text></HStack>
+              <Heading level={3}>Points Value</Heading>
               <HStack gap={GAP.group} align="end" wrap="wrap">
                 <NumberInput label="Total Points" size="lg" width={150} value={points} min={0} step={50}
                              onChange={(p) => { setPoints(p || 0); setPointsRoll(null); setSides(null); }} />

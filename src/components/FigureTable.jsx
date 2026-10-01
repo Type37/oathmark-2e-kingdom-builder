@@ -1,11 +1,10 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
 import {
-  Table, HStack, VStack, Text, Button, Popover, Link, useMediaQuery,
+  Icon, Table, HStack, VStack, Text, Button, Popover, Link, useMediaQuery,
 } from "@astryxdesign/core";
 import { pixel, proportional } from "@astryxdesign/core/Table";
 import { stats, baseRule } from "../rules/kingdom.mjs";
-import Defined from "./Defined.jsx";
+import Defined, { AttributeTerms } from "./Defined.jsx";
 import { COL, BREAK, statWidth } from "../layout.mjs";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
 
@@ -14,31 +13,16 @@ function Head({ statKey }) {
   const def = stats[statKey];
   const letter = statKey === "pts" ? "Pts" : statKey;
   return (
-    <Popover
-      width={340}
-      label={def?.name ?? letter}
-      placement="below"
-      content={
-        def && (
-          <VStack gap={2}>
-            <Text type="large">{def.name}</Text>
-            <Text>{def.text}</Text>
-            {def.note && <Text type="label">{def.note}</Text>}
-          </VStack>
-        )
-      }
-    >
-      <Button variant="ghost" size="sm" label={def?.name ?? letter}>
-        <HStack gap={1} align="center">
-          {statKey === "CD" && <Icon icon="app:d10" size="sm" />}
-          <Text type="label" color="inherit">{letter}</Text>
-        </HStack>
-      </Button>
-    </Popover>
+    <Defined def={def && { title: def.name, text: def.text, note: def.note, page: def.page }}>
+      <HStack gap={1} vAlign="center">
+        {statKey === "CD" && <Icon icon="app:d10" size="sm" />}
+        <Text type="label" color="inherit">{letter}</Text>
+      </HStack>
+    </Defined>
   );
 }
 
-export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, actionColumn, sort, onSort }) {
+export default function FigureTable({ rows, onAdd, onOpen, actionColumn, sort, onSort }) {
   // The letter keeps its definition; a caret beside it sorts the table.
   const sortable = (key, node) => {
     if (!onSort) return node;
@@ -75,21 +59,7 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
             {/* The abilities read under the name, as on a unit card: a column of
                 their own was squeezed to a word per line. Each comma stays with
                 the ability before it. */}
-            {attrs.length > 0 && (
-              <Text type="supporting">
-                {attrs.map((a, i) => (
-                  <React.Fragment key={a}>
-                    <span className="om-attr">
-                      {onOpenAttribute
-                        ? <Link className="om-attr-link" onClick={() => onOpenAttribute(a)}>{a}</Link>
-                        : a}
-                      {i < attrs.length - 1 && ","}
-                    </span>
-                    {i < attrs.length - 1 && " "}
-                  </React.Fragment>
-                ))}
-              </Text>
-            )}
+            <AttributeTerms attributes={attrs} />
           </VStack>
         );
       },

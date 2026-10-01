@@ -1,10 +1,8 @@
 import React from "react";
-import { VStack, Text, TextInput, Section, TabList, Tab, HStack } from "@astryxdesign/core";
+import { VStack, Text, TextInput, Section, TabList, Tab, HStack, Heading, NumberInput } from "@astryxdesign/core";
 import FigureTable from "../components/FigureTable.jsx";
 import Shell from "../Shell.jsx";
 import FigureCard from "../components/FigureCard.jsx";
-import { AttributeCard } from "../components/StatLine.jsx";
-import Counter from "../components/Counter.jsx";
 import { figures } from "../rules/kingdom.mjs";
 import { collectionTotals, unitsAffordable } from "../rules/collection.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
@@ -31,7 +29,6 @@ export default function CollectionPane({ value, onChange, shell }) {
   const [list, setList] = React.useState("dwarf");
   const [query, setQuery] = React.useState("");
   const [openFigure, setOpenFigure] = React.useState(null);
-  const [openAttr, setOpenAttr] = React.useState(null);
   const totals = collectionTotals(value);
   const sections = React.useRef({});
   const [sort, setSort] = React.useState(null);
@@ -97,29 +94,29 @@ export default function CollectionPane({ value, onChange, shell }) {
         {groups.map((g) => (
           <Section key={g.list} padding={0} className="om-list-section">
             <div ref={(el) => { sections.current[g.list] = el; }}>
-              <HStack justify="center" className="om-plate"><Text type="label">{LABEL[g.list]}</Text></HStack>
+              <Heading level={2}>{LABEL[g.list]}</Heading>
             </div>
             <FigureTable
               rows={g.rows}
               sort={sort}
               onSort={onSort}
               onOpen={setOpenFigure}
-              onOpenAttribute={setOpenAttr}
+             
               actionColumn={{
                 header: "Owned",
                 width: 190,
                 render: (r) => (
                   <HStack gap={2} align="center" justify="end">
                     {r.units ? <Text type="supporting">{r.units} {r.units === 1 ? "unit" : "units"}</Text> : null}
-                    <Counter label={`${r.name} owned`} value={r.owned}
-                             onChange={(n) => set(r.figureId, n)} />
+                    <NumberInput label={`${r.name} owned`} isLabelHidden hasNumberSteppers isIntegerOnly
+                                 size="sm" width={110} value={r.owned} min={0}
+                                 onChange={(n) => set(r.figureId, n ?? 0)} />
                   </HStack>
                 ),
               }}
             />
           </Section>
         ))}
-        <AttributeCard name={openAttr} isOpen={Boolean(openAttr)} onOpenChange={(o) => !o && setOpenAttr(null)} />
         {openFigure && (
           <FigureCard figureId={openFigure} isOpen onOpenChange={(o) => !o && setOpenFigure(null)} />
         )}

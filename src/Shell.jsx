@@ -1,9 +1,7 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
 import {
-  Layout, LayoutHeader, LayoutContent, LayoutPanel,
-  HStack, VStack, Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider,
-  Breadcrumbs, BreadcrumbItem,
+  Icon, Layout, LayoutHeader, LayoutContent, LayoutPanel, HStack, VStack, Heading, Button,
+  TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider, Breadcrumbs, BreadcrumbItem,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { VisuallyHidden } from "@astryxdesign/core/VisuallyHidden";

@@ -1,12 +1,11 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
 import {
-  VStack, HStack, StackItem, Text, Button, Selector, Card, Link, TextInput,
-  List, ListItem,
+  Icon, VStack, HStack, StackItem, Text, Button, Selector, Card, Link, TextInput, List, ListItem,
+  useMediaQuery, NumberInput,
 } from "@astryxdesign/core";
-import Counter from "./Counter.jsx";
 import { UpgradesDialog } from "./Upgrades.jsx";
-import { AttributeCard, StatBar } from "./StatLine.jsx";
+import { StatBar } from "./StatLine.jsx";
+import { AttributeTerms } from "./Defined.jsx";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { upgradeCost, applyUpgrades, upgradesFor } from "../rules/upgrades.mjs";
@@ -15,7 +14,6 @@ import { spellsKnown, applyItem } from "../rules/magic.mjs";
 import MagicItems from "./MagicItems.jsx";
 import SpellPicker from "./SpellPicker.jsx";
 import { attrLevel, weaponsOf, rangeText, STAT_KEYS } from "../rules/stats.mjs";
-import { useMediaQuery } from "@astryxdesign/core";
 import { BREAK } from "../layout.mjs";
 
 // The cost sits beside the name, so the card's stat bar leaves it out.
@@ -31,7 +29,6 @@ export default function UnitCard({
   const entry = pool.get(unit.figureId);
   const p = unitProfile(unit, units, entry);
   const [picking, setPicking] = React.useState(null);
-  const [attr, setAttr] = React.useState(null);
   const narrow = useMediaQuery(BREAK.narrow);
   if (!p) return null;
 
@@ -101,24 +98,15 @@ export default function UnitCard({
             </Text>
           </StackItem>
           {counts && (
-            <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
-                     max={p.max - (charFig ? 1 : 0)} onChange={(n) => patch({ count: n })} />
+            <NumberInput label={`${fig.name} figures`} isLabelHidden hasNumberSteppers isIntegerOnly width={120}
+                         value={unit.count ?? 1} min={1} max={p.max - (charFig ? 1 : 0)}
+                         onChange={(n) => patch({ count: n })} />
           )}
         </HStack>
 
         <StatBar variant={variantAfter} keys={CARD_STATS} />
 
-        {(variantAfter.attributes ?? []).length > 0 && (
-          <Text type="supporting">
-            {variantAfter.attributes.map((a, i) => (
-              <React.Fragment key={a}>
-                {i > 0 && ", "}
-                <Link onClick={() => setAttr(a)}>{a}</Link>
-              </React.Fragment>
-            ))}
-          </Text>
-        )}
-        <AttributeCard name={attr} isOpen={Boolean(attr)} onOpenChange={(o) => !o && setAttr(null)} />
+        <AttributeTerms attributes={variantAfter.attributes ?? []} />
 
         <List density="compact">
           {levels?.length > 1 && (

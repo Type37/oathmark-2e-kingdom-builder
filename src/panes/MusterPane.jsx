@@ -1,7 +1,7 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
 import {
-  VStack, HStack, StackItem, Heading, Text, Section, NumberInput, ProgressBar, Button, Token, Banner, MetadataList, MetadataListItem,
+  Icon, VStack, HStack, StackItem, Heading, Text, Section, NumberInput, ProgressBar, Button, Token,
+  Banner, MetadataList, MetadataListItem,
 } from "@astryxdesign/core";
 import FigureCard from "../components/FigureCard.jsx";
 import UnitCard from "../components/UnitCard.jsx";

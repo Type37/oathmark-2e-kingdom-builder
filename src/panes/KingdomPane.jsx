@@ -1,8 +1,6 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
 import {
-  VStack, HStack, Text, Button, List, ListItem,
-  Token, Tooltip,
+  Icon, Heading, Card, StackItem, VStack, HStack, Text, Button, List, ListItem, Token, Tooltip,
 } from "@astryxdesign/core";
 import Shell from "../Shell.jsx";
 import RegionMap from "../components/RegionMap.jsx";
@@ -75,12 +73,12 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
     const mine = picks.map((p, i) => ({ p, i })).filter(({ p }) => p.region === r);
     const full = mine.length >= REGION_SIZES[r];
     return (
-      <VStack key={r} gap={GAP.item} className={`${lit === r ? "om-region-lit" : ""}${live ? "" : " om-region-closed"}`.trim() || undefined}
-              onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}>
-        <HStack gap={GAP.item} align="center" justify="between" className="om-plate">
-          <RegionName region={r} value={value.regionNames?.[r]}
-                      onChange={(name) => patch({ regionNames: { ...(value.regionNames ?? {}), [r]: name } })} />
-          <HStack gap={GAP.item} align="center">
+      <Card key={r} padding={3} variant={lit === r ? "pink" : live ? "default" : "muted"}>
+      <VStack gap={GAP.item} onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}>
+        <HStack gap={GAP.item} vAlign="center">
+          <StackItem size="fill"><RegionName region={r} value={value.regionNames?.[r]}
+                      onChange={(name) => patch({ regionNames: { ...(value.regionNames ?? {}), [r]: name } })} /></StackItem>
+          <HStack gap={GAP.item} vAlign="center">
             {r === openBorderRegion(value) && (
               <Defined bare def={borderNote}><Token label="Open borders" size="sm" /></Defined>
             )}
@@ -143,6 +141,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
           )}
         </List>
       </VStack>
+      </Card>
     );
   });
 
@@ -157,7 +156,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
   // The book's Kingdom Sheet (p217): name, ruler, the rings; then what they grant.
   const detail = (
     <VStack gap={GAP.group}>
-      <HStack justify="center" className="om-plate"><Text type="label">Kingdom Sheet</Text></HStack>
+      <Heading level={2}>Kingdom Sheet</Heading>
       <HStack gap={GAP.item} align="center">
         <Emblem emblemKey={value.emblem} name={value.name} size="lg" />
         <Button label="Emblem" variant="secondary" size="sm"

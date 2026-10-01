@@ -3,7 +3,6 @@ import {
   Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, TabList, Tab, Text, Token,
 } from "@astryxdesign/core";
 import FigureTable from "./FigureTable.jsx";
-import { AttributeCard } from "./StatLine.jsx";
 import { figureById } from "../rules/kingdom.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
 import { owned } from "../rules/collection.mjs";
@@ -29,7 +28,6 @@ export function roleOf(fig) {
 
 // What the kingdom's territories allow, by the role it plays on the table.
 export default function AddUnits({ isOpen, onOpenChange, pool, units, collection, useCollection, onAdd, onOpenFigure }) {
-  const [openAttr, setOpenAttr] = React.useState(null);
   const [role, setRole] = React.useState("infantry");
 
   const grouped = React.useMemo(() => {
@@ -80,9 +78,7 @@ export default function AddUnits({ isOpen, onOpenChange, pool, units, collection
               <TabList value={active} onChange={setRole}>
                 {roles.map((r) => <Tab key={r} value={r} label={ROLE_LABEL[r]} />)}
               </TabList>
-              <FigureTable rows={rows} onOpen={onOpenFigure} onAdd={onAdd} onOpenAttribute={setOpenAttr} />
-              <AttributeCard name={openAttr} isOpen={Boolean(openAttr)}
-                             onOpenChange={(o) => !o && setOpenAttr(null)} />
+              <FigureTable rows={rows} onOpen={onOpenFigure} onAdd={onAdd} />
             </VStack>
           </LayoutContent>
         }

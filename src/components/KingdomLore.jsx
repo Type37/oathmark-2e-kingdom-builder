@@ -9,7 +9,7 @@ export default function KingdomLore({ value, onChange }) {
   const lore = value.lore;
   return (
     <VStack gap={GAP.item}>
-      <HStack justify="center" className="om-plate"><Text type="label">The Realm</Text></HStack>
+      <Heading level={2}>The Realm</Heading>
       {lore && (
         <VStack gap={GAP.item}>
           <VStack gap={0}>

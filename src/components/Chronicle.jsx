@@ -1,6 +1,7 @@
 import React from "react";
-import { Icon } from "@astryxdesign/core";
-import { VStack, HStack, Text, Button, NumberInput } from "@astryxdesign/core";
+import {
+  Icon, Heading, VStack, HStack, Text, Button, NumberInput,
+} from "@astryxdesign/core";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { TextArea } from "@astryxdesign/core/TextArea";
 import { GAP } from "../layout.mjs";
@@ -16,7 +17,7 @@ export default function Chronicle({ entries = [], onChange }) {
 
   return (
     <VStack gap={GAP.group}>
-      <HStack justify="center" className="om-plate"><Text type="label">Chronicle</Text></HStack>
+      <Heading level={2}>Chronicle</Heading>
       {entries.map((e, i) => (
         <VStack key={i} gap={GAP.tight}>
           <HStack gap={GAP.item} align="end">
