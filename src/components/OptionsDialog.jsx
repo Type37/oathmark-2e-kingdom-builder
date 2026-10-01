@@ -3,6 +3,7 @@ import {
   Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, StackItem, Switch, Heading, Text,
   Button, Avatar, Banner,
 } from "@astryxdesign/core";
+import { FormLayout } from "@astryxdesign/core/FormLayout";
 import { hasLore } from "../lore.mjs";
 
 export default function OptionsDialog({ isOpen, onOpenChange, value = {}, onChange, sync }) {
@@ -13,7 +14,7 @@ export default function OptionsDialog({ isOpen, onOpenChange, value = {}, onChan
         content={
           <LayoutContent>
             <VStack gap={6}>
-              <VStack gap={3} hAlign="start">
+              <FormLayout>
                 {/* Without the tables in the build there is nothing to switch on,
                     so the switch is absent rather than dead. */}
                 {hasLore && (
@@ -22,7 +23,7 @@ export default function OptionsDialog({ isOpen, onOpenChange, value = {}, onChan
                 )}
                 <Switch label="Muster from my collection" value={Boolean(value.useCollection)}
                         onChange={(useCollection) => onChange({ ...value, useCollection })} />
-              </VStack>
+              </FormLayout>
 
               {/* Kingdoms, armies and the collection follow a Discord account
                   to every device; see sync.mjs. */}
