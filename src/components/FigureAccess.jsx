@@ -2,7 +2,6 @@ import React from "react";
 import { VStack, List, ListItem, Text, Token } from "@astryxdesign/core";
 import { figurePool, figureById, grantLabel } from "../rules/kingdom.mjs";
 import { hueOf, HUE } from "../race.mjs";
-import { GAP } from "../layout.mjs";
 
 const RACE = {
   dwarf: "Dwarf", elf: "Elf", goblin: "Goblin", human: "Human",
@@ -21,9 +20,9 @@ export default function FigureAccess({ kingdom, onOpen }) {
   }
 
   return (
-    <VStack gap={GAP.group}>
+    <VStack gap={4}>
       {Object.keys(HUE).filter((r) => byRace[r]).map((race) => (
-        <VStack key={race} gap={GAP.tight}>
+        <VStack key={race} gap={1}>
           <Text type="label">{RACE[race]}</Text>
           <List density="compact">
             {byRace[race].map((e) => (

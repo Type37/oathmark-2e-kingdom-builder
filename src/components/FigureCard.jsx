@@ -11,7 +11,7 @@ import Defined from "./Defined.jsx";
 import { equipmentParts } from "../rules/equipment.mjs";
 import { STAT_KEYS, statText, baseText, carriesRule, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { costLabel } from "../rules/upgrades.mjs";
-import { GAP, statWidth } from "../layout.mjs";
+import { statWidth } from "../layout.mjs";
 
 const letter = (k) => (k === "pts" ? "Pts" : k);
 
@@ -62,7 +62,7 @@ function Equipment({ lines }) {
   const parts = lines.flatMap((line) => equipmentParts(line)).filter(({ label }) => carriesRule(label));
   if (!parts.length) return null;
   return (
-    <HStack gap={GAP.item} vAlign="center" wrap="wrap">
+    <HStack gap={2} vAlign="center" wrap="wrap">
       <Text type="label">Equipment</Text>
       {parts.map(({ part, label, entry }, i) => (
         entry ? (
@@ -81,17 +81,17 @@ function Option({ u, owns }) {
   const cost = costLabel(u);
   const changes = Object.entries(u.changes ?? {}).map(([k, v]) => `${letter(k)} ${statText(k, v)}`);
   return (
-    <VStack gap={GAP.tight}>
-      <HStack gap={GAP.item} align="baseline" justify="between" wrap="wrap"
+    <VStack gap={1}>
+      <HStack gap={2} align="baseline" justify="between" wrap="wrap"
               style={u.requires && owns && !owns(u.requires) ? { opacity: 0.72 } : undefined}>
-        <HStack gap={GAP.tight} align="baseline" wrap="wrap">
+        <HStack gap={1} align="baseline" wrap="wrap">
           <Text weight="semibold">{u.name}</Text>
           {u.requires && <Text color="secondary">(with {u.requires})</Text>}
         </HStack>
         <Text type="label">{cost}</Text>
       </HStack>
       {(changes.length > 0 || u.base) && (
-        <HStack gap={GAP.group} wrap="wrap">
+        <HStack gap={4} wrap="wrap">
           {changes.map((c) => <Text key={c}>{c}</Text>)}
           {u.base && <Text>Base {baseText(u.base)}</Text>}
         </HStack>
@@ -111,7 +111,7 @@ function Ranged({ fig }) {
   const named = [...new Set([...carried, ...breath, ...(artillery && !carried.length ? weaponsFromName(fig.name) : [])])];
   if (!named.length) return null;
   return (
-    <HStack gap={GAP.item} align="center" wrap="wrap">
+    <HStack gap={2} align="center" wrap="wrap">
       <Text type="label">Ranged</Text>
       {named.map((w) => <Text key={w}>{w} {rangeText(w)}</Text>)}
     </HStack>
@@ -137,7 +137,7 @@ export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange
           <LayoutContent>
             {/* The same block as a unit on the roster: cost top right, the
                 stat bar, then the abilities. */}
-            <VStack gap={GAP.section}>
+            <VStack gap={6}>
               <VStack gap={3}>
                 {/* Kept flat: an Astryx Table bleeds to its container's edge when
                     it is the first or last child, so it must sit mid-stack. */}
@@ -159,7 +159,7 @@ export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange
               </VStack>
               {fig.equipment.length > 0 && <Equipment lines={fig.equipment} />}
               {fig.upgrades?.length > 0 && (
-                <VStack gap={GAP.item}>
+                <VStack gap={2}>
                   <Heading level={3}>Options</Heading>
                   {fig.upgrades.map((u) => <Option key={u.index ?? u.name} u={u} owns={owns} />)}
                 </VStack>

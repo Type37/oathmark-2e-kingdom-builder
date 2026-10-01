@@ -12,7 +12,7 @@ import {
 import NameField from "./NameField.jsx";
 import RollButton from "./RollButton.jsx";
 import { rulerPool } from "../names.mjs";
-import { GAP, BREAK } from "../layout.mjs";
+import { BREAK } from "../layout.mjs";
 
 const d10 = () => 1 + Math.floor(Math.random() * 10);
 

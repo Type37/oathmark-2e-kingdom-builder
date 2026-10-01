@@ -18,7 +18,6 @@ import { EmptyState } from "@astryxdesign/core/EmptyState";
 import { shortfalls } from "../rules/collection.mjs";
 import { sizeRule, crewOf, isArtillery, isCharacter, unitProfile } from "../rules/army.mjs";
 import { battleTypeById } from "../rules/battle.mjs";
-import { GAP } from "../layout.mjs";
 
 // The Army Roster (p218): the units you have bought, what they cost, and what
 // the muster rules (p35) say about them.
@@ -80,7 +79,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
     const missing = kingdom?.level ? validateKingdom(kingdom).errors : [];
     return (
       <Shell {...shell} title={value.name || "Untitled"} content={(
-        <Section paddingBlock={GAP.section}>
+        <Section paddingBlock={6}>
           <EmptyState
             title={`${kingdom?.name || "This kingdom"} is not ready to muster`}
             description={missing.map((e) => `${e}.`).join(" ")}
@@ -105,7 +104,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
         onClick: () => onOpenKingdom?.(kingdom.id),
       }] : null}
       meta={(
-        <HStack gap={GAP.item} align="center" wrap="wrap">
+        <HStack gap={2} align="center" wrap="wrap">
           <Text type="large" color={over ? "error" : undefined}>{result.points} of</Text>
           <NumberInput label="Total Points" isLabelHidden size="lg" width={110} value={points} min={0} step={50}
                        onChange={(p) => onChange({ ...value, points: p || 0 })} />
@@ -113,18 +112,20 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       )}
       detailTitle="Army Roster"
       detail={(
-        <VStack gap={GAP.group}>
+        <VStack gap={6}>
+          <VStack gap={3}>
           <Heading level={2}>Army Roster</Heading>
           <ProgressBar label="Points Value" isLabelHidden
                        value={Math.min(result.points, points)} max={points || 1}
                        variant={over ? "error" : "accent"} />
+          </VStack>
           {result.errors.length > 0 && (
-            <VStack gap={GAP.tight}>
+            <VStack gap={1}>
               {result.errors.map((e) => <Banner key={e} status="error" title={e} />)}
             </VStack>
           )}
           {(result.warnings.length > 0 || short.length > 0) && (
-            <VStack gap={GAP.tight}>
+            <VStack gap={1}>
               {result.warnings.map((w) => <Banner key={w} status="warning" title={w} />)}
               {short.map((x) => (
                 <Banner key={x.figureId} status="warning" title={`${x.name}: own ${x.have} of ${x.need}`} />
@@ -134,7 +135,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
           {battle && (
             <VStack gap={1}>
               <Heading level={3}>{battle.name}</Heading>
-              <Text type="supporting">{battle.text}</Text>
+              <Text color="secondary">{battle.text}</Text>
             </VStack>
           )}
         </VStack>

@@ -7,7 +7,6 @@ import { ClickableCard } from "@astryxdesign/core/ClickableCard";
 import { LEVELS, REGION_SIZES, validateKingdom } from "../rules/kingdom.mjs";
 import { list as listOf } from "../rules/store.mjs";
 import Shell from "../Shell.jsx";
-import { GAP } from "../layout.mjs";
 import { hueOf } from "../race.mjs";
 import Emblem from "../components/Emblem.jsx";
 const capitalOf = (k) => k?.territories?.find((t) => t.region === 1)?.name ?? null;
@@ -30,24 +29,24 @@ export default function KingdomList({ store, onOpen, onNew, recordActions, shell
                 icon={<Icon icon="app:laurel" />} onClick={onNew} />
       )}
       content={
-          <VStack gap={GAP.section}>
-            <Grid columns={{ minWidth: 260, max: 3, repeat: "fill" }} gap={GAP.group}>
+          <VStack gap={6}>
+            <Grid columns={{ minWidth: 260, max: 3, repeat: "fill" }} gap={4}>
             {rows.map((k) => {
               const total = slots(k.level);
               const placed = (k.territories ?? []).length;
               const ok = validateKingdom(k).ok;
               return (
-                <ClickableCard key={k.id} label={k.name || "Untitled"} padding={5}
+                <ClickableCard key={k.id} label={k.name || "Untitled"}
                                variant={hueOf(k.capitalList)} onClick={() => onOpen(k.id)}>
-                  <VStack gap={GAP.item}>
-                    <HStack gap={GAP.item} align="center" justify="between">
-                      <HStack gap={GAP.item} align="center">
+                  <VStack gap={2}>
+                    <HStack gap={2} align="center" justify="between">
+                      <HStack gap={2} align="center">
                         <Emblem emblemKey={k.emblem} name={k.name} size="lg" />
                         <Heading level={2}>{k.name || "Untitled"}</Heading>
                       </HStack>
                       {recordActions && <MoreMenu items={recordActions("kingdoms", k)} alignment="end" />}
                     </HStack>
-                    <VStack gap={0}>
+                    <VStack gap={1}>
                       {k.ruler && <Text>Ruler: {k.ruler}</Text>}
                       {capitalOf(k) && <Text>Capital: {capitalOf(k)}</Text>}
                       {!ok && (

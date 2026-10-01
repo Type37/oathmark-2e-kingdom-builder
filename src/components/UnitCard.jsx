@@ -87,7 +87,7 @@ export default function UnitCard({
     <Card padding={0} variant={charFig ? "pink" : undefined}>
       <Layout height="auto" padding={4} defaultHasDividers
         header={(
-          <Toolbar label={`${shownName} actions`} size="md" dividers={["bottom"]}
+          <Toolbar label={`${shownName} actions`} size="sm" dividers={["bottom"]}
                    startContent={(
                      <HStack gap={2} vAlign="center" wrap="wrap">
                        {name}
@@ -97,9 +97,9 @@ export default function UnitCard({
                    endContent={(
                      <HStack gap={2} vAlign="center">
                        <Text type="large" weight="bold">{unitCost(unit)}pts</Text>
-                       <Button label="Move up" variant="ghost" size="sm" isIconOnly isDisabled={isFirst}
+                       <Button label="Move up" variant="ghost" isIconOnly isDisabled={isFirst}
                                icon={<Icon icon="arrowUp" />} onClick={() => onMove(-1)} />
-                       <Button label="Move down" variant="ghost" size="sm" isIconOnly isDisabled={isLast}
+                       <Button label="Move down" variant="ghost" isIconOnly isDisabled={isLast}
                                icon={<Icon icon="arrowDown" />} onClick={() => onMove(1)} />
                        <MoreMenu label={`${shownName} actions`} alignment="end" items={[
                          { label: "Move to top", isDisabled: isFirst, onClick: () => onMove("top") },
@@ -113,7 +113,10 @@ export default function UnitCard({
         )}
         content={(
       <LayoutContent>
+      {/* What the unit is, tight together; its choices a step apart. */}
+      <VStack gap={5}>
       <VStack gap={3}>
+        {(unit.name || notes.length > 0 || counts) && (
         <HStack gap={2} vAlign="center" wrap="wrap">
           <StackItem size="fill">
             <HStack gap={3} vAlign="center" wrap="wrap">
@@ -128,10 +131,12 @@ export default function UnitCard({
                          onChange={(n) => patch({ count: n })} />
           )}
         </HStack>
+        )}
 
         <StatBar variant={variantAfter} />
 
         <AttributeTerms attributes={variantAfter.attributes ?? []} />
+      </VStack>
 
         {/* Labels beside their controls, Astryx's settings-form layout, so each
             button sits next to the thing it changes. */}
@@ -207,10 +212,10 @@ function Choice({ label, values, detail, isOwed, onOpen, onClear }) {
     <Field label={label} inputID={id}>
       <VStack gap={1}>
         <HStack gap={2} vAlign="center" wrap="wrap">
-          <Button id={id} label={values.length ? "Change" : "Choose"} size="sm"
+          <Button id={id} label={values.length ? "Change" : "Choose"}
                   variant={isOwed ? "primary" : "secondary"} onClick={onOpen} />
           {values.length > 0 && <Text>{values.join(", ")}</Text>}
-          {onClear && <Button label="Remove" size="sm" variant="ghost" onClick={onClear} />}
+          {onClear && <Button label="Remove" variant="ghost" onClick={onClear} />}
         </HStack>
         {detail && <Text color="secondary">{detail}</Text>}
       </VStack>

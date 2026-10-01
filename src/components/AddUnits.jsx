@@ -7,7 +7,6 @@ import { figureById } from "../rules/kingdom.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
 import { owned } from "../rules/collection.mjs";
 import { sizeRule, crewOf } from "../rules/army.mjs";
-import { GAP } from "../layout.mjs";
 
 const ROLE_ORDER = ["character", "infantry", "cavalry", "monster", "artillery"];
 const ROLE_LABEL = {
@@ -74,7 +73,7 @@ export default function AddUnits({ isOpen, onOpenChange, pool, units, collection
         header={<DialogHeader title="Add Units" onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
-            <VStack gap={GAP.item} minHeight="76dvh">
+            <VStack gap={2} minHeight="76dvh">
               <TabList value={active} onChange={setRole}>
                 {roles.map((r) => <Tab key={r} value={r} label={ROLE_LABEL[r]} />)}
               </TabList>

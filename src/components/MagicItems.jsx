@@ -3,7 +3,6 @@ import {
   Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, Text, Button, List, ListItem,
 } from "@astryxdesign/core";
 import { itemsFor, itemFits } from "../rules/magic.mjs";
-import { GAP } from "../layout.mjs";
 
 // Appendix C, p204: only characters carry items, one each, one of a kind per
 // army. You pick by reading what the item does, not by its name.
@@ -14,7 +13,7 @@ export default function MagicItems({ isOpen, onOpenChange, taken = [], chosen, v
         header={<DialogHeader title="Magic Items" onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
-            <VStack gap={GAP.item}>
+            <VStack gap={2}>
               <List density="compact">
                 <ListItem label="No item" isSelected={!chosen}
                           onClick={() => { onChoose(null); onOpenChange(false); }} />
@@ -55,7 +54,7 @@ export function CarriedItem({ item, onOpen, onClear }) {
   if (!item) return <Button label="Add a magic item" size="sm" variant="ghost" onClick={onOpen} />;
   return (
     <VStack gap={0} align="start">
-      <HStack gap={GAP.item} align="baseline" wrap="wrap">
+      <HStack gap={2} align="baseline" wrap="wrap">
         <Text weight="semibold">{item.name}</Text>
         <Text type="label">{item.pts}pts</Text>
         <Button label="Change" size="sm" variant="ghost" onClick={onOpen} />

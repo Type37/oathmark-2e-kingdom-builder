@@ -13,7 +13,6 @@
 
 export const FRAME = { padding: 4, contentWidth: 1200 };
 export const PANEL = { library: 240, detail: 360, kingdom: 340, roster: 360 };
-export const GAP = { tight: 1, item: 2, group: 4, section: 6 };
 export const DENSITY = { choice: "spacious", data: "balanced", dense: "compact" };
 export const CONTROL = "sm";
 

@@ -7,7 +7,6 @@ import Footer from "../components/Footer.jsx";
 import laurel from "../icons/laurel-crown.svg?url";
 import muster from "../icons/muster.svg?url";
 import ruleBook from "../icons/rule-book.svg?url";
-import { GAP } from "../layout.mjs";
 
 const CARDS = [
   { id: "kingdoms", title: "Kingdom Builder", art: laurel },
@@ -25,7 +24,7 @@ export default function Landing({ onOpen }) {
       content={
         <LayoutContent padding={8}>
           <VStack gap={8}>
-            <VStack gap={GAP.group} maxWidth="62ch">
+            <VStack gap={4} maxWidth="62ch">
               <Heading level={1} type="display-1">Oathmark</Heading>
               <Blockquote>
                 Empires have fallen, and the land is broken. The great oathmarks that once stood
@@ -48,8 +47,8 @@ export default function Landing({ onOpen }) {
             </VStack>
             <Grid columns={{ minWidth: 220, max: 4, repeat: "fit" }} gap={6}>
               {CARDS.map((c) => (
-                <ClickableCard key={c.id} label={c.title} elevation="low" padding={6} onClick={() => onOpen(c.id)}>
-                  <VStack gap={6}>
+                <ClickableCard key={c.id} label={c.title} elevation="low" onClick={() => onOpen(c.id)}>
+                  <VStack gap={4}>
                     <Center>
                       {c.art ? <img src={c.art} alt="" width={140} height={140} /> : <Mark name={c.mark} size={140} />}
                     </Center>

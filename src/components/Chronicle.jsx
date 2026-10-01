@@ -4,7 +4,6 @@ import {
 } from "@astryxdesign/core";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { TextArea } from "@astryxdesign/core/TextArea";
-import { GAP } from "../layout.mjs";
 
 // The kingdom's annals, year by year (p27): a back story before the first
 // battle, or year one at the founding, then a line for each war as it is fought.
@@ -16,11 +15,11 @@ export default function Chronicle({ entries = [], onChange }) {
   };
 
   return (
-    <VStack gap={GAP.group}>
+    <VStack gap={4}>
       <Heading level={2}>Chronicle</Heading>
       {entries.map((e, i) => (
-        <VStack key={i} gap={GAP.tight}>
-          <HStack gap={GAP.item} align="end">
+        <VStack key={i} gap={1}>
+          <HStack gap={2} align="end">
             <NumberInput label="Year" size="sm" width={88} min={1} value={e.year}
                          onChange={(y) => set(i, { year: Math.max(1, y || 1) })} />
             <TextInput label="Event" size="sm" width="100%" value={e.title}

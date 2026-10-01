@@ -2,16 +2,15 @@ import React from "react";
 import { VStack, HStack, Text, Heading, Button, MetadataList, MetadataListItem } from "@astryxdesign/core";
 import RollButton from "./RollButton.jsx";
 import { rollLore } from "../lore.mjs";
-import { GAP } from "../layout.mjs";
 
 // What kind of realm this is, and how it came to be: one roll across the tables.
 export default function KingdomLore({ value, onChange }) {
   const lore = value.lore;
   return (
-    <VStack gap={GAP.item}>
+    <VStack gap={2}>
       <Heading level={2}>The Realm</Heading>
       {lore && (
-        <VStack gap={GAP.item}>
+        <VStack gap={2}>
           <VStack gap={0}>
             <Heading level={4}>{lore.theme.name}</Heading>
             <Text type="supporting">{lore.theme.text}</Text>

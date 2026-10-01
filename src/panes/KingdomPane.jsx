@@ -15,7 +15,7 @@ import Emblem from "../components/Emblem.jsx";
 import EmblemDialog from "../components/EmblemDialog.jsx";
 import Chronicle from "../components/Chronicle.jsx";
 import { Switch } from "@astryxdesign/core/Switch";
-import { GAP, DENSITY } from "../layout.mjs";
+import { DENSITY } from "../layout.mjs";
 import {
   LEVELS, REGION_SIZES, CAPITAL_LISTS, allTerritories, canPlace,
   validateKingdom, territory, grantList, figurePool, rarityNote, openBorderRegion, borderNote,
@@ -77,18 +77,31 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
     const mine = picks.map((p, i) => ({ p, i })).filter(({ p }) => p.region === r);
     const full = mine.length >= REGION_SIZES[r];
     return (
-      <Card key={r} padding={3}
+      <Card key={r}
             variant={lit === r ? (mine.length ? hueOf(mine[0].p.list) : "pink") : live ? "default" : "muted"}>
-      <VStack gap={GAP.item} onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}>
-        <HStack gap={GAP.item} vAlign="center">
+      <VStack gap={3} onMouseEnter={() => setLit(r)} onMouseLeave={() => setLit(null)}>
+        <HStack gap={2} vAlign="center">
           <StackItem size="fill"><RegionName region={r} value={value.regionNames?.[r]}
                       onChange={(name) => patch({ regionNames: { ...(value.regionNames ?? {}), [r]: name } })} /></StackItem>
-          <HStack gap={GAP.item} vAlign="center">
+          <HStack gap={2} vAlign="center">
             {r === openBorderRegion(value) && (
               <Defined bare def={borderNote}><Token label="Open borders" size="sm" /></Defined>
             )}
             {!live && <Token label={r > 4 ? "Campaign" : "Later"} size="sm" color="gray" />}
             <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
+            {/* The region's own action sits in its header, after the detail-page
+                template's section headings. */}
+            {!full && live && (r > 1 || !capitalList) && (
+              r > 1 && !capitalList ? (
+                <Tooltip content="Establish your capital first.">
+                  <Button label="Add territory" size="sm" variant="secondary" isDisabled
+                          icon={<Icon icon="app:plus" />} />
+                </Tooltip>
+              ) : (
+                <Button label={r === 1 ? "Choose a capital" : "Add territory"} size="sm" variant="secondary"
+                        icon={<Icon icon="app:plus" />} onClick={() => setPicking(r)} />
+              )
+            )}
           </HStack>
         </HStack>
         {regionLore?.[r] && (
@@ -97,6 +110,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
             {regionLore[r].text ? ` ${regionLore[r].text}` : ""}
           </Blockquote>
         )}
+        {mine.length > 0 && (
         <List density={DENSITY.data}>
           {mine.map(({ p, i }) => (
             <ListItem
@@ -117,7 +131,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
                 </Defined>
               }
               endContent={
-                <HStack gap={GAP.item} align="center">
+                <HStack gap={2} align="center">
                   {/* Territory is only lost once the kingdom is at war, after founding. */}
                   {founded && (
                     <Tooltip content={occupiedNote.text}>
@@ -136,18 +150,8 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
               }
             />
           ))}
-          {!full && live && (r > 1 || !capitalList) && (
-            r > 1 && !capitalList ? (
-              <Tooltip content="Establish your capital first.">
-                <ListItem label="Add territory" isDisabled startContent={<Icon icon="app:plus" />} />
-              </Tooltip>
-            ) : (
-              <ListItem label={r === 1 ? "Choose a capital" : "Add territory"}
-                        startContent={<Icon icon="app:plus" />}
-                        onClick={() => setPicking(r)} />
-            )
-          )}
         </List>
+        )}
       </VStack>
       </Card>
     );
@@ -163,27 +167,30 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
 
   // The book's Kingdom Sheet (p217): name, ruler, the rings; then what they grant.
   const detail = (
-    <VStack gap={GAP.group}>
-      <Heading level={2}>Kingdom Sheet</Heading>
-      <HStack gap={GAP.item} align="center">
-        <Emblem emblemKey={value.emblem} name={value.name} size="lg" />
-        <Button label="Emblem" variant="secondary" size="sm"
-                onClick={() => setCropping(true)} />
-        {value.emblem && (
-          <Button label="Remove emblem" size="sm" variant="ghost" isIconOnly
-                  icon={<Icon icon="close" />} onClick={() => onEmblem(null)} />
+    // Tight inside each group, generous between them: the sheet's name and
+    // ruler, the rings, the chronicle, the realm, the figures it grants.
+    <VStack gap={6}>
+      <VStack gap={3}>
+        <Heading level={2}>Kingdom Sheet</Heading>
+        <HStack gap={2} vAlign="center">
+          <Emblem emblemKey={value.emblem} name={value.name} size="lg" />
+          <Button label="Emblem" variant="secondary" onClick={() => setCropping(true)} />
+          {value.emblem && (
+            <Button label="Remove emblem" variant="ghost" isIconOnly
+                    icon={<Icon icon="close" />} onClick={() => onEmblem(null)} />
+          )}
+        </HStack>
+        <NameField label="Current Ruler" value={value.ruler} pool={rulerPool(value.culture)}
+                   onChange={(ruler) => patch({ ruler })} />
+        {lore?.ruler && (
+          <VStack gap={1}>
+            <Text color="secondary">Holds to {lore.ruler.holds.toLowerCase()}.</Text>
+            <Text color="secondary">
+              Their reign is marked by {lore.ruler.marked.name.toLowerCase()}. {lore.ruler.marked.text}
+            </Text>
+          </VStack>
         )}
-      </HStack>
-      <NameField label="Current Ruler" size="sm" value={value.ruler} pool={rulerPool(value.culture)}
-                 onChange={(ruler) => patch({ ruler })} />
-      {lore?.ruler && (
-        <VStack gap={GAP.tight}>
-          <Text type="supporting">Holds to {lore.ruler.holds.toLowerCase()}.</Text>
-          <Text type="supporting">
-            Their reign is marked by {lore.ruler.marked.name.toLowerCase()}. {lore.ruler.marked.text}
-          </Text>
-        </VStack>
-      )}
+      </VStack>
       {map}
       {chronicle}
       {settings?.lore && hasLore && <KingdomLore value={value} onChange={onChange} />}
@@ -223,7 +230,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
       onPrint={onPrint}
       title={value.name || "Untitled"}
       onRename={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
-      inlineDetail={<VStack gap={GAP.group}>{map}{chronicle}{access}</VStack>}
+      inlineDetail={<VStack gap={6}>{map}{chronicle}{access}</VStack>}
       meta={started && !founded ? (
         <Button label="Found the Kingdom" variant="primary" icon={<Icon icon="app:laurel" />}
                 className={sealing ? "om-found om-found-sealing" : "om-found"}
@@ -240,11 +247,11 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
       detail={detail}
       detailTitle="Kingdom Sheet"
       content={(
-        <VStack gap={GAP.section}>
+        <VStack gap={4}>
           <KingdomPrint value={value} />
           {regionList}
           {result && !result.ok && (
-            <VStack gap={GAP.tight}>
+            <VStack gap={1}>
               {result.errors.map((e) => <Banner key={e} status="error" title={e} />)}
             </VStack>
           )}

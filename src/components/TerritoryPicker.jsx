@@ -8,7 +8,7 @@ import { territory, figureById, rarityNote } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
 import { STAT_KEYS, statText } from "../rules/stats.mjs";
 import { hueOf } from "../race.mjs";
-import { BREAK, GAP, statWidth } from "../layout.mjs";
+import { BREAK, statWidth } from "../layout.mjs";
 
 const RACE = {
   dwarf: "Dwarf", elf: "Elf", goblin: "Goblin", human: "Human",
@@ -52,8 +52,8 @@ function Grants({ t, pool, region, onOpenFigure }) {
 
 function Preview({ t, region, capitalList, pool, onOpenFigure, onAdd, onBack }) {
   return (
-    <VStack gap={GAP.group}>
-      <HStack gap={GAP.item} align="center" wrap="wrap">
+    <VStack gap={4}>
+      <HStack gap={2} align="center" wrap="wrap">
         {onBack && <Button label="Back" variant="ghost" size="sm" onClick={onBack} />}
         <Heading level={3}>{t.name}</Heading>
         <Token label={RACE[t.list]} size="sm" color={hueOf(t.list)} />
@@ -107,7 +107,7 @@ export default function TerritoryPicker({ region, candidates, capitalList, found
         isScrollable
         content={
           <LayoutContent>
-            <VStack gap={GAP.group} minHeight="78dvh">
+            <VStack gap={4} minHeight="78dvh">
               {region === 1 && (
                 <Banner status="info" title={CAPITAL_NOTE} />
               )}

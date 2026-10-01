@@ -7,7 +7,6 @@ import { figures } from "../rules/kingdom.mjs";
 import { collectionTotals, unitsAffordable } from "../rules/collection.mjs";
 import { STAT_KEYS } from "../rules/stats.mjs";
 import { sizeRule } from "../rules/army.mjs";
-import { GAP } from "../layout.mjs";
 
 const LISTS = ["dwarf", "elf", "goblin", "human", "orc", "necropolis", "unaligned"];
 
@@ -81,7 +80,7 @@ export default function CollectionPane({ value, onChange, shell }) {
       detailTitle="Collection"
       content={(
       <VStack gap={0}>
-        <Section paddingBlockEnd={GAP.item}>
+        <Section paddingBlockEnd={2}>
           <TextInput label="Find a figure" value={query} size="sm"
                      onChange={(e) => setQuery(e.target?.value ?? e)} />
         </Section>

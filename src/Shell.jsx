@@ -7,7 +7,7 @@ import {
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { VisuallyHidden } from "@astryxdesign/core/VisuallyHidden";
 import Footer from "./components/Footer.jsx";
-import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
+import { BREAK, FRAME, PANEL } from "./layout.mjs";
 
 // Per-page frame, after Astryx's detail-page template: a fixed header with the
 // way back, the record's name and every action; the content and the sheet
@@ -44,14 +44,14 @@ export default function Shell({
     <Heading level={1}>{title}</Heading>
   );
   const titleBlock = titleAction
-    ? <HStack gap={GAP.tight} vAlign="center">{titleNode}{titleAction}</HStack>
+    ? <HStack gap={1} vAlign="center">{titleNode}{titleAction}</HStack>
     : titleNode;
   // On a phone an editable name cannot share the bar with Back and the trail
   // without running off the edge, so it takes the full width underneath.
   const titleBelow = narrow && Boolean(onRename);
 
   const lead = (
-    <HStack gap={GAP.item} vAlign="center" wrap="wrap">
+    <HStack gap={2} vAlign="center" wrap="wrap">
       {/* Back is always the first thing in the bar, so it never moves between pages. */}
       {onBack && (
         <Button label={backLabel ?? "Back"} variant="ghost" icon={<Icon icon="app:back" />} onClick={onBack} />
@@ -70,7 +70,7 @@ export default function Shell({
     </HStack>
   );
   const tools = (
-    <HStack gap={GAP.item} vAlign="center" wrap="wrap">
+    <HStack gap={2} vAlign="center" wrap="wrap">
       {meta}
       {onPrint && !narrow && (
         <Button label="Print" variant="secondary" icon={<Icon icon="app:print" />} onClick={onPrint} />
@@ -86,9 +86,9 @@ export default function Shell({
     <LayoutHeader>
       <SizeProvider value="lg">
         {titleBelow ? (
-          <VStack gap={GAP.item}>{lead}{titleBlock}{tools}</VStack>
+          <VStack gap={2}>{lead}{titleBlock}{tools}</VStack>
         ) : (
-          <HStack gap={GAP.group} vAlign="center" wrap="wrap">
+          <HStack gap={4} vAlign="center" wrap="wrap">
             <StackItem size="fill">{lead}</StackItem>
             {tools}
           </HStack>

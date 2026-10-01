@@ -5,7 +5,7 @@ import {
 import Shell from "../Shell.jsx";
 import { attributes } from "../rules/kingdom.mjs";
 import { spells, magicItems } from "../rules/magic.mjs";
-import { GAP, DENSITY } from "../layout.mjs";
+import { DENSITY } from "../layout.mjs";
 
 // Everything in the book's own words, from Appendices A, B and C.
 export default function ReferencePane({ shell }) {
@@ -32,7 +32,7 @@ export default function ReferencePane({ shell }) {
       title="Reference"
       content={
         <VStack gap={0}>
-          <Section paddingBlockEnd={GAP.item}>
+          <Section paddingBlockEnd={2}>
             <TextInput label="Search" value={query} size="sm"
                        onChange={(e) => setQuery(e.target?.value ?? e)} />
           </Section>
