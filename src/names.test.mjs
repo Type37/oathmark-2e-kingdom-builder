@@ -50,8 +50,8 @@ test("plainly modern places take their older forms", () => {
   assert.equal(cultureOf("Patelamunt"), "zazamanc");
 });
 
-test("a region name comes from the kingdom's homelands, never one already taken", () => {
-  const cymric = HOMELANDS.filter(([, c]) => c === "cymric").map(([n]) => n);
+test("a region name comes from the kingdom's homelands and people, never one already taken", () => {
+  const cymric = [...HOMELANDS.filter(([, c]) => c === "cymric").map(([n]) => n), ...CULTURES.cymric.rulers];
   for (let i = 0; i < 50; i++) {
     const name = rollPlace("cymric", [cymric[0], cymric[1]]);
     assert.ok(cymric.includes(name));
