@@ -5,7 +5,6 @@ import {
   BreadcrumbItem,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
-import { MobileNavToggle } from "@astryxdesign/core/MobileNav";
 import { VisuallyHidden } from "@astryxdesign/core/VisuallyHidden";
 import Footer from "./components/Footer.jsx";
 import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
@@ -53,7 +52,6 @@ export default function Shell({
 
   const lead = (
     <HStack gap={GAP.item} vAlign="center" wrap="wrap">
-      <MobileNavToggle label="Menu" />
       {/* Back is always the first thing in the bar, so it never moves between pages. */}
       {onBack && (
         <Button label={backLabel ?? "Back"} variant="ghost" icon={<Icon icon="app:back" />} onClick={onBack} />
@@ -108,11 +106,17 @@ export default function Shell({
         height="fill"
         contentWidth={width ?? FRAME.contentWidth}
         header={header}
-        content={<LayoutContent padding={narrow ? 4 : 6}>{body}</LayoutContent>}
+        content={(
+          <LayoutContent padding={narrow ? 4 : 6}>
+            {body}
+            {/* A phone has no room to keep the credits pinned, so they close the page. */}
+            {narrow && <Footer />}
+          </LayoutContent>
+        )}
         end={noPanels || !detail ? undefined : (
           <LayoutPanel width={PANEL.detail} padding={6} hasDivider>{detail}</LayoutPanel>
         )}
-        footer={<LayoutFooter hasDivider><Footer /></LayoutFooter>}
+        footer={narrow ? undefined : <LayoutFooter hasDivider><Footer /></LayoutFooter>}
       />
 
       {noPanels && detail && (

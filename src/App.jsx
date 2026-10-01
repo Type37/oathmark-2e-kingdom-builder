@@ -73,7 +73,7 @@ export default function App() {
   }, [store]);
 
   React.useEffect(() => {
-    document.body.dataset.view = ["kingdom", "muster"].includes(section) ? "work" : "front";
+    document.body.dataset.view = section === "home" ? "front" : "work";
     window.scrollTo(0, 0);
   }, [section]);
 
