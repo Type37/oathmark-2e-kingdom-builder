@@ -1,4 +1,5 @@
 import React from "react";
+import { regnalYear } from "./Chronicle.jsx";
 import PrintSheet from "./PrintSheet.jsx";
 import RegionMap from "./RegionMap.jsx";
 import { useEmblem } from "../emblem.mjs";
@@ -22,8 +23,8 @@ export default function KingdomPrint({ value }) {
   const regions = [...new Set([...start, ...picks.map((p) => p.region)])].sort((a, b) => a - b);
   const lore = value.lore;
   const chronicle = [...(value.chronicle ?? [])]
-    .filter((e) => e.title?.trim() || e.body?.trim())
-    .sort((a, b) => a.year - b.year);
+    // In the order written: years of different reigns do not sort against each other.
+    .filter((e) => e.title?.trim() || e.body?.trim());
 
   const byRace = RACE_ORDER
     .map((list) => ({
@@ -122,7 +123,7 @@ export default function KingdomPrint({ value }) {
           <dl>
             {chronicle.map((e, i) => (
               <React.Fragment key={i}>
-                <dt>Year {e.year}</dt>
+                <dt>{regnalYear(e)}</dt>
                 <dd>{e.title && <strong>{e.title}</strong>}{e.title && e.body ? " " : ""}{e.body}</dd>
               </React.Fragment>
             ))}
