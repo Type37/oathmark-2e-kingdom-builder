@@ -116,7 +116,8 @@ export default defineTheme({
     blockquote: { base: { fontStyle: "italic" } },
     card: { base: { borderRadius: "var(--radius-none)" } },
     button: { base: { fontFamily: "var(--font-family-code)" } },
-    "side-nav-item": { base: { fontFamily: "var(--font-family-code)" } },
+    // The rail is how you get around: one step up the type scale.
+    "side-nav-item": { base: { fontFamily: "var(--font-family-code)", fontSize: "var(--font-size-lg)" } },
     "dropdown-menu-item": { base: { fontFamily: "var(--font-family-code)" } },
     "side-nav-section": { base: { fontFamily: "var(--font-family-code)" } },
     "side-nav-heading": { base: { fontFamily: "var(--font-family-heading)" } },

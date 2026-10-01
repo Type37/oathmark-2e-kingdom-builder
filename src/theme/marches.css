@@ -232,6 +232,7 @@
 
   .astryx-side-nav-item {
     font-family: var(--font-family-code);
+    font-size: var(--font-size-lg);
   }
 
   .astryx-dropdown-menu-item {

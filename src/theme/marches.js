@@ -114,7 +114,8 @@ export const marchesTheme = {
     },
     "side-nav-item": {
       "base": {
-        "fontFamily": "var(--font-family-code)"
+        "fontFamily": "var(--font-family-code)",
+        "fontSize": "var(--font-size-lg)"
       }
     },
     "dropdown-menu-item": {

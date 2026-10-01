@@ -168,11 +168,11 @@ export default function App() {
   const navItems = (
     <>
       {builders.map((b) => (
-        <SideNavItem key={b.id} label={b.label} isSelected={b.match.includes(section)}
+        <SideNavItem key={b.id} size="lg" label={b.label} isSelected={b.match.includes(section)}
                      onClick={() => go(b.id)} />
       ))}
       <SideNavSection title="Rules">
-        <SideNavItem label="Reference" isSelected={section === "reference"} onClick={() => go("reference")} />
+        <SideNavItem size="lg" label="Reference" isSelected={section === "reference"} onClick={() => go("reference")} />
       </SideNavSection>
     </>
   );
