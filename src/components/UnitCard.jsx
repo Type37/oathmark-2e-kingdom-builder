@@ -43,7 +43,6 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
   const [attr, setAttr] = React.useState(null);
   const patch = (next) => onChange({ ...unit, ...next });
   const notes = [
-    unit.name ? fig.name : null,
     ...weaponsOf(fig).map((w) => `${w} ${rangeText(w)}`),
     p.penalty?.occupied ? "from occupied ground, activates one worse" : null,
     p.penalty?.unreliable ? "from the borderlands, Unreliable" : null,
@@ -65,9 +64,9 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
             what the unit is and where it came from reads underneath. */}
         <HStack gap={GAP.item} align="center" justify="between" wrap="wrap">
           <HStack gap={GAP.item} align="baseline" wrap="wrap">
-            <Button variant="ghost" size="sm" label={unit.name || fig.name} onClick={() => onOpenFigure(fig.id)}>
-              <Text type="large">{unit.name || fig.name}</Text>
-            </Button>
+            <TextInput label={`${fig.name} name`} isLabelHidden value={unit.name ?? ""} placeholder={fig.name}
+                       width={240} className="om-title-input"
+                       onChange={(e) => patch({ name: e.target?.value ?? e })} />
             <Text type="large">{unitCost(unit)}pts</Text>
           </HStack>
           {/* On a phone the controls take the next row, still at the right edge. */}
@@ -87,7 +86,9 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                     icon={<Ico name="times" />} onClick={onRemove} />
           </HStack>
         </HStack>
-        {notes && <Text type="supporting">{notes}</Text>}
+        <Text type="supporting">
+          <Link onClick={() => onOpenFigure(fig.id)}>{fig.name}</Link>{notes && ` · ${notes}`}
+        </Text>
 
         <StatBar variant={variantAfter} />
         <Text type="supporting">
@@ -101,8 +102,6 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
         <AttributeCard name={attr} isOpen={Boolean(attr)} onOpenChange={(o) => !o && setAttr(null)} />
 
         <HStack gap={GAP.group} align="end" wrap="wrap">
-          <TextInput label="Name" isOptional width={240} value={unit.name ?? ""} placeholder={fig.name}
-                     onChange={(e) => patch({ name: e.target?.value ?? e })} />
           {levels?.length > 1 && (
             <Selector label="Level" width={120} value={String(unit.level ?? levels[0])}
                       onChange={(v) => patch({ level: Number(v), spells: [] })}

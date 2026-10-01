@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Layout, LayoutContent, Grid, VStack, Card, Heading, Section, Text,
+  Layout, LayoutContent, Grid, VStack, HStack, Card, Heading, Section, Text, Button,
 } from "@astryxdesign/core";
 import { Icon } from "@iconify/react";
 import Mark from "../components/Mark.jsx";
@@ -25,15 +25,24 @@ export default function Landing({ onOpen }) {
           <VStack gap={8}>
             <VStack gap={GAP.group} style={{ maxInlineSize: "62ch" }}>
               <Heading level={1} type="display-1">Oathmark</Heading>
-              <Text type="large">
-                The old empires burned themselves out in the War of Lost Fathers. Now, in the
-                Lost Age, new kingdoms grow like weeds among their ruins, and every one of
-                them is bound by an oathmark raised in stone.
+              <Text type="large" style={{ fontStyle: "italic" }}>
+                Empires have fallen, and the land is broken. The great oathmarks that once stood
+                as testaments to the allegiances and might of nations have crumbled into ruin. In
+                this lost age, fealty and loyalty are as valuable as gold and as deadly as cold
+                iron, and war is ever-present
               </Text>
-              <Text color="secondary">
-                Kings fight the wars. Chroniclers keep them. Found your kingdom in the Marches,
-                muster its armies, and write down what they did, so the age is not lost twice.
+              <Text>
+                Oathmark: Second Edition is a revised and expanded version of the popular
+                mass-battle fantasy wargame, Oathmark. Featuring new and expanded rules, units
+                types, and a whole host of other revisions from years of player feedback. Command
+                the fantasy army you've always wanted in Oathmark: Second Edition, whether a
+                company of stalwart dwarves or a mixed force with proud elves, noble men, and wild
+                goblins standing shoulder-to-shoulder in the battle-line.
               </Text>
+              <HStack>
+                <Button label="Buy the book!" variant="primary" target="_blank" rel="noopener"
+                        href="https://www.ospreypublishing.com/us/oathmark-second-edition-9781472864628/" />
+              </HStack>
             </VStack>
             <Grid columns={{ minWidth: 220, max: 4, repeat: "fit" }} gap={6}>
               {CARDS.map((c) => (
