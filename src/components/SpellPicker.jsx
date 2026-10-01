@@ -23,7 +23,7 @@ export default function SpellPicker({ isOpen, onOpenChange, race, level, magicIt
                               onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
-            <VStack gap={GAP.item} style={{ blockSize: "70dvh", overflowY: "auto" }}>
+            <VStack gap={GAP.item}>
               <List density="compact">
                 {spellsFor(race).map((s) => {
                   const on = chosen.includes(s.name);

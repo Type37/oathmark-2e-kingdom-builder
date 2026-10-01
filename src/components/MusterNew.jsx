@@ -109,7 +109,7 @@ export default function MusterNew({ isOpen, onOpenChange, kingdoms, defaultKingd
                         onChange={(on) => { setUneven(on); setSides(on ? rollSides(points) : null); }} />
               </HStack>
 
-              <HStack gap={GAP.group} align="center" wrap="wrap" style={{ minBlockSize: 34 }}>
+              <HStack gap={GAP.group} vAlign="center" wrap="wrap" minHeight={34}>
                 {uneven && sides && (
                   <>
                   <Token color="red" label={`Attacker rolled ${sides.attacker.die}: ${pct(sides.attacker.modifier)}, ${sides.attacker.points}pts`} />

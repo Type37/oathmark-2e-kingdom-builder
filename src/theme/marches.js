@@ -247,6 +247,20 @@ export const marchesTheme = {
         "lineHeight": "var(--text-display-3-leading)"
       }
     },
+    "list-item": {
+      "base": {
+        ":hover": {
+          "backgroundColor": "var(--color-background-muted)"
+        }
+      }
+    },
+    "item": {
+      "base": {
+        ":hover": {
+          "backgroundColor": "var(--color-background-muted)"
+        }
+      }
+    },
     "blockquote": {
       "base": {
         "fontStyle": "italic"

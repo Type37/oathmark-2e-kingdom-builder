@@ -30,7 +30,7 @@ export default function KingdomList({ store, onOpen, onNew, recordActions, shell
                 icon={<Icon icon="app:laurel" />} onClick={onNew} />
       )}
       content={
-          <VStack gap={GAP.section} className="om-page">
+          <VStack gap={GAP.section}>
             <Grid columns={{ minWidth: 260, max: 3, repeat: "fill" }} gap={GAP.group}>
             {rows.map((k) => {
               const total = slots(k.level);

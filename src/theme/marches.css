@@ -379,6 +379,14 @@
     line-height: var(--text-display-3-leading);
   }
 
+  .astryx-list-item:hover:where(:not(:disabled,[aria-disabled="true"])) {
+    background-color: var(--color-background-muted);
+  }
+
+  .astryx-item:hover:where(:not(:disabled,[aria-disabled="true"])) {
+    background-color: var(--color-background-muted);
+  }
+
   .astryx-blockquote {
     font-style: italic;
   }

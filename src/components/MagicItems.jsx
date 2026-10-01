@@ -14,7 +14,7 @@ export default function MagicItems({ isOpen, onOpenChange, taken = [], chosen, v
         header={<DialogHeader title="Magic Items" onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
-            <VStack gap={GAP.item} style={{ blockSize: "70dvh", overflowY: "auto" }}>
+            <VStack gap={GAP.item}>
               <List density="compact">
                 <ListItem label="No item" isSelected={!chosen}
                           onClick={() => { onChoose(null); onOpenChange(false); }} />

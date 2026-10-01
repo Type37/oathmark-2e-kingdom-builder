@@ -1,4 +1,5 @@
 import React from "react";
+import { HStack, VStack } from "@astryxdesign/core";
 import { hueOf } from "../race.mjs";
 
 // Radii scale to the outermost region so a small kingdom still fills the box.
@@ -29,9 +30,9 @@ export default function RegionMap({ regions, playable, picks, activeRegion, litR
   const pickAt = (region, index) => picks.filter((p) => p.region === region)[index] ?? null;
 
   return (
-    <svg viewBox="-150 -150 300 300" width="100%" role="img"
-         style={{ maxWidth: 300, maxHeight: 300, display: "block", margin: "0 auto" }}
-         aria-label={`Regions 1 to ${outer}`}>
+    <HStack hAlign="center">
+    <VStack width="100%" maxWidth={300}>
+    <svg viewBox="-150 -150 300 300" width="100%" role="img" aria-label={`Regions 1 to ${outer}`}>
       {[...regions].reverse().map((region) => {
         const r = R[region - 1];
         const inner = region === 1 ? 0 : R[region - 2];
@@ -73,7 +74,7 @@ export default function RegionMap({ regions, playable, picks, activeRegion, litR
                       : isActive ? "var(--color-accent)" : "var(--color-border-emphasized)"}
                     strokeWidth={isHovered || isLit ? 3 : isActive || pick ? 2 : 1}
                     strokeDasharray={live ? undefined : "4 4"}
-                    style={{ cursor: live ? "pointer" : "default", opacity: live ? 1 : 0.55 }}
+                    cursor={live ? "pointer" : "default"} opacity={live ? 1 : 0.55}
                     onMouseEnter={() => { onSlotHover?.(key); onRegionHover?.(region); }}
                     onMouseLeave={() => { onSlotHover?.(null); onRegionHover?.(null); }}
                     onClick={() => live && onSlotClick?.(region, i, pick)}
@@ -102,5 +103,7 @@ export default function RegionMap({ regions, playable, picks, activeRegion, litR
       <text x="0" y="4" textAnchor="middle" fontSize="var(--font-size-2xs)"
             pointerEvents="none" aria-hidden="true" fill="var(--color-text-secondary)">1</text>
     </svg>
+    </VStack>
+    </HStack>
   );
 }

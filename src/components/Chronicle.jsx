@@ -25,7 +25,7 @@ export default function Chronicle({ entries = [], onChange }) {
                          onChange={(y) => set(i, { year: Math.max(1, y || 1) })} />
             <TextInput label="Event" size="sm" width="100%" value={e.title}
                        onChange={(title) => set(i, { title })} />
-            <Button className="om-remove" label="Remove entry" size="sm" variant="destructive" isIconOnly
+            <Button label="Remove entry" size="sm" variant="ghost" isIconOnly
                     icon={<Icon icon="close" />} onClick={() => onChange(entries.filter((_, j) => j !== i))} />
           </HStack>
           <TextArea label={`Year ${e.year}`} isLabelHidden size="sm" rows={3} value={e.body ?? ""}

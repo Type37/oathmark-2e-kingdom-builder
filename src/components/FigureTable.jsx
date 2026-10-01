@@ -49,7 +49,7 @@ export default function FigureTable({ rows, onAdd, onOpen, actionColumn, sort, o
       renderCell: (r) => {
         const attrs = r.fig?.variants?.[0]?.attributes ?? [];
         return (
-          <VStack gap={0}>
+          <VStack gap={0} hAlign="start">
             <Link isStandalone onClick={() => onOpen?.(r.figureId)}>{r.name}</Link>
             {r.cap && (
               <HStack gap={2} align="center">

@@ -24,7 +24,7 @@ export default function MusterList({ store, onOpen, onNew, recordActions, shell 
                 icon={<Icon icon="app:muster" />} onClick={onNew} />
       )}
       content={
-          <VStack gap={GAP.section} className="om-page">
+          <VStack gap={GAP.section}>
             <Grid columns={{ minWidth: 260, max: 3, repeat: "fill" }} gap={GAP.group}>
               {rows.map((m) => {
                 const k = get(store, "kingdoms", m.kingdomId);

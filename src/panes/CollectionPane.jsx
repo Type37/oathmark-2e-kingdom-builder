@@ -85,7 +85,7 @@ export default function CollectionPane({ value, onChange, shell }) {
           <TextInput label="Find a figure" value={query} size="sm"
                      onChange={(e) => setQuery(e.target?.value ?? e)} />
         </Section>
-        <Section paddingBlockEnd={0} className="om-sticky-tabs">
+        <Section paddingBlockEnd={0}>
           <TabList value={list} onChange={jump} isFullBleed overflow="visible">
             {LISTS.map((l) => <Tab key={l} value={l} label={LABEL[l]} />)}
           </TabList>

@@ -74,7 +74,7 @@ export default function AddUnits({ isOpen, onOpenChange, pool, units, collection
         header={<DialogHeader title="Add Units" onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
-            <VStack gap={GAP.item} style={{ minBlockSize: "76dvh" }}>
+            <VStack gap={GAP.item} minHeight="76dvh">
               <TabList value={active} onChange={setRole}>
                 {roles.map((r) => <Tab key={r} value={r} label={ROLE_LABEL[r]} />)}
               </TabList>

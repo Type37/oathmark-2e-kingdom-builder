@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Icon, Heading, Card, StackItem, VStack, HStack, Text, Button, List, ListItem, Token, Tooltip, Banner,
+  Icon, Heading, Card, StackItem, VStack, HStack, Text, Button, List, ListItem, Token, Tooltip, Banner, Blockquote,
 } from "@astryxdesign/core";
 import Shell from "../Shell.jsx";
 import RegionMap from "../components/RegionMap.jsx";
@@ -87,10 +87,10 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
           </HStack>
         </HStack>
         {regionLore?.[r] && (
-          <Text type="supporting" className="om-region-lore">
+          <Blockquote>
             <Text type="inherit" weight="semibold">{regionLore[r].name}.</Text>
             {regionLore[r].text ? ` ${regionLore[r].text}` : ""}
-          </Text>
+          </Blockquote>
         )}
         <List density={DENSITY.data}>
           {mine.map(({ p, i }) => (
@@ -119,7 +119,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
                               territories: picks.map((x, j) => (j === i ? { ...x, occupied: on } : x)),
                             })} />
                   </Tooltip>
-                  <Button className="om-remove" label="Remove" size="sm" variant="destructive" isIconOnly
+                  <Button label="Remove" size="sm" variant="ghost" isIconOnly
                           icon={<Icon icon="close" />}
                           onClick={() => patch(r === 1
                             ? { capitalList: null, territories: [] }
@@ -162,7 +162,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
         <Button label="Emblem" variant="secondary" size="sm"
                 onClick={() => setCropping(true)} />
         {value.emblem && (
-          <Button className="om-remove" label="Remove emblem" size="sm" variant="destructive" isIconOnly
+          <Button label="Remove emblem" size="sm" variant="ghost" isIconOnly
                   icon={<Icon icon="close" />} onClick={() => onEmblem(null)} />
         )}
       </HStack>

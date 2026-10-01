@@ -5,15 +5,6 @@ body {
   background-color: var(--color-background-body);
 }
 
-/* Sword rules stand in for a Divider where the sheet needs a heavier break. */
-.om-sword-rule {
-  height: 120px;
-  background-image: url("/art/sword-plain.png");
-  background-size: auto 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: 0.75;
-}
 
 /* A newly claimed territory pops onto the sheet from its own centre. */
 @keyframes om-pop {
@@ -47,26 +38,6 @@ body {
   }
 }
 
-/* The page's bar stays put: Back, Print and the menu are always reachable. */
-.om-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background-color: var(--color-background-body);
-}
-
-/* One page scroll. The kingdom sheet rides along, pinned under the nav. */
-.om-sticky {
-  position: sticky;
-  top: var(--spacing-4);
-  align-self: start;
-}
-
-/* Hover should say what you are pointing at, everywhere. */
-.astryx-list-item:hover,
-.astryx-item:hover {
-  background-color: var(--color-background-muted);
-}
 .om-slot {
   cursor: pointer;
 }
@@ -75,98 +46,12 @@ body {
   stroke-width: 3;
 }
 
-/* The book's label plate: scooped corners, a double rule. Plain radius where corner-shape is unsupported. */
-.om-plate {
-  border: var(--border-width) solid var(--color-text-secondary);
-  border-radius: var(--spacing-2);
-  corner-shape: scoop;
-  box-shadow:
-    inset 0 0 0 var(--spacing-0-5) var(--color-background-body),
-    inset 0 0 0 calc(var(--spacing-0-5) + var(--border-width)) var(--color-text-secondary);
-  padding: var(--spacing-1) var(--spacing-4);
-}
-/* Plate labels are the book's spaced sans capitals (Gandur New), set in Cabin. */
-.om-plate * {
-  font-family: var(--font-family-ui);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-/* A region under the pointer, here or on the Kingdom Sheet, lights its plate. */
-.om-region-lit .om-plate {
-  background-color: var(--color-accent-muted);
-  border-color: var(--color-accent);
-  box-shadow:
-    inset 0 0 0 var(--spacing-0-5) var(--color-accent-muted),
-    inset 0 0 0 calc(var(--spacing-0-5) + var(--border-width)) var(--color-accent);
-}
-
-/* The book's callout: pale magenta field, notched border, magenta text. */
-.om-callout {
-  background-color: var(--color-accent-muted);
-  border: var(--border-width) solid var(--color-background-pink);
-  border-radius: var(--spacing-2);
-  corner-shape: scoop;
-  padding: var(--spacing-3) var(--spacing-4);
-}
-.om-callout * { color: var(--color-text-accent); }
-
-/* The SideNav rail is the desktop menu; the MobileNav drawer + hamburger take over below md. */
-.om-menu-btn { display: inline-flex; }
-@media (min-width: 768px) {
-  .om-menu-btn { display: none; }
-}
-@media (max-width: 767px) {
-  .astryx-side-nav { display: none; }
-}
-
 /* Uppy's Dashboard sizes itself; the stage just holds it in the dialog's flow. */
 .om-crop-stage { display: block; line-height: 0; }
 
-/* A figure's name wraps to a second line; it should stay left, not centre. */
-.astryx-table-cell .astryx-link { text-align: start; justify-content: flex-start; }
-
-/* Stat buttons sit on the dark header bar and take its pale text. */
-.astryx-table-header-cell .astryx-button,
-.astryx-table-header-cell .astryx-button * { color: inherit; }
-.astryx-table-header-cell .astryx-button { padding-inline: var(--spacing-1); }
-
-/* Card art sits on the muted field, never a dark fill behind dark text. */
-.om-card-art {
-  background-color: var(--color-background-muted);
-  color: var(--color-text-primary);
-  padding: var(--spacing-5);
-  justify-content: center;
-}
-.om-card { cursor: pointer; }
-.om-card:hover .om-card-art { background-color: var(--color-border); }
-
-.om-page { padding-block-end: calc(var(--spacing-12) * 3); }
 
 /* The page's one action rides with the content instead of floating over the
    footers at the end of the page. */
-.om-cta-dock {
-  position: sticky;
-  bottom: var(--spacing-6);
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-}
-.om-cta-dock > * { pointer-events: auto; }
-
-.om-cta-dock .astryx-button {
-  inline-size: min(512px, calc(100% - var(--spacing-8) * 2));
-  min-block-size: calc(var(--spacing-7) * 2);
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-xl);
-}
-
-@media (max-width: 768px) {
-  .om-cta-dock { bottom: var(--spacing-3); }
-}
-
 
 /* Print: the page falls away and the Kingdom Sheet stands alone on paper. */
 .om-print { display: none; }
@@ -282,14 +167,6 @@ body {
   .om-print-grants li::before { content: "• "; }
 
   /* A box to tick when a territory falls, and a rule to write a new one on. */
-  .om-print-box {
-    inline-size: 3.5mm;
-    block-size: 3.5mm;
-    border: 0.75pt solid #000;
-    flex: none;
-    align-self: center;
-  }
-  .om-print-box.is-on { background: repeating-linear-gradient(45deg, #000 0 1pt, transparent 1pt 2.5pt); }
   .om-print-rule { flex: 1; border-block-end: 0.5pt solid #999; align-self: center; }
 
   .om-print-realm { break-inside: avoid; margin-block-start: 3mm; }
@@ -427,51 +304,19 @@ body {
   .om-print tr { break-inside: avoid; }
 }
 
-/* The list names stay in reach while the whole collection scrolls past. */
-.om-sticky-tabs {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background-color: var(--color-background-body);
-}
 
-
-/* On a card the emblem is a mark, not the subject: it sits back from the name. */
-/* Only a real crest fades; the initials that stand in for one are text and
-   keep their contrast. */
-.om-card-emblem img { opacity: 0.55; }
-.om-card:hover .om-card-emblem img { opacity: 0.85; }
-.om-card-emblem .astryx-avatar-fallback { color: var(--color-text-primary); }
 
 /* A chip that carries a definition still needs a box the popover can measure. */
-.om-defined { display: inline-flex; }
 
 /* An attribute opens its rule, but it is prose first: it keeps the text colour
    and says so with an underline. */
-.om-attr-link, .om-attr-link * {
-  color: var(--color-text-primary);
-  text-decoration-line: underline;
-  text-decoration-thickness: var(--border-width);
-  text-decoration-color: var(--color-border);
-  text-underline-offset: 3px;
-}
-.om-attr-link:hover, .om-attr-link:hover * { text-decoration-color: currentColor; }
 /* An ability and its comma never part across a line break. */
-.om-attr { white-space: nowrap; }
 
 /* Regions the kingdom has not reached yet are present but set back: a dashed
    plate says "not yet" while the text keeps its full contrast. */
-.om-region-closed .om-plate { border-style: dashed; box-shadow: none; }
 
 /* A popover opened from a plate is its own surface: it must not inherit the
    plate's spaced capitals. */
-.om-plate .astryx-popover,
-.om-plate .astryx-popover * {
-  font-family: var(--font-family-body);
-  font-weight: normal;
-  letter-spacing: normal;
-  text-transform: none;
-}
 
 @media print {
   /* The emblem is the sheet's crest: top right, opposite the kingdom's name. */
@@ -490,60 +335,12 @@ body {
   contain-intrinsic-size: auto 1200px;
 }
 
-/* The book's own logo stands in for the app name. */
-.om-brand {
-  display: block;
-  padding: var(--spacing-2) var(--spacing-3) var(--spacing-1);
-}
-.om-brand img {
-  inline-size: 100%;
-  max-inline-size: 180px;
-  block-size: auto;
-  display: block;
-}
-.om-brand-line {
-  display: block;
-  margin-block-start: var(--spacing-1);
-  font-family: var(--font-family-ui);
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
 
 /* A region takes a name. It reads as the plate's label until you point at it. */
-.om-region-name {
-  appearance: none;
-  border: var(--border-width) solid transparent;
-  border-radius: var(--spacing-1);
-  background: none;
-  padding: 0 var(--spacing-1);
-  margin-inline-start: calc(var(--spacing-1) * -1);
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-}
-.om-region-name .astryx-icon { opacity: 0; }
-.om-region-name:hover { border-color: var(--color-border); }
-.om-region-name:hover .astryx-icon,
-.om-region-name:focus-visible .astryx-icon { opacity: 0.7; }
-.om-region-ord { opacity: 0.55; }
-.om-region-input { margin-block: calc(var(--spacing-1) * -1); }
 
 /* The credit line: the game on the left, this builder on the right. */
-.om-footer {
-  position: sticky;
-  bottom: 0;
-  z-index: 4;
-  border-block-start: var(--border-width) solid var(--color-border);
-  background-color: var(--color-background-body);
-  padding: var(--spacing-2) var(--spacing-6);
-}
 /* On a phone the credits wrap to several lines; pinned, they would eat the
    screen, so there they close the page instead. */
-@media (max-width: 767px) {
-  .om-footer { position: static; padding: var(--spacing-3) var(--spacing-4); }
-}
 
 /* A roll tumbles the dice once and lands with a bounce. */
 @keyframes om-roll {
@@ -562,78 +359,7 @@ body {
 }
 
 /* The roster's stat block: the book's grey bar, in fixed columns. */
-.om-statbar {
-  display: grid;
-  grid-template-columns: repeat(var(--om-cols), minmax(0, 1fr));
-  border: var(--border-width) solid var(--color-bar);
-  max-inline-size: 640px;
-}
-.om-statbar-col { display: grid; }
-.om-statbar-letter {
-  appearance: none;
-  border: 0;
-  cursor: pointer;
-  background-color: var(--color-bar);
-  color: var(--color-on-bar);
-  font-family: var(--font-family-ui);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-align: center;
-  padding-block: var(--spacing-1);
-}
-.om-statbar-letter:hover,
-.om-statbar-letter:focus-visible {
-  background-color: var(--color-text-primary);
-}
-.om-statbar-value {
-  text-align: center;
-  padding-block: var(--spacing-1);
-  font-size: var(--font-size-lg);
-}
 
 /* The shared WarLore footer sits on the front screens; a build is no place for it. */
 body[data-view="work"] .wlf { display: none; }
 
-/* The record's name is a heading you can type in. */
-/* The name reads as the page's title until you point at it, then it is a field.
-   Astryx owns the box and its height; the heading face and size are ours. */
-.om-title-input.astryx-text-input {
-  border-color: transparent;
-  background-color: transparent;
-}
-.om-title-input.astryx-text-input:hover { border-color: var(--color-border); }
-.om-title-input.astryx-text-input:focus-within {
-  border-color: var(--color-accent);
-  background-color: var(--color-background-card);
-}
-.om-title-input input {
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-xl);
-  line-height: 1;
-}
-
-/* Removing something is destructive, not urgent: the red arrives on approach. */
-.om-remove.astryx-button {
-  background-color: transparent;
-  border-color: var(--color-border);
-  color: var(--color-text-secondary);
-}
-.om-remove.astryx-button:hover,
-.om-remove.astryx-button:focus-visible {
-  background-color: var(--color-background-red);
-  border-color: var(--color-text-error);
-  color: var(--color-text-error);
-}
-
-/* A region's line of lore sits under its plate, quieter than the territories. */
-.om-region-lore {
-  margin-inline-start: var(--spacing-3);
-  font-style: italic;
-}
-
-/* Every list stays in view: on a phone the race tabs wrap to a second row
-   rather than scroll half of them off the edge. */
-.om-sticky-tabs .astryx-tab-strip { flex-wrap: wrap; }
-.om-card-controls { margin-inline-start: auto; }

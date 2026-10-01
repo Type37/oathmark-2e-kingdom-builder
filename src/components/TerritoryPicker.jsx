@@ -107,7 +107,7 @@ export default function TerritoryPicker({ region, candidates, capitalList, found
         isScrollable
         content={
           <LayoutContent>
-            <VStack gap={GAP.group} style={{ minBlockSize: "78dvh" }}>
+            <VStack gap={GAP.group} minHeight="78dvh">
               {region === 1 && (
                 <Banner status="info" title={CAPITAL_NOTE} />
               )}
