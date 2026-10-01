@@ -62,11 +62,31 @@ const blobToDataUrl = (blob) => new Promise((resolve) => {
   r.readAsDataURL(blob);
 });
 
+// The app never shows an emblem larger than this, so the cloud copy is
+// shrunk to it: an uploaded photo can be megabytes, the sync's whole document
+// may be under one.
+const EMBLEM_SYNC_PX = 256;
+
+async function shrink(blob) {
+  try {
+    const img = await createImageBitmap(blob);
+    const scale = Math.min(1, EMBLEM_SYNC_PX / Math.max(img.width, img.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(img.width * scale);
+    canvas.height = Math.round(img.height * scale);
+    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+    const out = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", 0.85));
+    return out && out.size < blob.size ? out : blob;
+  } catch {
+    return blob;
+  }
+}
+
 async function inlineEmblems(kingdoms) {
   return Promise.all(kingdoms.map(async (k) => {
     if (!k.emblem || k.emblem.startsWith("data:")) return k;
     const blob = await idbGet(k.emblem).catch(() => null);
-    const url = blob ? await blobToDataUrl(blob) : null;
+    const url = blob ? await blobToDataUrl(await shrink(blob)) : null;
     return { ...k, emblem: url };
   }));
 }
