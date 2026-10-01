@@ -147,7 +147,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
                onSlotClick={(r, _i, pick) => { if (!pick && (r === 1 || capitalList)) setPicking(r); }} />
   );
   const access = <FigureAccess kingdom={value} onOpen={setOpenFigure} />;
-  const chronicle = <Chronicle entries={value.chronicle ?? []} ruler={value.ruler ?? ""} onChange={(chronicle) => patch({ chronicle })} />;
+  const chronicle = <Chronicle text={value.chronicle ?? ""} onChange={(chronicle) => patch({ chronicle })} />;
 
   // The book's Kingdom Sheet (p217): name, ruler, the rings; then what they grant.
   const detail = (

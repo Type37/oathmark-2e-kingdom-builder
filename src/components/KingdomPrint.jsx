@@ -1,5 +1,6 @@
 import React from "react";
-import { regnalYear } from "./Chronicle.jsx";
+import { Markdown } from "@astryxdesign/core/Markdown";
+import { chronicleText } from "../rules/store.mjs";
 import PrintSheet from "./PrintSheet.jsx";
 import RegionMap from "./RegionMap.jsx";
 import { useEmblem } from "../emblem.mjs";
@@ -21,9 +22,7 @@ export default function KingdomPrint({ value }) {
   const start = LEVELS[level];
   const picks = value.territories ?? [];
   const regions = [...new Set([...start, ...picks.map((p) => p.region)])].sort((a, b) => a - b);
-  const chronicle = [...(value.chronicle ?? [])]
-    // In the order written: years of different reigns do not sort against each other.
-    .filter((e) => e.title?.trim() || e.body?.trim());
+  const chronicle = chronicleText(value.chronicle).trim();
 
   const byRace = RACE_ORDER
     .map((list) => ({
@@ -92,17 +91,10 @@ export default function KingdomPrint({ value }) {
       </div>
 
 
-      {chronicle.length > 0 && (
+      {chronicle && (
         <section className="om-print-chronicle">
           <h2>Chronicle</h2>
-          <dl>
-            {chronicle.map((e, i) => (
-              <React.Fragment key={i}>
-                <dt>{regnalYear(e)}</dt>
-                <dd>{e.title && <strong>{e.title}</strong>}{e.title && e.body ? " " : ""}{e.body}</dd>
-              </React.Fragment>
-            ))}
-          </dl>
+          <Markdown headingLevelStart={3} density="compact">{chronicle}</Markdown>
         </section>
       )}
 

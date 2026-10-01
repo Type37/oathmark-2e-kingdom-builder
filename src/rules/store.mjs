@@ -31,12 +31,26 @@ export function currentMagic(muster) {
   };
 }
 
+// The chronicle was once a list of dated entries; it is one document now. An
+// old list becomes paragraphs, each led by its year: "**Year 3 of Barrok IV.**"
+export function chronicleText(chronicle) {
+  if (typeof chronicle === "string") return chronicle;
+  if (!Array.isArray(chronicle)) return "";
+  return chronicle
+    .filter((e) => e.title?.trim() || e.body?.trim())
+    .map((e) => {
+      const when = e.ruler?.trim() ? `Year ${e.year} of ${e.ruler.trim()}` : `Year ${e.year}`;
+      return [`**${when}.**`, e.title?.trim() && `${e.title.trim()}.`, e.body?.trim()].filter(Boolean).join(" ");
+    })
+    .join("\n\n");
+}
+
 export function normalise(raw) {
   const s = { ...emptyStore(), ...(raw ?? {}) };
   for (const k of KINDS) if (!Array.isArray(s[k])) s[k] = [];
   s.musters = s.musters.map(currentMagic);
   // A retired feature's saved text is dropped wherever it was kept.
-  s.kingdoms = s.kingdoms.map(({ lore: _drop, ...k }) => k);
+  s.kingdoms = s.kingdoms.map(({ lore: _drop, ...k }) => ({ ...k, chronicle: chronicleText(k.chronicle) }));
   if (s.settings) { const { lore: _off, ...rest } = s.settings; s.settings = rest; }
   s.active = s.active ?? {};
   s.deleted = s.deleted && typeof s.deleted === "object" ? s.deleted : {};

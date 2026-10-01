@@ -101,7 +101,7 @@ test("a valid kingdom file parses and fills defaults", () => {
     JSON.stringify({ name: "Grundeland", level: "beginner", territories: [] }),
   );
   assert.equal(kind, "kingdoms");
-  assert.deepEqual(value.chronicle, []);
+  assert.equal(value.chronicle, "");
   assert.deepEqual(value.collection, {});
 });
 
@@ -158,4 +158,15 @@ test("a spell is found by its name for the print, whatever the case", async () =
   assert.equal(spellNamed("rain of knives")?.name, "Rain of Knives");
   assert.ok(spellNamed("Rain of Knives").cn > 0);
   assert.equal(spellNamed("No Such Spell"), null);
+});
+
+test("an old list of chronicle entries becomes one document, each paragraph led by its year", async () => {
+  const { chronicleText } = await import("./store.mjs");
+  const text = chronicleText([
+    { year: 1, ruler: "Barrok IV", title: "The founding", body: "Stone was laid." },
+    { year: 2, title: "", body: "" },
+    { year: 3, title: "War", body: "" },
+  ]);
+  assert.equal(text, "**Year 1 of Barrok IV.** The founding. Stone was laid.\n\n**Year 3.** War.");
+  assert.equal(chronicleText("Already a document"), "Already a document");
 });
