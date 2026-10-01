@@ -249,7 +249,11 @@ export default function App() {
 
         {page === "home" && <Landing onOpen={go} />}
         {page === "kingdoms" && (
-          <KingdomList store={store} recordActions={recordActions} shell={shell}
+          <KingdomList store={store} recordActions={recordActions}
+                       shell={{ ...shell, actions: EXAMPLE_KINGDOMS.map((e) => ({
+                         label: `Load ${e.name}`,
+                         onClick: () => setStore((st) => save(st, "kingdoms", loadExample(e.id))),
+                       })) }}
                        onOpen={(id) => open("kingdoms", id)} onNew={() => setFounding(true)} />
         )}
         {page === "kingdom" && (

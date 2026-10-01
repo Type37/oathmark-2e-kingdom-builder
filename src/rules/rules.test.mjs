@@ -226,3 +226,8 @@ test("both example kingdoms validate as the book builds them", () => {
     assert.deepEqual(r.errors, [], `${e.name}: ${r.errors.join("; ")}`);
   }
 });
+
+test("every example kingdom validates as built", async () => {
+  const { EXAMPLE_KINGDOMS, loadExample } = await import("./examples.mjs");
+  for (const e of EXAMPLE_KINGDOMS) assert.deepEqual(validateKingdom(loadExample(e.id)).errors, [], e.name);
+});
