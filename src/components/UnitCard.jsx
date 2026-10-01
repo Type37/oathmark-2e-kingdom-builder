@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  StackItem, Token, VStack, HStack, Text, Button, Selector, Card, NumberInput, Layout, LayoutContent, Field,
+  StackItem, Token, Icon, VStack, HStack, Text, Button, Selector, Card, NumberInput, Layout, LayoutContent, Field,
 } from "@astryxdesign/core";
 import { UpgradesDialog } from "./Upgrades.jsx";
 import { StatBar } from "./StatLine.jsx";
@@ -12,7 +12,7 @@ import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { upgradeCost, applyUpgrades, upgradesFor } from "../rules/upgrades.mjs";
-import { unitProfile, canJoin, isCharacter, crewOf, isArtillery, joinRule } from "../rules/army.mjs";
+import { unitProfile, canJoin, isCharacter, crewOf, isArtillery, joinRule, withGuest } from "../rules/army.mjs";
 import { spellsKnown, applyItem } from "../rules/magic.mjs";
 import MagicItems from "./MagicItems.jsx";
 import SpellPicker from "./SpellPicker.jsx";
@@ -34,7 +34,7 @@ export default function UnitCard({
   const { fig, variant, charFig } = p;
   const crew = crewOf(fig);
   const upgraded = applyUpgrades(variant, unit.upgrades ?? []);
-  const variantAfter = applyItem(upgraded, unit.magicItem);
+  const variantAfter = withGuest(applyItem(upgraded, unit.magicItem), p);
   const caster = attrLevel(variantAfter, "Spellcaster");
   const knows = caster ? spellsKnown(unit.level ?? caster, unit.magicItem) : 0;
   const chosenSpells = unit.spells ?? [];
@@ -66,11 +66,12 @@ export default function UnitCard({
     p.formation,
   ].filter(Boolean);
 
+  const host = unit.joinedTo ? units.find((u) => u.uid === unit.joinedTo) : null;
   // States, not descriptions: they ride beside the name as tokens.
   const states = [
     p.unitOfOne ? "Unit-of-one" : null,
     charFig ? `Led by ${charFig.name}` : null,
-    unit.joinedTo ? "Fighting inside a unit" : null,
+    host ? `Joined to: ${host.name || figureById.get(host.figureId)?.name || "a unit"}` : null,
   ].filter(Boolean);
 
   const shownName = unit.name || fig.name;
@@ -82,7 +83,7 @@ export default function UnitCard({
   return (
     // Astryx's card-with-inner-layout: a Toolbar header carrying the unit's
     // name and its actions, the body underneath. Moving and removing live in
-    // the ⋯ menu, as on the template's Kanban cards.
+    // the arrows and the ⋯ menu.
     <Card padding={0} variant={charFig ? "pink" : undefined}>
       <Layout height="auto" padding={4} defaultHasDividers
         header={(
@@ -96,10 +97,12 @@ export default function UnitCard({
                    endContent={(
                      <HStack gap={2} vAlign="center">
                        <Text type="large" weight="bold">{unitCost(unit)}pts</Text>
+                       <Button label="Move up" variant="ghost" size="sm" isIconOnly isDisabled={isFirst}
+                               icon={<Icon icon="arrowUp" />} onClick={() => onMove(-1)} />
+                       <Button label="Move down" variant="ghost" size="sm" isIconOnly isDisabled={isLast}
+                               icon={<Icon icon="arrowDown" />} onClick={() => onMove(1)} />
                        <MoreMenu label={`${shownName} actions`} alignment="end" items={[
                          { label: "Move to top", isDisabled: isFirst, onClick: () => onMove("top") },
-                         { label: "Move up", isDisabled: isFirst, onClick: () => onMove(-1) },
-                         { label: "Move down", isDisabled: isLast, onClick: () => onMove(1) },
                          { label: "Move to bottom", isDisabled: isLast, onClick: () => onMove("bottom") },
                          { type: "divider" },
                          { label: "Duplicate unit", onClick: onDuplicate },

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { formation, sizeRule, canJoin, crewOf, unitProfile, isMonster } from "./army.mjs";
+import { formation, sizeRule, canJoin, crewOf, unitProfile, isMonster, withGuest } from "./army.mjs";
 import { figureById } from "./kingdom.mjs";
 import { validateArmy } from "./muster.mjs";
 
@@ -113,3 +113,15 @@ test("a mounted character joins by its new base, pp81, 84", async () => {
   assert.match(joinRule(general, horse), /25 x 50mm/);
   assert.match(joinRule(general, chariot), /fights alone/);
 });
+
+// p82: a goblin king (A6, Command) joining elf spearmen (A3) gives the unit A6.
+test("a commander's higher Activation and the slower Move carry to the unit", () => {
+  const spearmen = { A: 3, M: 6, attributes: [] };
+  const king = { charVariant: { A: 6, M: 5, attributes: ["Command (2)"] } };
+  assert.deepEqual(pick(withGuest(spearmen, king)), { A: 6, M: 5 });
+  const champion = { charVariant: { A: 6, M: 5, attributes: ["Champion"] } };
+  assert.deepEqual(pick(withGuest(spearmen, champion)), { A: 3, M: 5 });
+  const general = { charVariant: { A: 2, M: 6, attributes: ["Command (1)"] } };
+  assert.equal(withGuest(spearmen, general).A, 3);
+});
+const pick = ({ A, M }) => ({ A, M });

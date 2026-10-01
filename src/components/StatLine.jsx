@@ -1,5 +1,5 @@
 import React from "react";
-import { Table } from "@astryxdesign/core";
+import { Table, Text } from "@astryxdesign/core";
 import { proportional } from "@astryxdesign/core/Table";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
 import { stats, baseRule } from "../rules/kingdom.mjs";
@@ -26,12 +26,14 @@ export function StatBar({ variant, keys = BAR_KEYS }) {
     key: k,
     align: "center",
     resizable: false,
-    // Wide enough that "11+" and "BASE" never wrap or clip; on a phone the
-    // table scrolls sideways inside its card instead.
-    width: proportional(1, { minWidth: k === "base" ? 64 : 48 }),
+    // Every column always in view: on a phone the columns squeeze rather
+    // than scroll any of them out of sight.
+    width: proportional(k === "base" ? 1.5 : 1, { minWidth: 32 }),
     header: (
       <Defined def={ruleFor(k)}>{k === "pts" ? "Pts" : k === "base" ? "Base" : k}</Defined>
     ),
+    // A value never breaks across lines: "11+" is one stat, not two.
+    renderCell: (r) => <Text textWrap="nowrap">{r[k]}</Text>,
   }));
   const row = Object.fromEntries(cols.map((k) => [
     k, k === "base" ? baseText(variant.base) : k === "CD" ? String(variant[k]) : statText(k, variant[k]),

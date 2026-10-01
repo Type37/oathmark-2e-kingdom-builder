@@ -4,7 +4,7 @@ import { useEmblem } from "../emblem.mjs";
 import { lookupAttribute } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { applyUpgrades } from "../rules/upgrades.mjs";
-import { unitProfile, crewOf } from "../rules/army.mjs";
+import { unitProfile, crewOf, withGuest } from "../rules/army.mjs";
 import { STAT_KEYS, statText, baseText, attrLevel, figuresIn, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { magicItems as ALL_ITEMS, spellsKnown, applyItem, spellNamed } from "../rules/magic.mjs";
 
@@ -22,7 +22,7 @@ export default function ArmyPrint({ value, kingdom, pool, battle }) {
   const rows = units.map((unit) => {
     const p = unitProfile(unit, units, pool.get(unit.figureId));
     if (!p) return null;
-    const v = applyItem(applyUpgrades(p.variant, unit.upgrades ?? []), unit.magicItem);
+    const v = withGuest(applyItem(applyUpgrades(p.variant, unit.upgrades ?? []), unit.magicItem), p);
     const caster = attrLevel(v, "Spellcaster");
     return {
       unit, p, v,

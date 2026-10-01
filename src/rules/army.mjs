@@ -91,6 +91,18 @@ export function sourcePenalties(entry) {
   return { occupied: allOccupied, unreliable: allBorderland };
 }
 
+// What the unit fights with once a character has joined: the slowest Move, and
+// with Command the character's Activation when it is the higher (p82).
+export function withGuest(variant, p) {
+  if (!p?.charVariant) return variant;
+  const command = attrLevel(p.charVariant, "Command");
+  return {
+    ...variant,
+    M: Math.min(variant.M, p.charVariant.M),
+    A: command ? Math.max(variant.A, p.charVariant.A) : variant.A,
+  };
+}
+
 export function unitProfile(unit, units, entry) {
   const fig = figureById.get(unit.figureId);
   if (!fig) return null;
