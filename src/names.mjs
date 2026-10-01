@@ -1,3 +1,4 @@
+import { knaveKingdom } from "./knave-names.mjs";
 // Name pools for the roll buttons. Every entry is printed in a published book
 // the owner has, with its page, or is a historical name from the owner's
 // research (HN); nothing here is invented. See notes/culture-pools.md.
@@ -154,17 +155,16 @@ export function randomName(pool, avoid) {
   return n;
 }
 
-// A region's name comes from the kingdom's own culture: its homelands, and
-// its people's names, as land is so often named for whoever held it. Never one
-// already taken by the kingdom or another region; a culture with nothing left
-// draws on everyone's.
-export const placePool = (culture) => [
-  ...HOMELANDS.filter(([, c]) => c === culture).map(([n]) => n),
-  ...(CULTURES[culture]?.rulers ?? []),
-];
+// A region's name is one of two things, as likely as each other: one of the
+// kingdom's own culture's lands, or a Knave 2e place name, built the way Knave
+// builds its surnames (pp60-61), one half from each table, so Ash + beck makes
+// Ashbeck. Never one already taken by the kingdom or another region.
+export const placePool = (culture) => HOMELANDS.filter(([, c]) => c === culture).map(([n]) => n);
 export function rollPlace(culture, taken = []) {
   const used = new Set(taken.filter(Boolean).map((n) => n.toLowerCase()));
-  const free = (list) => [...new Set(list)].filter((n) => !used.has(n.toLowerCase()));
-  const own = free(placePool(culture));
-  return randomName(own.length ? own : free([...NAMES.kingdom, ...NAMES.hero]));
+  const lands = placePool(culture).filter((n) => !used.has(n.toLowerCase()));
+  if (lands.length && Math.random() < 0.5) return randomName(lands);
+  let name = knaveKingdom();
+  for (let i = 0; i < 20 && used.has(name.toLowerCase()); i++) name = knaveKingdom();
+  return name;
 }
