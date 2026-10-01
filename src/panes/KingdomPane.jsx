@@ -91,7 +91,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
                       taken={[value.name, ...Object.values(value.regionNames ?? {})]}
                       onChange={(name) => patch({ regionNames: { ...(value.regionNames ?? {}), [r]: name } })} /></StackItem>
           <HStack gap={2} vAlign="center" wrap="wrap">
-            {lore && value.regionFlavor?.[r] && flavorTokens([value.regionFlavor[r].trait, value.regionFlavor[r].location])}
+            {lore && r > 1 && value.regionFlavor?.[r] && flavorTokens([value.regionFlavor[r].trait, value.regionFlavor[r].location])}
             {r === openBorderRegion(value) && (
               <Defined bare def={borderNote}><Token label="Open borders" size="sm" /></Defined>
             )}

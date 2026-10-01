@@ -10,9 +10,10 @@ const kingdom = {
   ],
 };
 
-test("every region gets a Knave place trait and location", () => {
+test("every region past the capital gets a Knave place trait and location", () => {
   const k = withFlavor(kingdom);
-  for (const r of [1, 2, 3, 4, 5, 6]) {
+  assert.equal(k.regionFlavor[1], undefined);
+  for (const r of [2, 3, 4, 5, 6]) {
     assert.ok(TRAITS.includes(k.regionFlavor[r].trait));
     assert.ok(LOCATIONS.includes(k.regionFlavor[r].location));
   }

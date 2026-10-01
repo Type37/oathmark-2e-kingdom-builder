@@ -1,5 +1,5 @@
 // Detailed Region & City Lore: flavour from Knave 2e's tables, with no rules
-// attached. Each region gets a Place Trait and a Location ("Eerie", "Ashland");
+// attached. Each region past the capital gets a Place Trait and a Location ("Eerie", "Ashland");
 // each city gets a City Theme, a Structure, a Street Detail, a Building and a
 // Faction ("Bells", "Temple", "Lanterns", "Bakery", "Thieves' guild"). Rolled once
 // and kept on the kingdom, so switching the option off and on again shows the
@@ -16,7 +16,8 @@ export const isCity = (t) => Boolean(territory(t.list, t.name)?.capital);
 export function withFlavor(kingdom, rand = Math.random) {
   let changed = false;
   const regionFlavor = { ...(kingdom.regionFlavor ?? {}) };
-  for (const r of [1, 2, 3, 4, 5, 6]) {
+  // Region 1 is always the capital city, so it takes the city's lore instead.
+  for (const r of [2, 3, 4, 5, 6]) {
     if (!regionFlavor[r]) {
       regionFlavor[r] = { trait: pick(TRAITS, rand), location: pick(LOCATIONS, rand) };
       changed = true;
