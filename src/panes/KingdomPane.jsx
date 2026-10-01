@@ -97,19 +97,6 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
             )}
             {!live && <Token label={r > 4 ? "Campaign" : "Later"} size="sm" color="gray" />}
             <Text type="label">{mine.length} of {REGION_SIZES[r]}</Text>
-            {/* The region's own action sits in its header, after the detail-page
-                template's section headings. */}
-            {!full && live && (r > 1 || !capitalList) && (
-              r > 1 && !capitalList ? (
-                <Tooltip content="Establish your capital first.">
-                  <Button label="Add territory" size="sm" variant="secondary" isDisabled
-                          icon={<Icon icon="app:plus" />} />
-                </Tooltip>
-              ) : (
-                <Button label={r === 1 ? "Choose a capital" : "Add territory"} size="sm" variant="secondary"
-                        icon={<Icon icon="app:plus" />} onClick={() => setPicking(r)} />
-              )
-            )}
           </HStack>
         </HStack>
         {mine.length > 0 && (
@@ -156,6 +143,21 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
             />
           ))}
         </List>
+        )}
+        {/* Adding sits under the region's territories, where the next one goes,
+            so it is in the same place in every region whatever its header holds. */}
+        {!full && live && (r > 1 || !capitalList) && (
+          <HStack>
+            {r > 1 && !capitalList ? (
+              <Tooltip content="Establish your capital first.">
+                <Button label="Add territory" size="sm" variant="secondary" isDisabled
+                        icon={<Icon icon="app:plus" />} />
+              </Tooltip>
+            ) : (
+              <Button label={r === 1 ? "Choose a capital" : "Add territory"} size="sm" variant="secondary"
+                      icon={<Icon icon="app:plus" />} onClick={() => setPicking(r)} />
+            )}
+          </HStack>
         )}
       </VStack>
       </Card>

@@ -4,6 +4,7 @@ import { HStack, StackItem, Text, Link } from "@astryxdesign/core";
 const SOURCE = "https://github.com/Type37/oathmark-2e-kingdom-builder";
 const WARLORE = "https://linktr.ee/warlore";
 const EMAIL = "warlore1@outlook.com";
+const KOFI = "https://ko-fi.com/jetwong";
 
 export default function Footer() {
   return (
@@ -17,6 +18,7 @@ export default function Footer() {
         <Link href="https://ospreypublishing.com/uk/oathmark-second-edition" target="_blank">Game website</Link>
         <Link href={`mailto:${EMAIL}?subject=Oathmark builder`}>Send feedback</Link>
         <Link href={SOURCE} target="_blank">Source on GitHub</Link>
+        <Link href={KOFI} target="_blank">Ko-fi</Link>
       </HStack>
     </HStack>
   );
