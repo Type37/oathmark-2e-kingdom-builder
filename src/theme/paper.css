@@ -102,15 +102,14 @@ body {
     gap: 0 4mm;
     margin: 0;
   }
-  .om-print-head dt,
-  .om-print-realm dt {
+  .om-print-head dt {
     font-family: var(--font-family-code);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-size: 7.5pt;
     align-self: center;
   }
-  .om-print-head dd, .om-print-realm dd { margin: 0; }
+  .om-print-head dd { margin: 0; }
 
   /* The rings sit beside the ledger they describe. */
   .om-print-body {
@@ -149,12 +148,6 @@ body {
   }
   .om-print h3 em { font-weight: normal; font-size: 9pt; }
   .om-print p { margin: 0 0 0 6mm; }
-  .om-print-region-lore {
-    margin: 0 0 1mm;
-    font-size: 7.5pt;
-    font-style: italic;
-    color: #444;
-  }
 
   /* What the territory unlocks: an aside, two up, not a wall of body copy. */
   .om-print-grants {
@@ -176,14 +169,6 @@ body {
   /* A box to tick when a territory falls, and a rule to write a new one on. */
   .om-print-rule { flex: 1; border-block-end: 0.5pt solid #999; align-self: center; }
 
-  .om-print-realm { break-inside: avoid; margin-block-start: 3mm; }
-  .om-print-realm p { margin: 0 0 1.5mm; font-size: 9pt; line-height: 1.35; }
-  .om-print-realm dl {
-    display: grid;
-    grid-template-columns: 22mm 1fr;
-    gap: 0.5mm 3mm;
-    margin: 1.5mm 0 0;
-  }
 
   /* The roster of figures, by race, overleaf. */
   .om-print-figures { margin-block-start: 3mm; font-size: 8pt; line-height: 1.2; }

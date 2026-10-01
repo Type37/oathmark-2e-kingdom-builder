@@ -27,7 +27,6 @@ export const KingdomSchema = z.object({
   culture: z.string().nullable().optional(),
   founded: z.boolean().optional(),
   regionNames: z.record(z.string(), z.string()).optional().default({}),
-  lore: z.object({}).passthrough().nullable().optional(),
   saved: z.string().optional(),
 });
 
@@ -71,7 +70,7 @@ export const StoreSchema = z.object({
   collections: z.array(CollectionSchema).optional().default([]),
   musters: z.array(MusterSchema).optional().default([]),
   active: z.record(z.string(), z.string()).optional().default({}),
-  settings: z.object({ lore: z.boolean().optional(), useCollection: z.boolean().optional() }).passthrough().optional().default({}),
+  settings: z.object({ useCollection: z.boolean().optional() }).passthrough().optional().default({}),
 });
 
 // Every field is optional so partial saves survive, which means an empty

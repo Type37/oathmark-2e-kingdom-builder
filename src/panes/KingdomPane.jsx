@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Icon, Heading, Card, StackItem, VStack, HStack, Text, Button, List, ListItem, Token, Tooltip, Banner, Blockquote,
+  Icon, Heading, Card, StackItem, VStack, HStack, Text, Button, List, ListItem, Token, Tooltip, Banner,
 } from "@astryxdesign/core";
 import Shell from "../Shell.jsx";
 import RegionMap from "../components/RegionMap.jsx";
@@ -23,10 +23,8 @@ import {
 } from "../rules/kingdom.mjs";
 import { hueOf } from "../race.mjs";
 import { rulerPool, cultureOf } from "../names.mjs";
-import KingdomLore from "../components/KingdomLore.jsx";
 import Defined from "../components/Defined.jsx";
 import KingdomPrint from "../components/KingdomPrint.jsx";
-import { hasLore, rollLore } from "../lore.mjs";
 
 const grants = (list, name, opts) => grantList(list, name, opts).map((g) => g.label).join(", ");
 
@@ -56,16 +54,6 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
         a.t.rarity - b.t.rarity || a.t.name.localeCompare(b.t.name));
   }, [picking, capitalList]);
 
-  // Lore and Detail fills itself in: the realm, the ruler and every region.
-  React.useEffect(() => {
-    if (!settings?.lore || !hasLore || value.lore) return;
-    const rolled = rollLore();
-    if (rolled) onChange({ ...value, lore: rolled });
-  }, [settings?.lore, value.lore]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Lore rolled before regions and rulers existed still fills in the new parts.
-  const lore = value.lore;
-  const regionLore = settings?.lore && hasLore ? lore?.regions : null;
 
   const [sealing, setSealing] = React.useState(false);
   const founded = Boolean(value.founded);
@@ -106,12 +94,6 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
             )}
           </HStack>
         </HStack>
-        {regionLore?.[r] && (
-          <Blockquote>
-            <Text type="inherit" weight="semibold">{regionLore[r].name}.</Text>
-            {regionLore[r].text ? ` ${regionLore[r].text}` : ""}
-          </Blockquote>
-        )}
         {mine.length > 0 && (
         <List density={DENSITY.data}>
           {mine.map(({ p, i }) => (
@@ -170,7 +152,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
   // The book's Kingdom Sheet (p217): name, ruler, the rings; then what they grant.
   const detail = (
     // Tight inside each group, generous between them: the sheet's name and
-    // ruler, the rings, the chronicle, the realm, the figures it grants.
+    // ruler, the rings, the chronicle, the figures it grants.
     <VStack gap={6}>
       <VStack gap={3}>
         <Heading level={2}>Kingdom Sheet</Heading>
@@ -184,18 +166,9 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
         </HStack>
         <NameField label="Current Ruler" value={value.ruler} pool={rulerPool(value.culture)}
                    onChange={(ruler) => patch({ ruler })} />
-        {lore?.ruler && (
-          <VStack gap={1}>
-            <Text color="secondary">Holds to {lore.ruler.holds.toLowerCase()}.</Text>
-            <Text color="secondary">
-              Their reign is marked by {lore.ruler.marked.name.toLowerCase()}. {lore.ruler.marked.text}
-            </Text>
-          </VStack>
-        )}
       </VStack>
       {map}
       {chronicle}
-      {settings?.lore && hasLore && <KingdomLore value={value} onChange={onChange} />}
       {access}
     </VStack>
   );

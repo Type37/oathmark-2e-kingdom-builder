@@ -35,6 +35,9 @@ export function normalise(raw) {
   const s = { ...emptyStore(), ...(raw ?? {}) };
   for (const k of KINDS) if (!Array.isArray(s[k])) s[k] = [];
   s.musters = s.musters.map(currentMagic);
+  // A retired feature's saved text is dropped wherever it was kept.
+  s.kingdoms = s.kingdoms.map(({ lore: _drop, ...k }) => k);
+  if (s.settings) { const { lore: _off, ...rest } = s.settings; s.settings = rest; }
   s.active = s.active ?? {};
   s.deleted = s.deleted && typeof s.deleted === "object" ? s.deleted : {};
   s.schema = SCHEMA;

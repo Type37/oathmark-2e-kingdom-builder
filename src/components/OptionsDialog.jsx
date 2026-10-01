@@ -4,7 +4,6 @@ import {
   Button, Avatar, Banner,
 } from "@astryxdesign/core";
 import { FormLayout } from "@astryxdesign/core/FormLayout";
-import { hasLore } from "../lore.mjs";
 
 export default function OptionsDialog({ isOpen, onOpenChange, value = {}, onChange, sync }) {
   return (
@@ -15,12 +14,6 @@ export default function OptionsDialog({ isOpen, onOpenChange, value = {}, onChan
           <LayoutContent>
             <VStack gap={6}>
               <FormLayout>
-                {/* Without the tables in the build there is nothing to switch on,
-                    so the switch is absent rather than dead. */}
-                {hasLore && (
-                  <Switch label="Lore and Detail" value={Boolean(value.lore)}
-                          onChange={(lore) => onChange({ ...value, lore })} />
-                )}
                 <Switch label="Muster from my collection" value={Boolean(value.useCollection)}
                         onChange={(useCollection) => onChange({ ...value, useCollection })} />
               </FormLayout>

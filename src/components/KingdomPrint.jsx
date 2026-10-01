@@ -21,7 +21,6 @@ export default function KingdomPrint({ value }) {
   const start = LEVELS[level];
   const picks = value.territories ?? [];
   const regions = [...new Set([...start, ...picks.map((p) => p.region)])].sort((a, b) => a - b);
-  const lore = value.lore;
   const chronicle = [...(value.chronicle ?? [])]
     // In the order written: years of different reigns do not sort against each other.
     .filter((e) => e.title?.trim() || e.body?.trim());
@@ -65,9 +64,6 @@ export default function KingdomPrint({ value }) {
                   {value.regionNames?.[r]?.trim() || `Region ${r}`}
                   <span>{mine.length} of {REGION_SIZES[r]}</span>
                 </h2>
-                {lore?.regions?.[r] && (
-                  <p className="om-print-region-lore">{lore.regions[r].name}</p>
-                )}
                 {mine.map((p, i) => (
                   <div key={`${p.name}-${i}`} className="om-print-terr">
                     <h3>
@@ -95,27 +91,6 @@ export default function KingdomPrint({ value }) {
         </div>
       </div>
 
-      {lore && (
-        <section className="om-print-realm">
-          <h2>The Realm<span>{lore.theme.name}</span></h2>
-          <p>{lore.theme.text}</p>
-          <dl>
-            <dt>Values</dt><dd>{lore.values.map((v) => v.name).join("; ")}</dd>
-            <dt>Neighbour</dt><dd>{lore.dispute}</dd>
-            <dt>Ties</dt><dd>{lore.tie}</dd>
-            {lore.ruler && (
-              <>
-                <dt>Ruler</dt>
-                <dd>Holds to {lore.ruler.holds.toLowerCase()}; their reign is marked by {lore.ruler.marked.name.toLowerCase()}.</dd>
-              </>
-            )}
-            <dt>History</dt>
-            <dd>
-              {lore.history.origin.name}. {lore.history.rise.name}. {lore.history.peak.name}. {lore.history.fall.name}.
-            </dd>
-          </dl>
-        </section>
-      )}
 
       {chronicle.length > 0 && (
         <section className="om-print-chronicle">
