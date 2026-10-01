@@ -14,12 +14,13 @@ import OptionsDialog from "./components/OptionsDialog.jsx";
 
 import { validateKingdom } from "./rules/kingdom.mjs";
 import {
-  STORE_KEY, emptyStore, normalise, save, get, remove, duplicate, setActive, activeRecord, toFile,
+  STORE_KEY, emptyStore, normalise, save, get, remove, duplicate, setActive, activeRecord, toFile, stamp,
 } from "./rules/store.mjs";
 import useSection, { PARENT } from "./useSection.mjs";
 import { EXAMPLE_KINGDOMS, loadExample } from "./rules/examples.mjs";
 import { saveEmblem, deleteEmblem } from "./emblem.mjs";
 import { downloadJson, fileSlug } from "./download.mjs";
+import useSync from "./useSync.mjs";
 
 // Each page is its own chunk, so the landing screen loads only itself.
 const KingdomList = React.lazy(() => import("./panes/KingdomList.jsx"));
@@ -47,7 +48,8 @@ function read() {
   }
   if (!store.kingdoms.length) {
     for (const e of EXAMPLE_KINGDOMS) store = save(store, "kingdoms", loadExample(e.id));
-    store = { ...store, active: {} };
+    // Seeded examples stay on this device until you change one.
+    store = { ...store, active: {}, kingdoms: store.kingdoms.map((k) => ({ ...k, seeded: true })) };
   }
   return store;
 }
@@ -57,6 +59,7 @@ const collectionOf = (store) => store.collections[0] ?? { name: "Collection", ow
 
 export default function App() {
   const [store, setStore] = React.useState(read);
+  const sync = useSync(store, setStore);
   const [section, setSection] = useSection();
   const [error, setError] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -276,7 +279,7 @@ export default function App() {
         {page === "collection" && (
           <CollectionPane
             value={collection.owned}
-            onChange={(owned) => setStore((s) => ({ ...s, collections: [{ ...collection, owned }] }))}
+            onChange={(owned) => setStore((s) => ({ ...s, collections: [{ ...collection, id: collection.id ?? "collection", owned, saved: stamp() }] }))}
             shell={shell}
           />
         )}
@@ -284,7 +287,7 @@ export default function App() {
 
         </React.Suspense>
         </PaneError>
-        <OptionsDialog isOpen={options} onOpenChange={setOptions} value={store.settings ?? {}}
+        <OptionsDialog isOpen={options} onOpenChange={setOptions} value={store.settings ?? {}} sync={sync}
                        onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
       </AppShell>
       </>

@@ -5,6 +5,8 @@ import "@astryxdesign/core/astryx.css";
 import "./theme/fonts.css";
 import "./theme/marches.css";
 import "./theme/paper.css";
+// Read before the router: a return from Discord carries its key in the hash.
+import "./sync.mjs";
 import App from "./App.jsx";
 
 // Every deploy renames the code-split chunks and deletes the old ones, so a tab

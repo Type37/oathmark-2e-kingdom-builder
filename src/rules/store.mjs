@@ -36,6 +36,7 @@ export function normalise(raw) {
   for (const k of KINDS) if (!Array.isArray(s[k])) s[k] = [];
   s.musters = s.musters.map(currentMagic);
   s.active = s.active ?? {};
+  s.deleted = s.deleted && typeof s.deleted === "object" ? s.deleted : {};
   s.schema = SCHEMA;
   return s;
 }
@@ -50,7 +51,9 @@ export function get(store, kind, id) {
 
 export function save(store, kind, record) {
   const id = record.id ?? uid();
-  const next = { ...record, id, saved: stamp() };
+  // An example the app seeded becomes yours, and syncs, once you change it.
+  const { seeded: _seeded, ...rec } = record;
+  const next = { ...rec, id, saved: stamp() };
   const rest = (store[kind] ?? []).filter((r) => r.id !== id);
   return { ...store, [kind]: [...rest, next], active: { ...store.active, [kind]: id } };
 }
@@ -58,7 +61,13 @@ export function save(store, kind, record) {
 export function remove(store, kind, id) {
   const active = { ...store.active };
   if (active[kind] === id) delete active[kind];
-  return { ...store, [kind]: (store[kind] ?? []).filter((r) => r.id !== id), active };
+  // The tombstone lets Discord Sync carry the deletion to other devices.
+  return {
+    ...store,
+    [kind]: (store[kind] ?? []).filter((r) => r.id !== id),
+    active,
+    deleted: { ...(store.deleted ?? {}), [id]: stamp() },
+  };
 }
 
 export function duplicate(store, kind, id) {
