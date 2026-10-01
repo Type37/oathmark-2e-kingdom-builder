@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  StackItem, VStack, HStack, Text, Button, Selector, Card, NumberInput, Layout, LayoutContent, Field,
+  StackItem, Token, VStack, HStack, Text, Button, Selector, Card, NumberInput, Layout, LayoutContent, Field,
 } from "@astryxdesign/core";
 import { UpgradesDialog } from "./Upgrades.jsx";
 import { StatBar } from "./StatLine.jsx";
@@ -62,11 +62,15 @@ export default function UnitCard({
     ...weaponsOf(fig).map((w) => `${w} ${rangeText(w)}`),
     p.penalty?.occupied ? "from occupied ground, activates one worse" : null,
     p.penalty?.unreliable ? "from the borderlands, Unreliable" : null,
-    p.unitOfOne ? "unit-of-one" : null,
     crew ? `crew of ${crew}` : null,
-    charFig ? `led by ${charFig.name}` : null,
-    unit.joinedTo ? "fighting inside a unit" : null,
     p.formation,
+  ].filter(Boolean);
+
+  // States, not descriptions: they ride beside the name as tokens.
+  const states = [
+    p.unitOfOne ? "Unit-of-one" : null,
+    charFig ? `Led by ${charFig.name}` : null,
+    unit.joinedTo ? "Fighting inside a unit" : null,
   ].filter(Boolean);
 
   const shownName = unit.name || fig.name;
@@ -83,7 +87,12 @@ export default function UnitCard({
       <Layout height="auto" padding={4} defaultHasDividers
         header={(
           <Toolbar label={`${shownName} actions`} size="md" dividers={["bottom"]}
-                   startContent={name}
+                   startContent={(
+                     <HStack gap={2} vAlign="center" wrap="wrap">
+                       {name}
+                       {states.map((t) => <Token key={t} label={t} size="sm" />)}
+                     </HStack>
+                   )}
                    endContent={(
                      <HStack gap={2} vAlign="center">
                        <Text type="large" weight="bold">{unitCost(unit)}pts</Text>
