@@ -5,7 +5,14 @@ export const CAPITAL_LISTS = LISTS.filter((l) => l !== "unaligned");
 export const REGION_SIZES = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6 };
 export const LEVELS = { beginner: [1, 2], moderate: [1, 2, 3], expert: [1, 2, 3, 4] };
 
-const RARITY_BY_REGION = { 2: { own: 2, other: 1 }, 3: { own: 3, other: 2 }, 4: { own: 4, other: 3 } };
+// p18's table for Regions 2-4. Regions 5 and 6 follow the same pattern: p38
+// adds campaign territories "following the rules presented under kingdom
+// creation", and p18 singles out unaligned (5) terrain as placeable "in Region 5
+// of any kingdom", which only says something if aligned (5) terrain is not.
+const RARITY_BY_REGION = {
+  2: { own: 2, other: 1 }, 3: { own: 3, other: 2 }, 4: { own: 4, other: 3 },
+  5: { own: 5, other: 4 }, 6: { own: 6, other: 5 },
+};
 
 export function territory(list, name) {
   return data.territories[list]?.find((t) => t.name === name);
@@ -48,13 +55,11 @@ export function canPlace({ capitalList, region, list, name, founded, kingdom }) 
     return { ok: true };
   }
   // Regions 5 and 6 are campaign additions, so they wait for the kingdom to be founded (p37).
-  if (region > 4) {
-    if (!founded) return { ok: false, reason: "Campaign only: found the kingdom first" };
-    if (kingdom && !sharesBorder(kingdom, region))
-      return { ok: false, reason: `Region ${region} shares no border with an unoccupied territory` };
-    if (t.rarity > region) return { ok: false, reason: `Rarity ${t.rarity}: needs Region ${t.rarity}` };
-    return { ok: true };
-  }
+  if (region > 4 && !founded) return { ok: false, reason: "Campaign only: found the kingdom first" };
+  // Anything added once the kingdom is founded must border a territory you
+  // still hold (p38), in any region.
+  if (founded && kingdom && !sharesBorder(kingdom, region))
+    return { ok: false, reason: `Region ${region} shares no border with an unoccupied territory` };
 
   // Unaligned territories use their printed rarity regardless of capital (p18, p22).
   // "On the same list as their capital city" (p17) is about the terrain, so a
@@ -64,7 +69,9 @@ export function canPlace({ capitalList, region, list, name, founded, kingdom }) 
     const need = earliestRegion(t.rarity, sameList);
     return {
       ok: false,
-      reason: need > 4 ? "Campaign only" : `Rarity ${t.rarity}: needs Region ${need}`,
+      reason: need > 6 ? "Cannot be placed in this kingdom"
+        : need > 4 && !founded ? "Campaign only"
+        : `Rarity ${t.rarity}: needs Region ${need}`,
     };
   }
   return { ok: true };
@@ -153,7 +160,9 @@ export function validateKingdom(k) {
     for (const r of outside) errors.push(`Region ${r}: not in a ${k.level} kingdom`);
   }
   for (const p of placed) {
-    const res = canPlace({ capitalList: k.capitalList, region: p.region, list: p.list, name: p.name, founded: k.founded, kingdom: k });
+    // The border rule (p38) governs adding a territory, not keeping one: losing a
+    // neighbour to occupation later does not make what you hold illegal.
+    const res = canPlace({ capitalList: k.capitalList, region: p.region, list: p.list, name: p.name, founded: k.founded });
     if (!res.ok) errors.push(res.reason);
   }
   return { ok: errors.length === 0, errors, slots: slots.length, placed: placed.length };

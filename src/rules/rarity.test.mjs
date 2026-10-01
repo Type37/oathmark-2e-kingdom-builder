@@ -142,3 +142,36 @@ test("pp20-22: territory data matches the printed lists and rarities", () => {
     assert.deepEqual(got, want, list);
   }
 });
+
+// p38 adds campaign territories by the kingdom-creation rules, so Regions 5
+// and 6 keep p18's own/other split; p18: unaligned (5) goes in any Region 5.
+test("p18/p38: Regions 5-6 take own list up to the region, other lists one less", () => {
+  const held = (r) => ({ territories: [{ region: r - 1, list: "dwarf", name: "Forges" }] });
+  const place = (capitalList, region, list, name) =>
+    canPlace({ capitalList, region, list, name, founded: true, kingdom: held(region) }).ok;
+  assert.equal(place("elf", 5, "elf", "Hill Caves"), true);
+  assert.equal(place("dwarf", 5, "elf", "Hill Caves"), false);
+  assert.equal(place("dwarf", 6, "elf", "Hill Caves"), true);
+  assert.equal(place("dwarf", 6, "unaligned", "Glade"), true);
+  assert.equal(place("dwarf", 5, "unaligned", "Glade"), false);
+});
+
+test("p38: anything added after founding must border a territory still held", () => {
+  const kingdom = { territories: [{ region: 2, list: "dwarf", name: "Forges", occupied: true }] };
+  const at3 = canPlace({ capitalList: "dwarf", region: 3, list: "dwarf", name: "Forges", founded: true, kingdom });
+  assert.equal(at3.ok, false);
+  const held = { territories: [{ region: 2, list: "dwarf", name: "Forges" }] };
+  assert.equal(canPlace({ capitalList: "dwarf", region: 3, list: "dwarf", name: "Forges", founded: true, kingdom: held }).ok, true);
+});
+
+test("p38: an occupied neighbour does not make territories already held illegal", () => {
+  const k = {
+    level: "expert", capitalList: "elf", founded: true,
+    territories: [
+      { region: 1, list: "elf", name: "Elf City" },
+      { region: 4, list: "elf", name: "Forests", occupied: true },
+      { region: 5, list: "elf", name: "Hill Caves" },
+    ],
+  };
+  assert.equal(validateKingdom(k).errors.some((e) => /border/.test(e)), false);
+});
