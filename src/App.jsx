@@ -1,7 +1,6 @@
 import React from "react";
 import { Theme, AppShell, Text, Banner, Section } from "@astryxdesign/core";
 import { SideNav, SideNavHeading, SideNavItem, SideNavSection } from "@astryxdesign/core/SideNav";
-import { MobileNav } from "@astryxdesign/core/MobileNav";
 import { AlertDialog } from "@astryxdesign/core/AlertDialog";
 import { marchesTheme } from "./theme/marches.js";
 import { icons } from "./theme/icons.jsx";
@@ -11,7 +10,6 @@ const THEME = { ...marchesTheme, icons };
 import Landing from "./panes/Landing.jsx";
 import Emblem from "./components/Emblem.jsx";
 import PaneError from "./components/PaneError.jsx";
-import Footer from "./components/Footer.jsx";
 import OptionsDialog from "./components/OptionsDialog.jsx";
 
 import { validateKingdom } from "./rules/kingdom.mjs";
@@ -157,7 +155,6 @@ export default function App() {
   const shell = {
     onBack: () => go(parent),
     backLabel: BACK_LABEL[parent] ?? "Back",
-    onMenu: () => setMenuOpen(true),
     appActions,
     onOptions: () => setOptions(true),
   };
@@ -181,10 +178,8 @@ export default function App() {
   );
   const sideNav = section === "home" ? undefined : (
     <SideNav header={
-      <a href="#/" className="om-brand" aria-label="Oathmark Unofficial Builder, home">
-        <img src={`${import.meta.env.BASE_URL}art/oathmark-logo.png`} alt="Oathmark" />
-        <span className="om-brand-line">Oathmark Unofficial Builder</span>
-      </a>
+      <SideNavHeading heading="Oathmark" subheading="Unofficial Builder" headingHref="#/"
+                      icon={<img src={`${import.meta.env.BASE_URL}art/oathmark-logo.png`} alt="" width={64} />} />
     }>{navItems}</SideNav>
   );
 
@@ -196,10 +191,8 @@ export default function App() {
   return (
     <Theme theme={THEME} mode="light">
       <>
-      <AppShell height="auto" contentPadding={0} variant="wash" sideNav={sideNav} mobileNav={false}>
-        <MobileNav isOpen={menuOpen} onOpenChange={setMenuOpen} header="Oathmark">
-          {navItems}
-        </MobileNav>
+      <AppShell contentPadding={0} variant="wash" sideNav={sideNav}
+                mobileNav={{ isOpen: menuOpen, onOpenChange: setMenuOpen }}>
         <PaneError key={page}>
         <React.Suspense fallback={null}>
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={onFile} />
@@ -294,7 +287,6 @@ export default function App() {
         <OptionsDialog isOpen={options} onOpenChange={setOptions} value={store.settings ?? {}}
                        onChange={(settings) => setStore((s) => ({ ...s, settings }))} />
       </AppShell>
-      <Footer />
       </>
     </Theme>
   );

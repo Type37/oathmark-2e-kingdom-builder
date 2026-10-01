@@ -1,8 +1,9 @@
 import React from "react";
 import {
-  Layout, LayoutContent, Grid, VStack, HStack, ClickableCard, Center, Heading, Text, Button, Blockquote,
+  Layout, LayoutContent, LayoutFooter, Grid, VStack, HStack, ClickableCard, Center, Heading, Text, Button, Blockquote,
 } from "@astryxdesign/core";
 import Mark from "../components/Mark.jsx";
+import Footer from "../components/Footer.jsx";
 import laurel from "../icons/laurel-crown.svg?url";
 import muster from "../icons/muster.svg?url";
 import ruleBook from "../icons/rule-book.svg?url";
@@ -18,11 +19,11 @@ const CARDS = [
 export default function Landing({ onOpen }) {
   return (
     <Layout
-      height="auto"
-      padding={8}
+      height="fill"
+      footer={<LayoutFooter hasDivider><Footer /></LayoutFooter>}
       contentWidth={1040}
       content={
-        <LayoutContent>
+        <LayoutContent padding={8}>
           <VStack gap={8}>
             <VStack gap={GAP.group} maxWidth="62ch">
               <Heading level={1} type="display-1">Oathmark</Heading>

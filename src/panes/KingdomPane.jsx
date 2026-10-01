@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Icon, Heading, Card, StackItem, VStack, HStack, Text, Button, List, ListItem, Token, Tooltip,
+  Icon, Heading, Card, StackItem, VStack, HStack, Text, Button, List, ListItem, Token, Tooltip, Banner,
 } from "@astryxdesign/core";
 import Shell from "../Shell.jsx";
 import RegionMap from "../components/RegionMap.jsx";
@@ -216,7 +216,9 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
       title={value.name || "Untitled"}
       onRename={(name) => patch({ name, culture: cultureOf(name) ?? value.culture ?? null })}
       inlineDetail={<VStack gap={GAP.group}>{map}{chronicle}{access}</VStack>}
-      meta={onMuster && (
+      meta={started && !founded ? (
+        <Button label="Found the Kingdom" variant="primary" onClick={() => patch({ founded: true })} />
+      ) : onMuster && (
         <Button label={value.name ? `Muster an Army of ${value.name}` : "Muster an Army"}
                 variant="primary" icon={<Icon icon="app:muster" />} onClick={onMuster} />
       )}
@@ -226,15 +228,9 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
         <VStack gap={GAP.section}>
           <KingdomPrint value={value} />
           {regionList}
-          {started && !founded && (
-            <div className="om-cta-dock">
-              <Button label="Found the Kingdom" variant="primary"
-                      onClick={() => patch({ founded: true })} />
-            </div>
-          )}
           {result && !result.ok && (
-            <VStack gap={GAP.tight} className="om-callout">
-              {result.errors.map((e) => <Text key={e}>{e}</Text>)}
+            <VStack gap={GAP.tight}>
+              {result.errors.map((e) => <Banner key={e} status="error" title={e} />)}
             </VStack>
           )}
           {dialogs}

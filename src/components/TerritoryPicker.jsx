@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, LayoutPanel,
-  VStack, HStack, List, ListItem, Token, Text, Heading, Button, Table, Link, useMediaQuery,
+  VStack, HStack, List, ListItem, Token, Text, Heading, Button, Table, Link, useMediaQuery, Banner,
 } from "@astryxdesign/core";
 import { pixel, proportional } from "@astryxdesign/core/Table";
 import { territory, figureById, rarityNote } from "../rules/kingdom.mjs";
@@ -109,7 +109,7 @@ export default function TerritoryPicker({ region, candidates, capitalList, found
           <LayoutContent>
             <VStack gap={GAP.group} style={{ minBlockSize: "78dvh" }}>
               {region === 1 && (
-                <HStack className="om-callout"><Text>{CAPITAL_NOTE}</Text></HStack>
+                <Banner status="info" title={CAPITAL_NOTE} />
               )}
               {narrow ? (preview ?? list) : preview}
             </VStack>

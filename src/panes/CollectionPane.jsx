@@ -30,7 +30,6 @@ export default function CollectionPane({ value, onChange, shell }) {
   const [query, setQuery] = React.useState("");
   const [openFigure, setOpenFigure] = React.useState(null);
   const totals = collectionTotals(value);
-  const sections = React.useRef({});
   const [sort, setSort] = React.useState(null);
 
   // Every figure in the book, in printed order, kept in its own list's section.
@@ -63,7 +62,7 @@ export default function CollectionPane({ value, onChange, shell }) {
   // The list names are a jump bar, not a filter.
   const jump = (l) => {
     setList(l);
-    sections.current[l]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById(`list-${l}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const set = (id, n) => {
@@ -93,9 +92,7 @@ export default function CollectionPane({ value, onChange, shell }) {
         </Section>
         {groups.map((g) => (
           <Section key={g.list} padding={0} className="om-list-section">
-            <div ref={(el) => { sections.current[g.list] = el; }}>
-              <Heading level={2}>{LABEL[g.list]}</Heading>
-            </div>
+            <Heading level={2} id={`list-${g.list}`}>{LABEL[g.list]}</Heading>
             <FigureTable
               rows={g.rows}
               sort={sort}

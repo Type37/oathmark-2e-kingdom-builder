@@ -34,9 +34,7 @@ export default function MusterList({ store, onOpen, onNew, recordActions, shell 
                     <VStack gap={GAP.item}>
                       <HStack gap={GAP.item} align="center" justify="between">
                         <HStack gap={GAP.item} align="center">
-                          <span className="om-card-emblem">
-                            <Emblem emblemKey={k?.emblem} name={k?.name} size="lg" />
-                          </span>
+                          <Emblem emblemKey={k?.emblem} name={k?.name} size="lg" />
                           <Heading level={2}>{m.name || "Untitled"}</Heading>
                         </HStack>
                         {recordActions && <MoreMenu items={recordActions("musters", m)} alignment="end" />}

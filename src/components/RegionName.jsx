@@ -1,40 +1,15 @@
 import React from "react";
-import {
-  Icon, HStack, Text, TextInput,
-} from "@astryxdesign/core";
+import { HStack, Text, TextInput } from "@astryxdesign/core";
 
-// "Region 3" is the book's label; the name you give it is yours. It reads as a
-// heading until you point at it, and the pencil says it will take a name.
+// "Region 3" is the book's label; the name you give it is yours. It is a
+// field like every other name in the app, with the book's label beside it.
 export default function RegionName({ region, value, onChange }) {
-  const [editing, setEditing] = React.useState(false);
   const named = (value ?? "").trim();
-
-  if (editing) {
-    return (
-      <TextInput
-        label={`Name for Region ${region}`}
-        isLabelHidden
-        autoFocus
-        size="sm"
-        width={220}
-        className="om-region-input"
-        value={named}
-        placeholder={`Region ${region}`}
-        onChange={(e) => onChange(e.target?.value ?? e)}
-        onBlur={() => setEditing(false)}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") setEditing(false); }}
-      />
-    );
-  }
-
   return (
-    <button type="button" className="om-region-name" onClick={() => setEditing(true)}
-            aria-label={named ? `Rename ${named}` : `Name Region ${region}`}>
-      <HStack gap={1} align="center">
-        <Text type="label">{named || `Region ${region}`}</Text>
-        {named && <Text type="label" className="om-region-ord">Region {region}</Text>}
-        <Icon icon="app:pen" size="sm" />
-      </HStack>
-    </button>
+    <HStack gap={2} vAlign="center" wrap="wrap">
+      <TextInput label={`Name for Region ${region}`} isLabelHidden size="sm" width={220}
+                 value={value ?? ""} placeholder={`Region ${region}`} onChange={(v) => onChange(v)} />
+      {named && <Text type="label" color="secondary">Region {region}</Text>}
+    </HStack>
   );
 }

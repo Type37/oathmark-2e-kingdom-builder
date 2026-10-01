@@ -1,18 +1,23 @@
 import React from "react";
 import {
-  Icon, Layout, LayoutHeader, LayoutContent, LayoutPanel, HStack, VStack, Heading, Button,
-  TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider, Breadcrumbs, BreadcrumbItem,
+  Icon, Layout, LayoutHeader, LayoutContent, LayoutPanel, LayoutFooter, HStack, VStack, StackItem,
+  Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider, Breadcrumbs,
+  BreadcrumbItem,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
+import { MobileNavToggle } from "@astryxdesign/core/MobileNav";
 import { VisuallyHidden } from "@astryxdesign/core/VisuallyHidden";
+import Footer from "./components/Footer.jsx";
 import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 
-// Per-page frame: one bar holding the way back, the record's name, and every
-// action in a single menu. Navigation lives in App (SideNav / MobileNav).
+// Per-page frame, after Astryx's detail-page template: a fixed header with the
+// way back, the record's name and every action; the content and the sheet
+// panel scroll on their own; the credits sit in the footer. Below the panel
+// breakpoint the sheet opens as a full-screen dialog.
 export default function Shell({
   title, titleAction, leading, subtitle, crumbs, meta, actions, appActions, onOptions, onPrint, onRename,
   content, detail, detailTitle, inlineDetail, width,
-  onBack, backLabel, onMenu,
+  onBack, backLabel,
 }) {
   const noPanels = useMediaQuery(BREAK.panel);
   const narrow = useMediaQuery(BREAK.narrow);
@@ -31,35 +36,30 @@ export default function Shell({
   // for screen readers beside it.
   const titleNode = onRename ? (
     <>
-    <VisuallyHidden as="h1">{title}</VisuallyHidden>
-    <TextInput label="Name" isLabelHidden value={title === "Untitled" ? "" : title}
-               placeholder="Untitled" width={narrow ? "100%" : 260} className="om-title-input"
-               onChange={(e) => onRename(e.target?.value ?? e)} />
+      <VisuallyHidden as="h1">{title}</VisuallyHidden>
+      <TextInput label="Name" isLabelHidden value={title === "Untitled" ? "" : title}
+                 placeholder="Untitled" width={narrow ? "100%" : 280}
+                 onChange={(v) => onRename(v)} />
     </>
   ) : (
     <Heading level={1}>{title}</Heading>
   );
   const titleBlock = titleAction
-    ? <HStack gap={GAP.tight} align="center">{titleNode}{titleAction}</HStack>
+    ? <HStack gap={GAP.tight} vAlign="center">{titleNode}{titleAction}</HStack>
     : titleNode;
   // On a phone an editable name cannot share the bar with Back and the trail
   // without running off the edge, so it takes the full width underneath.
   const titleBelow = narrow && Boolean(onRename);
 
   const lead = (
-    <HStack gap={GAP.item} align="center">
+    <HStack gap={GAP.item} vAlign="center" wrap="wrap">
+      <MobileNavToggle label="Menu" />
       {/* Back is always the first thing in the bar, so it never moves between pages. */}
       {onBack && (
-        <Button className="om-back" label={backLabel ?? "Back"} variant="ghost"
-                icon={<Icon icon="app:back" />} onClick={onBack} />
-      )}
-      {onMenu && (
-        <Button className="om-menu-btn" label="Menu" variant="ghost" isIconOnly
-                icon={<Icon icon="menu" />} onClick={onMenu} />
+        <Button label={backLabel ?? "Back"} variant="ghost" icon={<Icon icon="app:back" />} onClick={onBack} />
       )}
       {leading}
-      {/* Where the record lives, then the record. The parent carries its own
-          emblem, so nothing in the bar is an unlabelled stray word. */}
+      {/* Where the record lives, then the record. */}
       {crumbs?.length ? (
         <Breadcrumbs label="Trail">
           {crumbs.map((c) => (
@@ -72,28 +72,29 @@ export default function Shell({
     </HStack>
   );
   const tools = (
-    <HStack gap={GAP.item} align="center" wrap="wrap">
+    <HStack gap={GAP.item} vAlign="center" wrap="wrap">
       {meta}
       {onPrint && !narrow && (
-        <Button label="Print" variant="secondary"
-                icon={<Icon icon="app:print" />} onClick={onPrint} />
+        <Button label="Print" variant="secondary" icon={<Icon icon="app:print" />} onClick={onPrint} />
       )}
       {noPanels && detail && (
-        <Button label={detailTitle ?? "Details"} variant="secondary"
-                onClick={() => setDetailOpen(true)} />
+        <Button label={detailTitle ?? "Details"} variant="secondary" onClick={() => setDetailOpen(true)} />
       )}
       {menuItems.length > 0 && <MoreMenu alignment="end" items={menuItems} />}
     </HStack>
   );
 
   const header = (
-    <LayoutHeader>
+    <LayoutHeader hasDivider padding={narrow ? 4 : 6}>
       <SizeProvider value="lg">
-      {titleBelow ? (
-        <VStack gap={GAP.item}>{lead}{titleBlock}{tools}</VStack>
-      ) : (
-        <HStack gap={GAP.group} align="center" justify="between" wrap="wrap">{lead}{tools}</HStack>
-      )}
+        {titleBelow ? (
+          <VStack gap={GAP.item}>{lead}{titleBlock}{tools}</VStack>
+        ) : (
+          <HStack gap={GAP.group} vAlign="center" wrap="wrap">
+            <StackItem size="fill">{lead}</StackItem>
+            {tools}
+          </HStack>
+        )}
       </SizeProvider>
     </LayoutHeader>
   );
@@ -104,19 +105,21 @@ export default function Shell({
   return (
     <>
       <Layout
-        padding={narrow ? 4 : 6}
-        height="auto"
+        height="fill"
         contentWidth={width ?? FRAME.contentWidth}
-        header={<div className="om-topbar">{header}</div>}
+        header={header}
         content={<LayoutContent padding={narrow ? 4 : 6}>{body}</LayoutContent>}
-        end={noPanels || !detail ? undefined : <LayoutPanel width={PANEL.detail} hasDivider className="om-sticky">{detail}</LayoutPanel>}
+        end={noPanels || !detail ? undefined : (
+          <LayoutPanel width={PANEL.detail} padding={6} hasDivider>{detail}</LayoutPanel>
+        )}
+        footer={<LayoutFooter hasDivider><Footer /></LayoutFooter>}
       />
 
       {noPanels && detail && (
-        <Dialog isOpen={detailOpen} onOpenChange={setDetailOpen} width={420}>
+        <Dialog variant="fullscreen" isOpen={detailOpen} onOpenChange={setDetailOpen}>
           <Layout
             header={<DialogHeader title={detailTitle ?? "Details"} onOpenChange={setDetailOpen} />}
-            content={<LayoutContent>{detail}</LayoutContent>}
+            content={<LayoutContent padding={4}>{detail}</LayoutContent>}
           />
         </Dialog>
       )}
