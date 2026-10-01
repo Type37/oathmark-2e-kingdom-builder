@@ -1,4 +1,5 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import {
   Layout, LayoutHeader, LayoutContent, LayoutPanel,
   HStack, VStack, Heading, Button, TextInput, useMediaQuery, Dialog, DialogHeader, SizeProvider,
@@ -6,7 +7,6 @@ import {
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { VisuallyHidden } from "@astryxdesign/core/VisuallyHidden";
-import Ico from "./components/Ico.jsx";
 import { BREAK, FRAME, PANEL, GAP } from "./layout.mjs";
 
 // Per-page frame: one bar holding the way back, the record's name, and every
@@ -53,11 +53,11 @@ export default function Shell({
       {/* Back is always the first thing in the bar, so it never moves between pages. */}
       {onBack && (
         <Button className="om-back" label={backLabel ?? "Back"} variant="ghost"
-                icon={<Ico name="arrow-left" size={20} />} onClick={onBack} />
+                icon={<Icon icon="app:back" />} onClick={onBack} />
       )}
       {onMenu && (
         <Button className="om-menu-btn" label="Menu" variant="ghost" isIconOnly
-                icon={<Ico name="menu" size={20} />} onClick={onMenu} />
+                icon={<Icon icon="menu" />} onClick={onMenu} />
       )}
       {leading}
       {/* Where the record lives, then the record. The parent carries its own
@@ -78,7 +78,7 @@ export default function Shell({
       {meta}
       {onPrint && !narrow && (
         <Button label="Print" variant="secondary"
-                icon={<Ico name="printer" size={20} />} onClick={onPrint} />
+                icon={<Icon icon="app:print" />} onClick={onPrint} />
       )}
       {noPanels && detail && (
         <Button label={detailTitle ?? "Details"} variant="secondary"

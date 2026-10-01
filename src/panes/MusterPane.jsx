@@ -1,11 +1,11 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import {
-  VStack, HStack, Text, Section, NumberInput, ProgressBar, Button, Token, Banner, MetadataList, MetadataListItem,
+  VStack, HStack, StackItem, Heading, Text, Section, NumberInput, ProgressBar, Button, Token, Banner, MetadataList, MetadataListItem,
 } from "@astryxdesign/core";
 import FigureCard from "../components/FigureCard.jsx";
 import UnitCard from "../components/UnitCard.jsx";
 import AddUnits from "../components/AddUnits.jsx";
-import Ico from "../components/Ico.jsx";
 import Emblem from "../components/Emblem.jsx";
 import ArmyPrint from "../components/ArmyPrint.jsx";
 import Shell from "../Shell.jsx";
@@ -117,7 +117,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       detailTitle="Army Roster"
       detail={(
         <VStack gap={GAP.group}>
-          <HStack justify="center" className="om-plate"><Text type="label">Army Roster</Text></HStack>
+          <Heading level={2}>Army Roster</Heading>
           <ProgressBar label="Points Value" isLabelHidden
                        value={Math.min(result.points, points)} max={points || 1}
                        variant={over ? "error" : "accent"} />
@@ -154,8 +154,13 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
         </VStack>
       )}
       content={(
-        <VStack gap={GAP.group} className="om-page">
+        <VStack gap={4}>
           <ArmyPrint value={value} kingdom={kingdom} pool={pool} stats={agg} battle={battle} />
+          <HStack gap={2} vAlign="center">
+            <StackItem size="fill"><Heading level={2}>Units</Heading></StackItem>
+            <Button label="Add Units" variant="primary" onClick={() => setAdding(true)}
+                    icon={<Icon icon="app:plus" />} />
+          </HStack>
           {units.map((u, i) => (
             <UnitCard key={u.uid} isFirst={i === 0} isLast={i === units.length - 1}
                       onMove={(dir) => move(u.uid, dir)} kingdom={kingdom} unit={u} pool={pool} units={units}
@@ -173,10 +178,6 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
                         .map((x) => (x.joinedTo === u.uid ? { ...x, joinedTo: null } : x)))}
                       onOpenFigure={setOpenFigure} />
           ))}
-          <div className="om-cta-dock">
-            <Button label="Add Units" variant="primary" onClick={() => setAdding(true)}
-                    icon={<Ico name="plus" size={20} />} />
-          </div>
           <AddUnits isOpen={adding} onOpenChange={setAdding} pool={pool} units={units}
                     collection={collection} useCollection={settings.useCollection} onAdd={add} onOpenFigure={setOpenFigure} />
           {openFigure && (

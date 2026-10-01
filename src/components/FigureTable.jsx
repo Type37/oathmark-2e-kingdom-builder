@@ -1,13 +1,11 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import {
   Table, HStack, VStack, Text, Button, Popover, Link, useMediaQuery,
 } from "@astryxdesign/core";
 import { pixel, proportional } from "@astryxdesign/core/Table";
 import { stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
-import Ico from "./Ico.jsx";
-import { Icon } from "@iconify/react";
-import { D10 } from "../icons/game.mjs";
 import { COL, BREAK, statWidth } from "../layout.mjs";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
 
@@ -32,7 +30,7 @@ function Head({ statKey }) {
     >
       <Button variant="ghost" size="sm" label={def?.name ?? letter}>
         <HStack gap={1} align="center">
-          {statKey === "CD" && <Icon icon={D10} width={16} height={16} />}
+          {statKey === "CD" && <Icon icon="app:d10" size="sm" />}
           <Text type="label" color="inherit">{letter}</Text>
         </HStack>
       </Button>
@@ -50,7 +48,7 @@ export default function FigureTable({ rows, onAdd, onOpen, onOpenAttribute, acti
         {node}
         <Button variant="ghost" size="sm" isIconOnly label={`Sort by ${key}`}
                 onClick={() => onSort(key)}
-                icon={<Ico name={active && sort.dir === "asc" ? "arrow-up" : "arrow-down"} size={14} />} />
+                icon={<Icon icon={active && sort.dir === "asc" ? "arrowUp" : "arrowDown"} />} />
       </HStack>
     );
   };

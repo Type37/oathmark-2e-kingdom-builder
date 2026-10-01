@@ -1,11 +1,9 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import {
   VStack, HStack, Text, Button, List, ListItem,
   Token, Tooltip,
 } from "@astryxdesign/core";
-import { Icon } from "@iconify/react";
-import { MUSTER } from "../icons/game.mjs";
-import Ico from "../components/Ico.jsx";
 import Shell from "../Shell.jsx";
 import RegionMap from "../components/RegionMap.jsx";
 import FigureCard from "../components/FigureCard.jsx";
@@ -124,7 +122,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
                             })} />
                   </Tooltip>
                   <Button className="om-remove" label="Remove" size="sm" variant="destructive" isIconOnly
-                          icon={<Ico name="times" />}
+                          icon={<Icon icon="close" />}
                           onClick={() => patch(r === 1
                             ? { capitalList: null, territories: [] }
                             : { territories: picks.filter((_, j) => j !== i) })} />
@@ -135,11 +133,11 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
           {!full && live && (r > 1 || !capitalList) && (
             r > 1 && !capitalList ? (
               <Tooltip content="Establish your capital first.">
-                <ListItem label="Add territory" isDisabled startContent={<Ico name="plus" />} />
+                <ListItem label="Add territory" isDisabled startContent={<Icon icon="app:plus" />} />
               </Tooltip>
             ) : (
               <ListItem label={r === 1 ? "Choose a capital" : "Add territory"}
-                        startContent={<Ico name="plus" />}
+                        startContent={<Icon icon="app:plus" />}
                         onClick={() => setPicking(r)} />
             )
           )}
@@ -166,7 +164,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
                 onClick={() => setCropping(true)} />
         {value.emblem && (
           <Button className="om-remove" label="Remove emblem" size="sm" variant="destructive" isIconOnly
-                  icon={<Ico name="times" />} onClick={() => onEmblem(null)} />
+                  icon={<Icon icon="close" />} onClick={() => onEmblem(null)} />
         )}
       </HStack>
       <NameField label="Current Ruler" size="sm" value={value.ruler} pool={rulerPool(value.culture)}
@@ -221,7 +219,7 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
       inlineDetail={<VStack gap={GAP.group}>{map}{chronicle}{access}</VStack>}
       meta={onMuster && (
         <Button label={value.name ? `Muster an Army of ${value.name}` : "Muster an Army"}
-                variant="primary" icon={<Icon icon={MUSTER} width={20} height={20} />} onClick={onMuster} />
+                variant="primary" icon={<Icon icon="app:muster" />} onClick={onMuster} />
       )}
       detail={detail}
       detailTitle="Kingdom Sheet"

@@ -379,6 +379,10 @@
     line-height: var(--text-display-3-leading);
   }
 
+  .astryx-blockquote {
+    font-style: italic;
+  }
+
   .astryx-card {
     border-radius: var(--radius-none);
     --_card-radius: var(--radius-none);

@@ -1,36 +1,50 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import {
-  VStack, HStack, Text, Button, Selector, Card, Link, TextInput,
+  VStack, HStack, StackItem, Text, Button, Selector, Card, Link, TextInput,
+  List, ListItem,
 } from "@astryxdesign/core";
 import Counter from "./Counter.jsx";
-import Ico from "./Ico.jsx";
-import Upgrades from "./Upgrades.jsx";
-import Defined from "./Defined.jsx";
-import { AttributeCard } from "./StatLine.jsx";
-import { StatBar } from "./StatLine.jsx";
+import { UpgradesDialog } from "./Upgrades.jsx";
+import { AttributeCard, StatBar } from "./StatLine.jsx";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
-import { upgradeCost, applyUpgrades } from "../rules/upgrades.mjs";
+import { upgradeCost, applyUpgrades, upgradesFor } from "../rules/upgrades.mjs";
 import { unitProfile, canJoin, isCharacter, crewOf, isArtillery, joinRule } from "../rules/army.mjs";
-import { spellsKnown } from "../rules/magic.mjs";
-import MagicItems, { CarriedItem } from "./MagicItems.jsx";
-import { applyItem } from "../rules/magic.mjs";
-import SpellPicker, { SpellList } from "./SpellPicker.jsx";
-import { attrLevel, weaponsOf, rangeText } from "../rules/stats.mjs";
-import { GAP } from "../layout.mjs";
+import { spellsKnown, applyItem } from "../rules/magic.mjs";
+import MagicItems from "./MagicItems.jsx";
+import SpellPicker from "./SpellPicker.jsx";
+import { attrLevel, weaponsOf, rangeText, STAT_KEYS } from "../rules/stats.mjs";
+import { useMediaQuery } from "@astryxdesign/core";
+import { BREAK } from "../layout.mjs";
 
-// One entry on the Army Roster: who they are, how many, and what they carry.
-export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin, onRemove, onOpenFigure, onMove, isFirst, isLast }) {
+// The cost sits beside the name, so the card's stat bar leaves it out.
+const CARD_STATS = STAT_KEYS.filter((k) => k !== "pts");
+
+// One entry on the Army Roster, laid out like the book's unit block (p218):
+// name and cost, then type and quantity, then the stat bar, then every choice
+// made for the unit as one labelled list. Picking happens in dialogs, so a
+// card's height is set by what the unit has, never by what it could have.
+export default function UnitCard({
+  kingdom, unit, pool, units, onChange, onJoin, onRemove, onOpenFigure, onMove, isFirst, isLast,
+}) {
   const entry = pool.get(unit.figureId);
   const p = unitProfile(unit, units, entry);
+  const [picking, setPicking] = React.useState(null);
+  const [attr, setAttr] = React.useState(null);
+  const narrow = useMediaQuery(BREAK.narrow);
   if (!p) return null;
-  const { fig, variant, charFig, guest } = p;
+
+  const { fig, variant, charFig } = p;
   const crew = crewOf(fig);
-  const variantAfter = applyItem(applyUpgrades(variant, unit.upgrades ?? []), unit.magicItem);
+  const upgraded = applyUpgrades(variant, unit.upgrades ?? []);
+  const variantAfter = applyItem(upgraded, unit.magicItem);
   const caster = attrLevel(variantAfter, "Spellcaster");
   const knows = caster ? spellsKnown(unit.level ?? caster, unit.magicItem) : 0;
   const chosenSpells = unit.spells ?? [];
   const levels = entry?.levels ?? null;
+  const hasOptions = upgradesFor(kingdom, unit.figureId).length > 0;
+  const counts = !isArtillery(fig) && p.max > 1;
 
   // A character already in the army may lead a unit instead of standing alone.
   const hosts = isCharacter(fig)
@@ -38,10 +52,14 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                           && !units.some((x) => x.joinedTo === u.uid && x.uid !== unit.uid))
     : [];
 
-  const [picking, setPicking] = React.useState(false);
-  const [spelling, setSpelling] = React.useState(false);
-  const [attr, setAttr] = React.useState(null);
   const patch = (next) => onChange({ ...unit, ...next });
+  // Taking the ring off can leave one spell too many; the last one chosen goes.
+  const carry = (magicItem) => patch({
+    magicItem,
+    spells: caster ? chosenSpells.slice(0, spellsKnown(unit.level ?? caster, magicItem)) : unit.spells,
+  });
+  const close = (o) => !o && setPicking(null);
+
   const notes = [
     ...weaponsOf(fig).map((w) => `${w} ${rangeText(w)}`),
     p.penalty?.occupied ? "from occupied ground, activates one worse" : null,
@@ -50,105 +68,142 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
     crew ? `crew of ${crew}` : null,
     charFig ? `led by ${charFig.name}` : null,
     unit.joinedTo ? "fighting inside a unit" : null,
-  ].filter(Boolean).join(" · ");
-  // Taking the ring off can leave one spell too many; the last one chosen goes.
-  const carry = (magicItem) => patch({
-    magicItem,
-    spells: caster ? chosenSpells.slice(0, spellsKnown(unit.level ?? caster, magicItem)) : unit.spells,
-  });
+    p.formation,
+  ].filter(Boolean);
+
+  const name = (
+    <TextInput label={`${fig.name} name`} isLabelHidden size="lg" width="100%"
+               value={unit.name ?? ""} placeholder={fig.name}
+               onChange={(v) => patch({ name: v })} />
+  );
 
   return (
-    <Card padding={4} variant={charFig ? "pink" : undefined}>
-      <VStack gap={GAP.item}>
-        {/* Name and cost on the left, the count and removal always on the right;
-            what the unit is and where it came from reads underneath. */}
-        <HStack gap={GAP.item} align="center" justify="between" wrap="wrap">
-          <HStack gap={GAP.item} align="baseline" wrap="wrap">
-            <TextInput label={`${fig.name} name`} isLabelHidden value={unit.name ?? ""} placeholder={fig.name}
-                       width={240} className="om-title-input"
-                       onChange={(e) => patch({ name: e.target?.value ?? e })} />
-            <Text type="large">{unitCost(unit)}pts</Text>
-          </HStack>
-          {/* On a phone the controls take the next row, still at the right edge. */}
-          <HStack gap={GAP.item} align="center" className="om-card-controls">
-            {!isArtillery(fig) && p.max > 1 && (
-              <>
-                {p.formation && <Text type="supporting" className="om-attr">{p.formation}</Text>}
-                <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
-                         max={p.max - (charFig ? 1 : 0)} onChange={(n) => patch({ count: n })} />
-              </>
-            )}
-            <Button label="Move up" size="sm" variant="ghost" isIconOnly isDisabled={isFirst}
-                    icon={<Ico name="arrow-up" />} onClick={() => onMove(-1)} />
-            <Button label="Move down" size="sm" variant="ghost" isIconOnly isDisabled={isLast}
-                    icon={<Ico name="arrow-down" />} onClick={() => onMove(1)} />
-            <Button className="om-remove" label="Remove unit" size="sm" variant="destructive" isIconOnly
-                    icon={<Ico name="times" />} onClick={onRemove} />
-          </HStack>
+    <Card variant={charFig ? "pink" : undefined}>
+      <VStack gap={3}>
+        {/* On a phone the name takes the whole row, so it is never cut short. */}
+        {narrow && name}
+        <HStack gap={2} vAlign="center">
+          <StackItem size="fill">{!narrow && name}</StackItem>
+          <Text type="large" weight="bold">{unitCost(unit)}pts</Text>
+          <Button label="Move up" variant="ghost" isIconOnly isDisabled={isFirst}
+                  icon={<Icon icon="arrowUp" />} onClick={() => onMove(-1)} />
+          <Button label="Move down" variant="ghost" isIconOnly isDisabled={isLast}
+                  icon={<Icon icon="arrowDown" />} onClick={() => onMove(1)} />
+          <Button label="Remove unit" variant="ghost" isIconOnly
+                  icon={<Icon icon="close" />} onClick={onRemove} />
         </HStack>
-        <Text type="supporting">
-          <Link onClick={() => onOpenFigure(fig.id)}>{fig.name}</Link>{notes && ` · ${notes}`}
-        </Text>
 
-        <StatBar variant={variantAfter} />
-        <Text type="supporting">
-          {(variantAfter.attributes ?? []).map((a, i) => (
-            <React.Fragment key={a}>
-              {i > 0 && ", "}
-              <Link className="om-attr-link" onClick={() => setAttr(a)}>{a}</Link>
-            </React.Fragment>
-          ))}
-        </Text>
+        <HStack gap={2} vAlign="center" wrap="wrap">
+          <StackItem size="fill">
+            <Text type="supporting">
+              <Link onClick={() => onOpenFigure(fig.id)}>{fig.name}</Link>
+              {notes.length > 0 && ` · ${notes.join(" · ")}`}
+            </Text>
+          </StackItem>
+          {counts && (
+            <Counter label={`${fig.name} figures`} value={unit.count ?? 1} min={1}
+                     max={p.max - (charFig ? 1 : 0)} onChange={(n) => patch({ count: n })} />
+          )}
+        </HStack>
+
+        <StatBar variant={variantAfter} keys={CARD_STATS} />
+
+        {(variantAfter.attributes ?? []).length > 0 && (
+          <Text type="supporting">
+            {variantAfter.attributes.map((a, i) => (
+              <React.Fragment key={a}>
+                {i > 0 && ", "}
+                <Link onClick={() => setAttr(a)}>{a}</Link>
+              </React.Fragment>
+            ))}
+          </Text>
+        )}
         <AttributeCard name={attr} isOpen={Boolean(attr)} onOpenChange={(o) => !o && setAttr(null)} />
 
-        <HStack gap={GAP.group} align="end" wrap="wrap">
+        <List density="compact">
           {levels?.length > 1 && (
-            <Selector label="Level" width={120} value={String(unit.level ?? levels[0])}
-                      onChange={(v) => patch({ level: Number(v), spells: [] })}
-                      options={levels.map((l) => ({ value: String(l), label: `Level ${l}` }))} />
+            <ListItem label="Level" endContent={(
+              <Selector label="Level" isLabelHidden width={140} value={String(unit.level ?? levels[0])}
+                        onChange={(v) => patch({ level: Number(v), spells: [] })}
+                        options={levels.map((l) => ({ value: String(l), label: `Level ${l}` }))} />
+            )} />
           )}
           {isCharacter(fig) && (
-            <Selector label="Joins" width={320} value={unit.joinedTo ?? ""}
-                      description={joinRule(fig, unit)} isDisabled={hosts.length === 0}
-                      onChange={(v) => onJoin(v || null)}
-                      options={[{ value: "", label: "Fights alone" },
-                                ...hosts.map((u) => ({
-                                  value: u.uid,
-                                  label: figureById.get(u.figureId)?.name ?? "Unit",
-                                }))]} />
+            <ListItem label="Joins" endContent={(
+              <Selector label="Joins" isLabelHidden width={240} value={unit.joinedTo ?? ""}
+                        isDisabled={hosts.length === 0} disabledMessage={joinRule(fig, unit)}
+                        onChange={(v) => onJoin(v || null)}
+                        options={[{ value: "", label: "Fights alone" },
+                                  ...hosts.map((u) => ({
+                                    value: u.uid,
+                                    label: u.name || figureById.get(u.figureId)?.name || "Unit",
+                                  }))]} />
+            )} />
           )}
-        </HStack>
-
-        {isCharacter(fig) && (
-          <>
-            <CarriedItem item={unit.magicItem} onOpen={() => setPicking(true)}
-                         onClear={() => carry(null)} />
-            <MagicItems isOpen={picking} onOpenChange={setPicking}
-                        chosen={unit.magicItem?.name}
-                        variant={applyUpgrades(variant, unit.upgrades ?? [])}
-                        taken={units.map((u) => u.magicItem?.name).filter(Boolean)}
-                        onChoose={carry} />
-          </>
-        )}
-
-        <Upgrades kingdom={kingdom} figureId={unit.figureId} level={unit.level}
-                  chosen={unit.upgrades ?? []}
-                  onChange={(ups) => patch({
-                    upgrades: ups.map((g) => ({
-                      name: g.name, pts: upgradeCost(g, unit.level),
-                      changes: g.changes, base: g.base, adds: g.adds,
-                    })),
-                  })} />
-
-        {caster > 0 && (
-          <>
-            <SpellList spells={chosenSpells} knows={knows} onOpen={() => setSpelling(true)} />
-            <SpellPicker isOpen={spelling} onOpenChange={setSpelling}
-                         race={fig.list} level={unit.level ?? caster} magicItem={unit.magicItem} chosen={chosenSpells}
-                         onChange={(spells) => patch({ spells })} />
-          </>
-        )}
+          {hasOptions && (
+            <Choice label="Options" values={(unit.upgrades ?? []).map((u) => `${u.name} +${u.pts}pts`)}
+                    onOpen={() => setPicking("options")} />
+          )}
+          {isCharacter(fig) && (
+            <Choice label="Magic item"
+                    values={unit.magicItem ? [`${unit.magicItem.name} ${unit.magicItem.pts}pts`] : []}
+                    detail={unit.magicItem?.text}
+                    onOpen={() => setPicking("item")}
+                    onClear={unit.magicItem ? () => carry(null) : undefined} />
+          )}
+          {caster > 0 && (
+            <Choice label={`Spells ${chosenSpells.length}/${knows}`} values={chosenSpells}
+                    isOwed={chosenSpells.length < knows} onOpen={() => setPicking("spells")} />
+          )}
+        </List>
       </VStack>
+
+      {hasOptions && (
+        <UpgradesDialog isOpen={picking === "options"} onOpenChange={close}
+                        kingdom={kingdom} figureId={unit.figureId} level={unit.level}
+                        chosen={unit.upgrades ?? []}
+                        onChange={(ups) => patch({
+                          upgrades: ups.map((g) => ({
+                            name: g.name, pts: upgradeCost(g, unit.level),
+                            changes: g.changes, base: g.base, adds: g.adds,
+                          })),
+                        })} />
+      )}
+      {isCharacter(fig) && (
+        <MagicItems isOpen={picking === "item"} onOpenChange={close}
+                    chosen={unit.magicItem?.name} variant={upgraded}
+                    taken={units.map((u) => u.magicItem?.name).filter(Boolean)}
+                    onChoose={carry} />
+      )}
+      {caster > 0 && (
+        <SpellPicker isOpen={picking === "spells"} onOpenChange={close}
+                     race={fig.list} level={unit.level ?? caster} magicItem={unit.magicItem}
+                     chosen={chosenSpells} onChange={(spells) => patch({ spells })} />
+      )}
     </Card>
+  );
+}
+
+// One row of the unit's choices: what is chosen beneath the label, and the
+// way to change it at the row's end, so every row's button sits in one place.
+function Choice({ label, values, detail, isOwed, onOpen, onClear }) {
+  const chosen = values.length > 0 || detail;
+  return (
+    <ListItem
+      label={label}
+      description={chosen ? (
+        <VStack gap={0}>
+          {values.length > 0 && <Text>{values.join(", ")}</Text>}
+          {detail && <Text type="supporting">{detail}</Text>}
+        </VStack>
+      ) : undefined}
+      endContent={(
+        <HStack gap={2} vAlign="center">
+          {onClear && <Button label="Remove" size="sm" variant="ghost" onClick={onClear} />}
+          <Button label={values.length ? "Change" : "Choose"} size="sm"
+                  variant={isOwed ? "primary" : "secondary"} onClick={onOpen} />
+        </HStack>
+      )}
+    />
   );
 }

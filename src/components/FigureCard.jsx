@@ -1,4 +1,5 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import {
   Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, Text, Table, Popover, Button,
 } from "@astryxdesign/core";
@@ -6,8 +7,6 @@ import { pixel } from "@astryxdesign/core/Table";
 import { Attributes, StatBar } from "./StatLine.jsx";
 import { figureById, stats, baseRule } from "../rules/kingdom.mjs";
 import Defined from "./Defined.jsx";
-import { Icon } from "@iconify/react";
-import { D10 } from "../icons/game.mjs";
 import { equipmentParts } from "../rules/equipment.mjs";
 import { STAT_KEYS, statText, baseText, carriesRule, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { costLabel } from "../rules/upgrades.mjs";
@@ -28,7 +27,7 @@ function StatRow({ variants, extra = [] }) {
         <Defined label={stats[k]?.name ?? letter(k)}
                  def={stats[k] && { title: stats[k].name, text: stats[k].text, note: stats[k].note, page: stats[k].page }}>
           <HStack gap={1} align="center">
-            {k === "CD" && <Icon icon={D10} width={16} height={16} />}
+            {k === "CD" && <Icon icon="app:d10" size="sm" />}
             <Text type="label">{letter(k)}</Text>
           </HStack>
         </Defined>

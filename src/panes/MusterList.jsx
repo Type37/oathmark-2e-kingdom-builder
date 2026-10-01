@@ -1,12 +1,11 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import {
   VStack, HStack, Grid, Text, Heading, Button,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { ClickableCard } from "@astryxdesign/core/ClickableCard";
-import { Icon } from "@iconify/react";
 import Emblem from "../components/Emblem.jsx";
-import { MUSTER } from "../icons/game.mjs";
 import { list as listOf, get } from "../rules/store.mjs";
 import { armyPoints } from "../rules/muster.mjs";
 import Shell from "../Shell.jsx";
@@ -23,7 +22,7 @@ export default function MusterList({ store, onOpen, onNew, recordActions, shell 
       title="Army Builder"
       meta={(
         <Button label="Muster a New Army" variant="primary"
-                icon={<Icon icon={MUSTER} width={20} height={20} />} onClick={onNew} />
+                icon={<Icon icon="app:muster" />} onClick={onNew} />
       )}
       content={
           <VStack gap={GAP.section} className="om-page">

@@ -1,11 +1,10 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import {
   VStack, HStack, Grid, Text, Heading, Button,
 } from "@astryxdesign/core";
 import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { ClickableCard } from "@astryxdesign/core/ClickableCard";
-import { Icon } from "@iconify/react";
-import { LAUREL } from "../icons/game.mjs";
 import { LEVELS, REGION_SIZES, validateKingdom } from "../rules/kingdom.mjs";
 import { list as listOf } from "../rules/store.mjs";
 import Shell from "../Shell.jsx";
@@ -29,7 +28,7 @@ export default function KingdomList({ store, onOpen, onNew, recordActions, shell
       title="Kingdom Builder"
       meta={(
         <Button label="New Kingdom" variant="primary"
-                icon={<Icon icon={LAUREL} width={20} height={20} />} onClick={onNew} />
+                icon={<Icon icon="app:laurel" />} onClick={onNew} />
       )}
       content={
           <VStack gap={GAP.section} className="om-page">

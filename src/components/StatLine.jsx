@@ -1,8 +1,9 @@
 import React from "react";
 import {
-  HStack, VStack, Text, Popover, Button,
+  HStack, VStack, Text, Popover, Button, Link, Table,
   Dialog, DialogHeader, Layout, LayoutContent,
 } from "@astryxdesign/core";
+import { proportional } from "@astryxdesign/core/Table";
 import { STAT_KEYS, statText, baseText } from "../rules/stats.mjs";
 import { stats, baseRule, lookupAttribute } from "../rules/kingdom.mjs";
 
@@ -83,27 +84,28 @@ export function StatCard({ statKey, isOpen, onOpenChange }) {
   );
 }
 
-// The book's stat block in miniature (p218): one bar of letters, values beneath,
-// in fixed columns so it never wraps into a ragged stack. Every letter opens its
-// rule, exactly as the letters do in the figure table.
+// The book's stat block in miniature (p218): one row of letters, values beneath,
+// in fixed columns. Every letter opens its rule.
 export function StatBar({ variant, keys = STAT_KEYS }) {
   const [open, setOpen] = React.useState(null);
   const cols = [...keys, "base"];
+  const columns = cols.map((k) => ({
+    key: k,
+    align: "center",
+    resizable: false,
+    width: proportional(1, { minWidth: 40 }),
+    header: (
+      <Link color="inherit" onClick={() => setOpen(k)} label={(k === "base" ? baseRule : stats[k])?.name ?? k}>
+        {k === "pts" ? "Pts" : k === "base" ? "Base" : k}
+      </Link>
+    ),
+  }));
+  const row = Object.fromEntries(cols.map((k) => [
+    k, k === "base" ? baseText(variant.base) : k === "CD" ? String(variant[k]) : statText(k, variant[k]),
+  ]));
   return (
     <>
-      <div className="om-statbar" style={{ "--om-cols": cols.length }}>
-        {cols.map((k) => (
-          <div key={k} className="om-statbar-col">
-            <button type="button" className="om-statbar-letter" onClick={() => setOpen(k)}
-                    aria-label={(k === "base" ? baseRule : stats[k])?.name ?? k}>
-              {k === "pts" ? "Pts" : k === "base" ? "Base" : k}
-            </button>
-            <span className="om-statbar-value">
-              {k === "base" ? baseText(variant.base) : k === "CD" ? variant[k] : statText(k, variant[k])}
-            </span>
-          </div>
-        ))}
-      </div>
+      <Table data={[{ id: "stats", ...row }]} idKey="id" columns={columns} density="compact" dividers="columns" />
       <StatCard statKey={open} isOpen={Boolean(open)} onOpenChange={(o) => !o && setOpen(null)} />
     </>
   );

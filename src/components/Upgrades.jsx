@@ -1,5 +1,7 @@
 import React from "react";
-import { VStack, HStack, Text, CheckboxList, CheckboxListItem } from "@astryxdesign/core";
+import {
+  VStack, HStack, Text, CheckboxList, CheckboxListItem, Dialog, DialogHeader, Layout, LayoutContent,
+} from "@astryxdesign/core";
 import { upgradesFor, upgradeCost } from "../rules/upgrades.mjs";
 import { statText, baseText } from "../rules/stats.mjs";
 
@@ -16,6 +18,7 @@ export default function Upgrades({ kingdom, figureId, level, chosen = [], onChan
   return (
     <CheckboxList
       label="Options"
+      isLabelHidden
       value={names}
       density="compact"
       onChange={(next) => onChange(ups.filter((u) => next.includes(u.name)))}
@@ -53,5 +56,18 @@ export default function Upgrades({ kingdom, figureId, level, chosen = [], onChan
         );
       })}
     </CheckboxList>
+  );
+}
+
+// The options picker, opened from the unit's Options row, so a long list of
+// mounts and wargear never sets the card's height.
+export function UpgradesDialog({ isOpen, onOpenChange, ...props }) {
+  return (
+    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width="min(640px, 94vw)" maxHeight="88dvh">
+      <Layout
+        header={<DialogHeader title="Options" onOpenChange={onOpenChange} />}
+        content={<LayoutContent isScrollable><Upgrades {...props} /></LayoutContent>}
+      />
+    </Dialog>
   );
 }

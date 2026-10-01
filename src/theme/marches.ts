@@ -109,6 +109,8 @@ export default defineTheme({
   },
 
   components: {
+    // The book sets its lore in italic.
+    blockquote: { base: { fontStyle: "italic" } },
     card: { base: { borderRadius: "var(--radius-none)" } },
     button: { base: { fontFamily: "var(--font-family-ui)" } },
     "side-nav-item": { base: { fontFamily: "var(--font-family-ui)" } },

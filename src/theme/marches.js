@@ -247,6 +247,11 @@ export const marchesTheme = {
         "lineHeight": "var(--text-display-3-leading)"
       }
     },
+    "blockquote": {
+      "base": {
+        "fontStyle": "italic"
+      }
+    },
     "card": {
       "base": {
         "borderRadius": "var(--radius-none)"

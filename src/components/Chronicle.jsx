@@ -1,8 +1,8 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import { VStack, HStack, Text, Button, NumberInput } from "@astryxdesign/core";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { TextArea } from "@astryxdesign/core/TextArea";
-import Ico from "./Ico.jsx";
 import { GAP } from "../layout.mjs";
 
 // The kingdom's annals, year by year (p27): a back story before the first
@@ -25,13 +25,13 @@ export default function Chronicle({ entries = [], onChange }) {
             <TextInput label="Event" size="sm" width="100%" value={e.title}
                        onChange={(title) => set(i, { title })} />
             <Button className="om-remove" label="Remove entry" size="sm" variant="destructive" isIconOnly
-                    icon={<Ico name="times" />} onClick={() => onChange(entries.filter((_, j) => j !== i))} />
+                    icon={<Icon icon="close" />} onClick={() => onChange(entries.filter((_, j) => j !== i))} />
           </HStack>
           <TextArea label={`Year ${e.year}`} isLabelHidden size="sm" rows={3} value={e.body ?? ""}
                     onChange={(body) => set(i, { body })} />
         </VStack>
       ))}
-      <Button label="Add Entry" variant="secondary" size="sm" icon={<Ico name="plus" />} onClick={add} />
+      <Button label="Add Entry" variant="secondary" size="sm" icon={<Icon icon="app:plus" />} onClick={add} />
     </VStack>
   );
 }

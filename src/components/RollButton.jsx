@@ -1,7 +1,6 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import { Button } from "@astryxdesign/core";
-import { Icon } from "@iconify/react";
-import { DICE } from "../icons/game.mjs";
 
 // Every roll in the app: the dice tumble once, then land.
 export default function RollButton({ label, onClick, variant = "secondary", size, isIconOnly }) {
@@ -14,10 +13,6 @@ export default function RollButton({ label, onClick, variant = "secondary", size
 
   return (
     <Button label={label} variant={variant} size={size} isIconOnly={isIconOnly} onClick={roll}
-            icon={
-              <span key={rolling} className={rolling ? "om-roll" : undefined}>
-                <Icon icon={DICE} width={18} height={18} />
-              </span>
-            } />
+            icon={<Icon key={rolling} icon="app:dice" className={rolling ? "om-roll" : undefined} />} />
   );
 }

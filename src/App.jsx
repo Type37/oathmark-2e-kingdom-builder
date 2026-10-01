@@ -4,6 +4,9 @@ import { SideNav, SideNavHeading, SideNavItem, SideNavSection } from "@astryxdes
 import { MobileNav } from "@astryxdesign/core/MobileNav";
 import { AlertDialog } from "@astryxdesign/core/AlertDialog";
 import { marchesTheme } from "./theme/marches.js";
+import { icons } from "./theme/icons.jsx";
+
+const THEME = { ...marchesTheme, icons };
 
 import Landing from "./panes/Landing.jsx";
 import Emblem from "./components/Emblem.jsx";
@@ -191,7 +194,7 @@ export default function App() {
   if (page === "muster" && !muster) page = "musters";
 
   return (
-    <Theme theme={marchesTheme} mode="light">
+    <Theme theme={THEME} mode="light">
       <>
       <AppShell height="auto" contentPadding={0} variant="wash" sideNav={sideNav} mobileNav={false}>
         <MobileNav isOpen={menuOpen} onOpenChange={setMenuOpen} header="Oathmark">

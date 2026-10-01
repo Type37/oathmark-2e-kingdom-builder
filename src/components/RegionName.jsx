@@ -1,6 +1,6 @@
 import React from "react";
+import { Icon } from "@astryxdesign/core";
 import { HStack, Text, TextInput } from "@astryxdesign/core";
-import Ico from "./Ico.jsx";
 
 // "Region 3" is the book's label; the name you give it is yours. It reads as a
 // heading until you point at it, and the pencil says it will take a name.
@@ -32,7 +32,7 @@ export default function RegionName({ region, value, onChange }) {
       <HStack gap={1} align="center">
         <Text type="label">{named || `Region ${region}`}</Text>
         {named && <Text type="label" className="om-region-ord">Region {region}</Text>}
-        <Ico name="pen" size={14} />
+        <Icon icon="app:pen" size="sm" />
       </HStack>
     </button>
   );
