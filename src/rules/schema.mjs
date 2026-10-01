@@ -43,6 +43,7 @@ export const MusterSchema = z.object({
     .array(
       z.object({
         uid: z.string().optional(),
+        name: z.string().optional(),
         figureId: z.string().min(1),
         count: z.number().int().min(1).optional().default(1),
         level: z.number().int().min(1).max(5).optional(),

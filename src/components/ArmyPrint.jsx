@@ -86,7 +86,7 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
           {rows.map(({ unit, p, v, figures, range, knows }) => (
             <tr key={unit.uid}>
               <td className="om-print-unit-name">
-                <strong>{p.fig.name}</strong>
+                <strong>{unit.name ? `${unit.name} (${p.fig.name})` : p.fig.name}</strong>
                 <span>
                   {[
                     p.penalty?.occupied ? "occupied ground, activates one worse" : null,

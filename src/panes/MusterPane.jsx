@@ -9,6 +9,8 @@ import Ico from "../components/Ico.jsx";
 import Emblem from "../components/Emblem.jsx";
 import ArmyPrint from "../components/ArmyPrint.jsx";
 import Shell from "../Shell.jsx";
+import { useToast } from "@astryxdesign/core/Toast";
+import { armyText } from "../rules/armyText.mjs";
 import { figurePool, figureById } from "../rules/kingdom.mjs";
 import { validateArmy } from "../rules/muster.mjs";
 import { validateKingdom } from "../rules/kingdom.mjs";
@@ -24,6 +26,7 @@ import { GAP } from "../layout.mjs";
 export default function MusterPane({ kingdom, collection = {}, settings = {}, value, onChange, ready, onOpenKingdom, onPrint, shell }) {
   const [openFigure, setOpenFigure] = React.useState(null);
   const [adding, setAdding] = React.useState(false);
+  const toast = useToast();
   const points = value.points ?? 1000;
   const units = value.units ?? [];
 
@@ -36,6 +39,25 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
   const battle = value.battleType ? battleTypeById.get(value.battleType) : null;
 
   const setUnits = (next) => onChange({ ...value, units: next });
+  const move = (uid, dir) => {
+    const i = units.findIndex((u) => u.uid === uid);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= units.length) return;
+    const next = [...units];
+    [next[i], next[j]] = [next[j], next[i]];
+    setUnits(next);
+  };
+
+  const share = async () => {
+    const text = armyText({ value, kingdom, pool });
+    try {
+      if (navigator.share) await navigator.share({ title: value.name || "Army", text });
+      else { await navigator.clipboard.writeText(text); toast({ body: "Copied" }); }
+    } catch (err) {
+      if (err?.name !== "AbortError") toast({ body: "Could not copy the army", type: "error" });
+    }
+  };
+
   const patchUnit = (uid, next) => setUnits(units.map((u) => (u.uid === uid ? next : u)));
 
   // Figures on the table, characters included (p81).
@@ -75,6 +97,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
   return (
     <Shell
       {...shell}
+      actions={[{ label: "Share as text", onClick: share }, ...(shell?.actions ?? [])]}
       onPrint={onPrint}
       title={value.name || "Untitled"}
       onRename={(name) => onChange({ ...value, name })}
@@ -133,8 +156,9 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       content={(
         <VStack gap={GAP.group} className="om-page">
           <ArmyPrint value={value} kingdom={kingdom} pool={pool} stats={agg} battle={battle} />
-          {units.map((u) => (
-            <UnitCard key={u.uid} kingdom={kingdom} unit={u} pool={pool} units={units}
+          {units.map((u, i) => (
+            <UnitCard key={u.uid} isFirst={i === 0} isLast={i === units.length - 1}
+                      onMove={(dir) => move(u.uid, dir)} kingdom={kingdom} unit={u} pool={pool} units={units}
                       onChange={(next) => patchUnit(u.uid, next)}
                       onJoin={(hostUid) => setUnits(units.map((x) => {
                         if (x.uid === u.uid) return { ...x, joinedTo: hostUid };

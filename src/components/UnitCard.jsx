@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  VStack, HStack, Text, Button, Selector, Card, Link,
+  VStack, HStack, Text, Button, Selector, Card, Link, TextInput,
 } from "@astryxdesign/core";
 import Counter from "./Counter.jsx";
 import Ico from "./Ico.jsx";
@@ -20,7 +20,7 @@ import { attrLevel, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { GAP } from "../layout.mjs";
 
 // One entry on the Army Roster: who they are, how many, and what they carry.
-export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin, onRemove, onOpenFigure }) {
+export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin, onRemove, onOpenFigure, onMove, isFirst, isLast }) {
   const entry = pool.get(unit.figureId);
   const p = unitProfile(unit, units, entry);
   if (!p) return null;
@@ -43,6 +43,7 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
   const [attr, setAttr] = React.useState(null);
   const patch = (next) => onChange({ ...unit, ...next });
   const notes = [
+    unit.name ? fig.name : null,
     ...weaponsOf(fig).map((w) => `${w} ${rangeText(w)}`),
     p.penalty?.occupied ? "from occupied ground, activates one worse" : null,
     p.penalty?.unreliable ? "from the borderlands, Unreliable" : null,
@@ -64,8 +65,8 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
             what the unit is and where it came from reads underneath. */}
         <HStack gap={GAP.item} align="center" justify="between" wrap="wrap">
           <HStack gap={GAP.item} align="baseline" wrap="wrap">
-            <Button variant="ghost" size="sm" label={fig.name} onClick={() => onOpenFigure(fig.id)}>
-              <Text type="large">{fig.name}</Text>
+            <Button variant="ghost" size="sm" label={unit.name || fig.name} onClick={() => onOpenFigure(fig.id)}>
+              <Text type="large">{unit.name || fig.name}</Text>
             </Button>
             <Text type="large">{unitCost(unit)}pts</Text>
           </HStack>
@@ -78,6 +79,10 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
                          max={p.max - (charFig ? 1 : 0)} onChange={(n) => patch({ count: n })} />
               </>
             )}
+            <Button label="Move up" size="sm" variant="ghost" isIconOnly isDisabled={isFirst}
+                    icon={<Ico name="arrow-up" />} onClick={() => onMove(-1)} />
+            <Button label="Move down" size="sm" variant="ghost" isIconOnly isDisabled={isLast}
+                    icon={<Ico name="arrow-down" />} onClick={() => onMove(1)} />
             <Button className="om-remove" label="Remove unit" size="sm" variant="destructive" isIconOnly
                     icon={<Ico name="times" />} onClick={onRemove} />
           </HStack>
@@ -96,6 +101,8 @@ export default function UnitCard({ kingdom, unit, pool, units, onChange, onJoin,
         <AttributeCard name={attr} isOpen={Boolean(attr)} onOpenChange={(o) => !o && setAttr(null)} />
 
         <HStack gap={GAP.group} align="end" wrap="wrap">
+          <TextInput label="Name" isOptional width={240} value={unit.name ?? ""} placeholder={fig.name}
+                     onChange={(e) => patch({ name: e.target?.value ?? e })} />
           {levels?.length > 1 && (
             <Selector label="Level" width={120} value={String(unit.level ?? levels[0])}
                       onChange={(v) => patch({ level: Number(v), spells: [] })}
