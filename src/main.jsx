@@ -5,6 +5,7 @@ import "@astryxdesign/core/astryx.css";
 import "./theme/fonts.css";
 import "./theme/marches.css";
 import "./theme/paper.css";
+import "./theme/touch.css";
 import App from "./App.jsx";
 
 // Every deploy renames the code-split chunks and deletes the old ones, so a tab

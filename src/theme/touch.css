@@ -1,0 +1,6 @@
+/* Fast taps must count, not double-tap zoom the page. Every element, not
+   only buttons: a second tap that misses a small stepper by a few pixels
+   lands on the row behind it. Samsung Internet, Firefox and Chrome with
+   "Force enable zoom" all double-tap zoom a device-width page. Pinch zoom
+   stays. Zero specificity, so a drag handle's own touch-action still wins. */
+html, * { touch-action: manipulation; }
