@@ -113,3 +113,15 @@ test("a mounted character joins by its new base, pp81, 84", async () => {
   assert.match(joinRule(general, horse), /25 x 50mm/);
   assert.match(joinRule(general, chariot), /fights alone/);
 });
+
+test("the roster reads as text, with a unit's own name leading", async () => {
+  const { armyText, unitLabel } = await import("./armyText.mjs");
+  assert.equal(unitLabel({ name: " Old Guard " }, "Soldiers"), "Old Guard (Soldiers)");
+  assert.equal(unitLabel({}, "Soldiers"), "Soldiers");
+  const text = armyText(
+    { name: "Test Army", commander: "Ada", points: 1000,
+      units: [{ uid: "a", figureId: "human-soldiers", count: 10, name: "Old Guard" }] },
+    { name: "Realm" }, new Map(),
+  );
+  assert.match(text, /^Test Army\nCommander: Ada\nKingdom: Realm\nPoints: \d+ of 1000\n\nOld Guard \(Human Soldiers?\) x10, \d+pts$/m);
+});

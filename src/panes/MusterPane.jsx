@@ -8,6 +8,8 @@ import AddUnits from "../components/AddUnits.jsx";
 import Ico from "../components/Ico.jsx";
 import Emblem from "../components/Emblem.jsx";
 import ArmyPrint from "../components/ArmyPrint.jsx";
+import ShareText from "../components/ShareText.jsx";
+import { armyText } from "../rules/armyText.mjs";
 import Shell from "../Shell.jsx";
 import { figurePool, figureById } from "../rules/kingdom.mjs";
 import { validateArmy } from "../rules/muster.mjs";
@@ -24,6 +26,7 @@ import { GAP } from "../layout.mjs";
 export default function MusterPane({ kingdom, collection = {}, settings = {}, value, onChange, ready, onOpenKingdom, onPrint, shell }) {
   const [openFigure, setOpenFigure] = React.useState(null);
   const [adding, setAdding] = React.useState(false);
+  const [sharing, setSharing] = React.useState(false);
   const points = value.points ?? 1000;
   const units = value.units ?? [];
 
@@ -36,6 +39,15 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
   const battle = value.battleType ? battleTypeById.get(value.battleType) : null;
 
   const setUnits = (next) => onChange({ ...value, units: next });
+  // Swap with the neighbour; a unit led by a character keeps its place in the list, not its host's.
+  const move = (uid, dir) => {
+    const i = units.findIndex((u) => u.uid === uid);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= units.length) return;
+    const next = [...units];
+    [next[i], next[j]] = [next[j], next[i]];
+    setUnits(next);
+  };
   const patchUnit = (uid, next) => setUnits(units.map((u) => (u.uid === uid ? next : u)));
 
   // Figures on the table, characters included (p81).
@@ -75,6 +87,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
   return (
     <Shell
       {...shell}
+      actions={[{ label: "Share as text", onClick: () => setSharing(true) }, ...(shell?.actions ?? [])]}
       onPrint={onPrint}
       title={value.name || "Untitled"}
       onRename={(name) => onChange({ ...value, name })}
@@ -133,8 +146,10 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       content={(
         <VStack gap={GAP.group} className="om-page">
           <ArmyPrint value={value} kingdom={kingdom} pool={pool} stats={agg} battle={battle} />
-          {units.map((u) => (
+          {units.map((u, i) => (
             <UnitCard key={u.uid} kingdom={kingdom} unit={u} pool={pool} units={units}
+                      isFirst={i === 0} isLast={i === units.length - 1}
+                      onMove={(dir) => move(u.uid, dir)}
                       onChange={(next) => patchUnit(u.uid, next)}
                       onJoin={(hostUid) => setUnits(units.map((x) => {
                         if (x.uid === u.uid) return { ...x, joinedTo: hostUid };
@@ -153,6 +168,8 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
             <Button label="Add Units" variant="primary" onClick={() => setAdding(true)}
                     icon={<Ico name="plus" size={20} />} />
           </div>
+          <ShareText isOpen={sharing} onOpenChange={setSharing} title={value.name || "Army"}
+                     text={sharing ? armyText(value, kingdom, pool) : ""} />
           <AddUnits isOpen={adding} onOpenChange={setAdding} pool={pool} units={units}
                     collection={collection} useCollection={settings.useCollection} onAdd={add} onOpenFigure={setOpenFigure} />
           {openFigure && (

@@ -5,6 +5,7 @@ import { lookupAttribute } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { applyUpgrades } from "../rules/upgrades.mjs";
 import { unitProfile, crewOf } from "../rules/army.mjs";
+import { unitLabel } from "../rules/armyText.mjs";
 import { STAT_KEYS, statText, baseText, attrLevel, figuresIn, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { magicItems as ALL_ITEMS, spellsKnown, applyItem, spellNamed } from "../rules/magic.mjs";
 
@@ -86,7 +87,7 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
           {rows.map(({ unit, p, v, figures, range, knows }) => (
             <tr key={unit.uid}>
               <td className="om-print-unit-name">
-                <strong>{p.fig.name}</strong>
+                <strong>{unitLabel(unit, p.fig.name)}</strong>
                 <span>
                   {[
                     p.penalty?.occupied ? "occupied ground, activates one worse" : null,
