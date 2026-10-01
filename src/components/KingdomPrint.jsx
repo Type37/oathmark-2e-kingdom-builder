@@ -43,7 +43,8 @@ export default function KingdomPrint({ value }) {
           <dl>
             <dt>Ruler</dt><dd>{value.ruler || "—"}</dd>
             <dt>Capital</dt><dd>{picks.find((p) => p.region === 1)?.name ?? "—"}</dd>
-            <dt>Start</dt><dd>{level}, Regions {start.join(", ")}</dd>
+            {/* The starting level only matters until the kingdom is founded. */}
+            {!value.founded && <><dt>Start</dt><dd>{level}, Regions {start.join(", ")}</dd></>}
           </dl>
         </div>
       </header>

@@ -1,7 +1,8 @@
 import React from "react";
+import { sizeRule, crewOf } from "../rules/army.mjs";
 import {
   Icon, Heading, Dialog, DialogHeader, Layout, LayoutContent, VStack, HStack, Text, Table, Popover,
-  Button,
+  Button, StackItem,
 } from "@astryxdesign/core";
 import { pixel } from "@astryxdesign/core/Table";
 import { Attributes, StatBar } from "./StatLine.jsx";
@@ -133,20 +134,29 @@ export default function FigureCard({ figureId, level, owns, isOpen, onOpenChange
       <Layout
         header={<DialogHeader title={fig.name} subtitle={`Unlocked from ${fig.terrain}`} onOpenChange={onOpenChange} />}
         content={
-          // The stat table runs edge to edge, which needs the content's top
-          // padding to bleed into; without it the letters slide under the header.
-          <LayoutContent padding={4}>
-            <VStack gap={GAP.group}>
-              <VStack gap={GAP.item}>
+          <LayoutContent>
+            {/* The same block as a unit on the roster: cost top right, the
+                stat bar, then the abilities. */}
+            <VStack gap={GAP.section}>
+              <VStack gap={3}>
+                {/* Kept flat: an Astryx Table bleeds to its container's edge when
+                    it is the first or last child, so it must sit mid-stack. */}
                 {shown.map((v, i) => (
-                  <VStack key={i} gap={0}>
-                    {shown.length > 1 && <Text type="label">Level {v.level}</Text>}
+                  <React.Fragment key={i}>
+                    <HStack gap={2} vAlign="center">
+                      <StackItem size="fill">
+                        {shown.length > 1 && <Text weight="semibold">Level {v.level}</Text>}
+                      </StackItem>
+                      <Text type="large" weight="bold">
+                        {v.pts}pts{sizeRule(fig).max > 1 && !crewOf(fig) ? " a figure" : ""}
+                      </Text>
+                    </HStack>
                     <StatBar variant={v} />
-                  </VStack>
+                  </React.Fragment>
                 ))}
+                <Attributes variant={shown[0]} />
+                <Ranged fig={fig} />
               </VStack>
-              <Ranged fig={fig} />
-              <Attributes variant={shown[0]} />
               {fig.equipment.length > 0 && <Equipment lines={fig.equipment} />}
               {fig.upgrades?.length > 0 && (
                 <VStack gap={GAP.item}>

@@ -83,7 +83,7 @@ export default function Shell({
   );
 
   const header = (
-    <LayoutHeader hasDivider padding={narrow ? 4 : 6}>
+    <LayoutHeader>
       <SizeProvider value="lg">
         {titleBelow ? (
           <VStack gap={GAP.item}>{lead}{titleBlock}{tools}</VStack>
@@ -104,19 +104,21 @@ export default function Shell({
     <>
       <Layout
         height="fill"
+        padding={narrow ? 4 : 6}
+        defaultHasDividers
         contentWidth={width ?? FRAME.contentWidth}
         header={header}
         content={(
-          <LayoutContent padding={narrow ? 4 : 6}>
+          <LayoutContent>
             {body}
             {/* A phone has no room to keep the credits pinned, so they close the page. */}
             {narrow && <Footer />}
           </LayoutContent>
         )}
         end={noPanels || !detail ? undefined : (
-          <LayoutPanel width={PANEL.detail} padding={6} hasDivider>{detail}</LayoutPanel>
+          <LayoutPanel width={PANEL.detail} hasDivider isScrollable label={detailTitle ?? "Details"}>{detail}</LayoutPanel>
         )}
-        footer={narrow ? undefined : <LayoutFooter hasDivider><Footer /></LayoutFooter>}
+        footer={narrow ? undefined : <LayoutFooter><Footer /></LayoutFooter>}
       />
 
       {noPanels && detail && (

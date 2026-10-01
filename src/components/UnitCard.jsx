@@ -14,11 +14,9 @@ import { unitProfile, canJoin, isCharacter, crewOf, isArtillery, joinRule } from
 import { spellsKnown, applyItem } from "../rules/magic.mjs";
 import MagicItems from "./MagicItems.jsx";
 import SpellPicker from "./SpellPicker.jsx";
-import { attrLevel, weaponsOf, rangeText, STAT_KEYS } from "../rules/stats.mjs";
+import { attrLevel, weaponsOf, rangeText } from "../rules/stats.mjs";
 import { BREAK } from "../layout.mjs";
 
-// The cost sits beside the name, so the card's stat bar leaves it out.
-const CARD_STATS = STAT_KEYS.filter((k) => k !== "pts");
 
 // One entry on the Army Roster, laid out like the book's unit block (p218):
 // name and cost, then type and quantity, then the stat bar, then every choice
@@ -105,7 +103,7 @@ export default function UnitCard({
           )}
         </HStack>
 
-        <StatBar variant={variantAfter} keys={CARD_STATS} />
+        <StatBar variant={variantAfter} />
 
         <AttributeTerms attributes={variantAfter.attributes ?? []} />
 

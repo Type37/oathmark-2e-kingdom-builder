@@ -8,7 +8,7 @@ const EMAIL = "warlore1@outlook.com";
 
 export default function Footer() {
   return (
-    <HStack gap={GAP.group} vAlign="center" wrap="wrap" paddingInline={6} paddingBlock={2}>
+    <HStack gap={GAP.group} vAlign="center" wrap="wrap">
       <StackItem size="fill"><Text type="supporting">
         <i>Oathmark: Second Edition</i> by{" "}
         <Link href="https://www.josephamccullough.com" target="_blank">Joseph A. McCullough</Link>

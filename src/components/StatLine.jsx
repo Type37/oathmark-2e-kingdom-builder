@@ -17,7 +17,10 @@ export function Attributes({ variant }) {
 
 // The book's stat block in miniature (p218): one row of letters, values beneath,
 // in fixed columns. Every letter opens its rule.
-export function StatBar({ variant, keys = STAT_KEYS }) {
+// The cost always sits beside the name, top right, so the bar leaves it out.
+const BAR_KEYS = STAT_KEYS.filter((k) => k !== "pts");
+
+export function StatBar({ variant, keys = BAR_KEYS }) {
   const cols = [...keys, "base"];
   const columns = cols.map((k) => ({
     key: k,
