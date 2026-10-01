@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Icon, VStack, HStack, StackItem, Heading, Text, Section, NumberInput, ProgressBar, Button, Token,
-  Banner, MetadataList, MetadataListItem,
+  Banner,
 } from "@astryxdesign/core";
 import FigureCard from "../components/FigureCard.jsx";
 import UnitCard from "../components/UnitCard.jsx";
@@ -15,7 +15,6 @@ import { figurePool, figureById } from "../rules/kingdom.mjs";
 import { validateArmy } from "../rules/muster.mjs";
 import { validateKingdom } from "../rules/kingdom.mjs";
 import { EmptyState } from "@astryxdesign/core/EmptyState";
-import { armyStats } from "../rules/stats.mjs";
 import { shortfalls } from "../rules/collection.mjs";
 import { sizeRule, crewOf, isArtillery, isCharacter, unitProfile } from "../rules/army.mjs";
 import { battleTypeById } from "../rules/battle.mjs";
@@ -32,7 +31,6 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
 
   const pool = React.useMemo(() => figurePool(kingdom), [kingdom]);
   const result = validateArmy(kingdom, { points, units });
-  const agg = armyStats(units);
   // Only a player tracking their painted figures wants to hear about shortfalls.
   const short = settings.useCollection ? shortfalls(collection, units) : [];
   const over = result.points > points;
@@ -41,10 +39,10 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
   const setUnits = (next) => onChange({ ...value, units: next });
   const move = (uid, dir) => {
     const i = units.findIndex((u) => u.uid === uid);
-    const j = i + dir;
-    if (i < 0 || j < 0 || j >= units.length) return;
-    const next = [...units];
-    [next[i], next[j]] = [next[j], next[i]];
+    const j = dir === "top" ? 0 : dir === "bottom" ? units.length - 1 : i + dir;
+    if (i < 0 || j < 0 || j >= units.length || i === j) return;
+    const next = units.filter((u) => u.uid !== uid);
+    next.splice(j, 0, units[i]);
     setUnits(next);
   };
 
@@ -120,22 +118,6 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
           <ProgressBar label="Points Value" isLabelHidden
                        value={Math.min(result.points, points)} max={points || 1}
                        variant={over ? "error" : "accent"} />
-          {/* Only what the rules make you act on. The points are on the bar and
-              the progress bar; unit and figure counts serve no rule at all. */}
-          <MetadataList>
-            {agg.command > 0 && (
-              <MetadataListItem label="Command">up to {agg.extraActivations} extra {agg.extraActivations === 1 ? "activation" : "activations"}</MetadataListItem>
-            )}
-            {agg.champions > 0 && <MetadataListItem label="Champion dice">{agg.champions}</MetadataListItem>}
-            {agg.shootingDice > 0 && (
-              <MetadataListItem label="Shooting">
-                {agg.shootingDice} dice to {agg.ranges.map((r) => `${r}"`).join(", ")}
-              </MetadataListItem>
-            )}
-            {agg.casters.length > 0 && (
-              <MetadataListItem label="Spells">{agg.spellsKnown} known across {agg.casters.length}</MetadataListItem>
-            )}
-          </MetadataList>
           {result.errors.length > 0 && (
             <VStack gap={GAP.tight}>
               {result.errors.map((e) => <Banner key={e} status="error" title={e} />)}
@@ -159,7 +141,7 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
       )}
       content={(
         <VStack gap={4}>
-          <ArmyPrint value={value} kingdom={kingdom} pool={pool} stats={agg} battle={battle} />
+          <ArmyPrint value={value} kingdom={kingdom} pool={pool} battle={battle} />
           <HStack gap={2} vAlign="center">
             <StackItem size="fill"><Heading level={2}>Units</Heading></StackItem>
             <Button label="Add Units" variant="primary" onClick={() => setAdding(true)}
@@ -167,7 +149,13 @@ export default function MusterPane({ kingdom, collection = {}, settings = {}, va
           </HStack>
           {units.map((u, i) => (
             <UnitCard key={u.uid} isFirst={i === 0} isLast={i === units.length - 1}
-                      onMove={(dir) => move(u.uid, dir)} kingdom={kingdom} unit={u} pool={pool} units={units}
+                      onMove={(dir) => move(u.uid, dir)}
+                      onDuplicate={() => {
+                        // The copy lands under the original and fights alone.
+                        const i = units.findIndex((x) => x.uid === u.uid);
+                        const copy = { ...u, uid: crypto.randomUUID(), joinedTo: null };
+                        setUnits([...units.slice(0, i + 1), copy, ...units.slice(i + 1)]);
+                      }} kingdom={kingdom} unit={u} pool={pool} units={units}
                       onChange={(next) => patchUnit(u.uid, next)}
                       onJoin={(hostUid) => setUnits(units.map((x) => {
                         if (x.uid === u.uid) return { ...x, joinedTo: hostUid };

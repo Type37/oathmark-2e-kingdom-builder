@@ -1,12 +1,14 @@
 import React from "react";
 import {
-  Icon, VStack, HStack, StackItem, Text, Button, Selector, Card, List, ListItem,
-  useMediaQuery, NumberInput,
+  StackItem, VStack, HStack, Text, Button, Selector, Card, NumberInput, Layout, LayoutContent, Field,
 } from "@astryxdesign/core";
 import { UpgradesDialog } from "./Upgrades.jsx";
 import { StatBar } from "./StatLine.jsx";
 import { AttributeTerms } from "./Defined.jsx";
 import InlineName from "./InlineName.jsx";
+import { Toolbar } from "@astryxdesign/core/Toolbar";
+import { FormLayout } from "@astryxdesign/core/FormLayout";
+import { MoreMenu } from "@astryxdesign/core/MoreMenu";
 import { figureById } from "../rules/kingdom.mjs";
 import { unitCost } from "../rules/muster.mjs";
 import { upgradeCost, applyUpgrades, upgradesFor } from "../rules/upgrades.mjs";
@@ -15,7 +17,6 @@ import { spellsKnown, applyItem } from "../rules/magic.mjs";
 import MagicItems from "./MagicItems.jsx";
 import SpellPicker from "./SpellPicker.jsx";
 import { attrLevel, weaponsOf, rangeText } from "../rules/stats.mjs";
-import { BREAK } from "../layout.mjs";
 
 
 // One entry on the Army Roster, laid out like the book's unit block (p218):
@@ -23,12 +24,11 @@ import { BREAK } from "../layout.mjs";
 // made for the unit as one labelled list. Picking happens in dialogs, so a
 // card's height is set by what the unit has, never by what it could have.
 export default function UnitCard({
-  kingdom, unit, pool, units, onChange, onJoin, onRemove, onOpenFigure, onMove, isFirst, isLast,
+  kingdom, unit, pool, units, onChange, onJoin, onRemove, onOpenFigure, onMove, onDuplicate, isFirst, isLast,
 }) {
   const entry = pool.get(unit.figureId);
   const p = unitProfile(unit, units, entry);
   const [picking, setPicking] = React.useState(null);
-  const narrow = useMediaQuery(BREAK.narrow);
   if (!p) return null;
 
   const { fig, variant, charFig } = p;
@@ -69,27 +69,39 @@ export default function UnitCard({
     p.formation,
   ].filter(Boolean);
 
+  const shownName = unit.name || fig.name;
   const name = (
     <InlineName label={`${fig.name} name`} value={unit.name} placeholder={fig.name} heading={3}
                 onChange={(v) => patch({ name: v })} />
   );
 
   return (
-    <Card variant={charFig ? "pink" : undefined}>
+    // Astryx's card-with-inner-layout: a Toolbar header carrying the unit's
+    // name and its actions, the body underneath. Moving and removing live in
+    // the ⋯ menu, as on the template's Kanban cards.
+    <Card padding={0} variant={charFig ? "pink" : undefined}>
+      <Layout height="auto" padding={4} defaultHasDividers
+        header={(
+          <Toolbar label={`${shownName} actions`} size="md" dividers={["bottom"]}
+                   startContent={name}
+                   endContent={(
+                     <HStack gap={2} vAlign="center">
+                       <Text type="large" weight="bold">{unitCost(unit)}pts</Text>
+                       <MoreMenu label={`${shownName} actions`} alignment="end" items={[
+                         { label: "Move to top", isDisabled: isFirst, onClick: () => onMove("top") },
+                         { label: "Move up", isDisabled: isFirst, onClick: () => onMove(-1) },
+                         { label: "Move down", isDisabled: isLast, onClick: () => onMove(1) },
+                         { label: "Move to bottom", isDisabled: isLast, onClick: () => onMove("bottom") },
+                         { type: "divider" },
+                         { label: "Duplicate unit", onClick: onDuplicate },
+                         { label: "Remove", variant: "destructive", onClick: onRemove },
+                       ]} />
+                     </HStack>
+                   )} />
+        )}
+        content={(
+      <LayoutContent>
       <VStack gap={3}>
-        {/* On a phone the name takes the whole row, so it is never cut short. */}
-        {narrow && name}
-        <HStack gap={2} vAlign="center">
-          <StackItem size="fill">{!narrow && name}</StackItem>
-          <Text type="large" weight="bold">{unitCost(unit)}pts</Text>
-          <Button label="Move up" variant="ghost" isIconOnly isDisabled={isFirst}
-                  icon={<Icon icon="arrowUp" />} onClick={() => onMove(-1)} />
-          <Button label="Move down" variant="ghost" isIconOnly isDisabled={isLast}
-                  icon={<Icon icon="arrowDown" />} onClick={() => onMove(1)} />
-          <Button label="Remove unit" variant="ghost" isIconOnly
-                  icon={<Icon icon="close" />} onClick={onRemove} />
-        </HStack>
-
         <HStack gap={2} vAlign="center" wrap="wrap">
           <StackItem size="fill">
             <HStack gap={3} vAlign="center" wrap="wrap">
@@ -109,18 +121,17 @@ export default function UnitCard({
 
         <AttributeTerms attributes={variantAfter.attributes ?? []} />
 
+        {/* Labels beside their controls, Astryx's settings-form layout, so each
+            button sits next to the thing it changes. */}
         {hasChoices && (
-        <List density="compact">
-          {levels?.length > 1 && (
-            <ListItem label="Level" endContent={(
-              <Selector label="Level" isLabelHidden width={140} value={String(unit.level ?? levels[0])}
+          <FormLayout direction="horizontal-labels">
+            {levels?.length > 1 && (
+              <Selector label="Level" width={140} value={String(unit.level ?? levels[0])}
                         onChange={(v) => patch({ level: Number(v), spells: [] })}
                         options={levels.map((l) => ({ value: String(l), label: `Level ${l}` }))} />
-            )} />
-          )}
-          {isCharacter(fig) && (
-            <ListItem label="Joins" endContent={(
-              <Selector label="Joins" isLabelHidden width={240} value={unit.joinedTo ?? ""}
+            )}
+            {isCharacter(fig) && (
+              <Selector label="Joins" width={240} value={unit.joinedTo ?? ""}
                         isDisabled={hosts.length === 0} disabledMessage={joinRule(fig, unit)}
                         onChange={(v) => onJoin(v || null)}
                         options={[{ value: "", label: "Fights alone" },
@@ -128,26 +139,27 @@ export default function UnitCard({
                                     value: u.uid,
                                     label: u.name || figureById.get(u.figureId)?.name || "Unit",
                                   }))]} />
-            )} />
-          )}
-          {hasOptions && (
-            <Choice label="Options" values={(unit.upgrades ?? []).map((u) => `${u.name} +${u.pts}pts`)}
-                    onOpen={() => setPicking("options")} />
-          )}
-          {isCharacter(fig) && (
-            <Choice label="Magic item"
-                    values={unit.magicItem ? [`${unit.magicItem.name} ${unit.magicItem.pts}pts`] : []}
-                    detail={unit.magicItem?.text}
-                    onOpen={() => setPicking("item")}
-                    onClear={unit.magicItem ? () => carry(null) : undefined} />
-          )}
-          {caster > 0 && (
-            <Choice label={`Spells ${chosenSpells.length}/${knows}`} values={chosenSpells}
-                    isOwed={chosenSpells.length < knows} onOpen={() => setPicking("spells")} />
-          )}
-        </List>
+            )}
+            {hasOptions && (
+              <Choice label="Options" values={(unit.upgrades ?? []).map((u) => `${u.name} +${u.pts}pts`)}
+                      onOpen={() => setPicking("options")} />
+            )}
+            {isCharacter(fig) && (
+              <Choice label="Magic item"
+                      values={unit.magicItem ? [`${unit.magicItem.name} ${unit.magicItem.pts}pts`] : []}
+                      detail={unit.magicItem?.text}
+                      onOpen={() => setPicking("item")}
+                      onClear={unit.magicItem ? () => carry(null) : undefined} />
+            )}
+            {caster > 0 && (
+              <Choice label={`Spells ${chosenSpells.length}/${knows}`} values={chosenSpells}
+                      isOwed={chosenSpells.length < knows} onOpen={() => setPicking("spells")} />
+            )}
+          </FormLayout>
         )}
       </VStack>
+      </LayoutContent>
+        )} />
 
       {hasOptions && (
         <UpgradesDialog isOpen={picking === "options"} onOpenChange={close}
@@ -175,26 +187,21 @@ export default function UnitCard({
   );
 }
 
-// One row of the unit's choices: what is chosen beneath the label, and the
-// way to change it at the row's end, so every row's button sits in one place.
+// One of the unit's choices: the button to change it beside its label, then
+// what is chosen.
 function Choice({ label, values, detail, isOwed, onOpen, onClear }) {
-  const chosen = values.length > 0 || detail;
+  const id = React.useId();
   return (
-    <ListItem
-      label={label}
-      description={chosen ? (
-        <VStack gap={0}>
-          {values.length > 0 && <Text>{values.join(", ")}</Text>}
-          {detail && <Text type="supporting">{detail}</Text>}
-        </VStack>
-      ) : undefined}
-      endContent={(
-        <HStack gap={2} vAlign="center">
-          {onClear && <Button label="Remove" size="sm" variant="ghost" onClick={onClear} />}
-          <Button label={values.length ? "Change" : "Choose"} size="sm"
+    <Field label={label} inputID={id}>
+      <VStack gap={1}>
+        <HStack gap={2} vAlign="center" wrap="wrap">
+          <Button id={id} label={values.length ? "Change" : "Choose"} size="sm"
                   variant={isOwed ? "primary" : "secondary"} onClick={onOpen} />
+          {values.length > 0 && <Text>{values.join(", ")}</Text>}
+          {onClear && <Button label="Remove" size="sm" variant="ghost" onClick={onClear} />}
         </HStack>
-      )}
-    />
+        {detail && <Text color="secondary">{detail}</Text>}
+      </VStack>
+    </Field>
   );
 }

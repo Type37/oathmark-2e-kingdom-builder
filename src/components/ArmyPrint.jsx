@@ -13,7 +13,7 @@ const COLS = STAT_KEYS.filter((k) => k !== "pts");
 
 // The Army Roster as paper: one table of units, then every rule this army
 // actually uses, in full, so the book can stay in the bag.
-export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
+export default function ArmyPrint({ value, kingdom, pool, battle }) {
   const emblem = useEmblem(kingdom?.emblem);
   const units = value.units ?? [];
   const points = value.points ?? 0;
@@ -58,13 +58,6 @@ export default function ArmyPrint({ value, kingdom, pool, stats, battle }) {
             <dt>Points</dt><dd>{spent} of {points}</dd>
             {value.commander && <><dt>Commander</dt><dd>{value.commander}</dd></>}
             {kingdom?.name && <><dt>Kingdom</dt><dd>{kingdom.name}</dd></>}
-            {stats.command > 0 && (
-              <><dt>Command</dt><dd>up to {stats.extraActivations} extra {stats.extraActivations === 1 ? "activation" : "activations"}</dd></>
-            )}
-            {stats.champions > 0 && <><dt>Champion dice</dt><dd>{stats.champions}</dd></>}
-            {stats.shootingDice > 0 && (
-              <><dt>Shooting</dt><dd>{stats.shootingDice} dice to {stats.ranges.map((r) => `${r}"`).join(", ")}</dd></>
-            )}
             {battle && <><dt>Battle</dt><dd>{battle.name}</dd></>}
           </dl>
         </div>

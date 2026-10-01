@@ -8,7 +8,6 @@ export default defineTheme({
   color: { accent: "#D40B61", neutralStyle: "warm", contrast: "high" },
 
   typography: {
-    scale: { base: 17, ratio: 1.2 },
     body: {
       family: "Berling LT Std",
       fallbacks: "'Crimson Pro', 'Iowan Old Style', Palatino, Georgia, serif",
@@ -19,11 +18,15 @@ export default defineTheme({
       weight: "normal",
       weights: { 1: "normal", 2: "normal", 3: "normal", 4: "normal", 5: "normal", 6: "normal" },
     },
+    // Three roles only, as Astryx has them. Cabin, the book's plain sans
+    // capitals, takes the code role and with it every control's label.
+    code: {
+      family: "Cabin",
+      fallbacks: "'Gill Sans', 'Segoe UI', sans-serif",
+    },
   },
 
   localTokens: {
-    // Controls: buttons, tabs, inputs, tokens.
-    "--font-family-ui": "Cabin, 'Gill Sans', 'Segoe UI', sans-serif",
     // The book's header bar: warm grey with pale caps.
     "--color-bar": "#5C5953",
     "--color-on-bar": "#EDE8E0",
@@ -115,23 +118,23 @@ export default defineTheme({
     // The book sets its lore in italic.
     blockquote: { base: { fontStyle: "italic" } },
     card: { base: { borderRadius: "var(--radius-none)" } },
-    button: { base: { fontFamily: "var(--font-family-ui)" } },
-    "side-nav-item": { base: { fontFamily: "var(--font-family-ui)" } },
-    "dropdown-menu-item": { base: { fontFamily: "var(--font-family-ui)" } },
-    "side-nav-section": { base: { fontFamily: "var(--font-family-ui)" } },
+    button: { base: { fontFamily: "var(--font-family-code)" } },
+    "side-nav-item": { base: { fontFamily: "var(--font-family-code)" } },
+    "dropdown-menu-item": { base: { fontFamily: "var(--font-family-code)" } },
+    "side-nav-section": { base: { fontFamily: "var(--font-family-code)" } },
     "side-nav-heading": { base: { fontFamily: "var(--font-family-heading)" } },
     "dialog-header-title-block": { base: { fontFamily: "var(--font-family-heading)" } },
     // Grenze Gotisch only at headline size. Small labels follow the book's plain
     // sans capitals (Gandur New) in Cabin: field labels, table bars, plates.
-    "field-label": { base: { fontFamily: "var(--font-family-ui)" } },
-    tab: { base: { fontFamily: "var(--font-family-ui)" } },
-    token: { base: { fontFamily: "var(--font-family-ui)" } },
-    badge: { base: { fontFamily: "var(--font-family-ui)" } },
+    "field-label": { base: { fontFamily: "var(--font-family-code)" } },
+    tab: { base: { fontFamily: "var(--font-family-code)" } },
+    token: { base: { fontFamily: "var(--font-family-code)" } },
+    badge: { base: { fontFamily: "var(--font-family-code)" } },
     "table-header-cell": {
       base: {
         backgroundColor: "var(--color-bar)",
         color: "var(--color-on-bar)",
-        fontFamily: "var(--font-family-ui)",
+        fontFamily: "var(--font-family-code)",
         fontWeight: "var(--font-weight-semibold)",
         letterSpacing: "0.06em",
         textTransform: "uppercase",

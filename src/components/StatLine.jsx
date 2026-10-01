@@ -26,7 +26,9 @@ export function StatBar({ variant, keys = BAR_KEYS }) {
     key: k,
     align: "center",
     resizable: false,
-    width: proportional(1, { minWidth: 40 }),
+    // Wide enough that "11+" and "BASE" never wrap or clip; on a phone the
+    // table scrolls sideways inside its card instead.
+    width: proportional(1, { minWidth: k === "base" ? 64 : 48 }),
     header: (
       <Defined def={ruleFor(k)}>{k === "pts" ? "Pts" : k === "base" ? "Base" : k}</Defined>
     ),
