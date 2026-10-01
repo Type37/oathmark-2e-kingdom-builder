@@ -41,6 +41,8 @@ export default function UnitCard({
   const levels = entry?.levels ?? null;
   const hasOptions = upgradesFor(kingdom, unit.figureId).length > 0;
   const counts = !isArtillery(fig) && p.max > 1;
+  // A unit with nothing to choose draws no empty list, so its card ends at its abilities.
+  const hasChoices = levels?.length > 1 || isCharacter(fig) || hasOptions || caster > 0;
 
   // A character already in the army may lead a unit instead of standing alone.
   const hosts = isCharacter(fig)
@@ -68,7 +70,7 @@ export default function UnitCard({
   ].filter(Boolean);
 
   const name = (
-    <InlineName label={`${fig.name} name`} value={unit.name} placeholder={fig.name}
+    <InlineName label={`${fig.name} name`} value={unit.name} placeholder={fig.name} heading={3}
                 onChange={(v) => patch({ name: v })} />
   );
 
@@ -107,6 +109,7 @@ export default function UnitCard({
 
         <AttributeTerms attributes={variantAfter.attributes ?? []} />
 
+        {hasChoices && (
         <List density="compact">
           {levels?.length > 1 && (
             <ListItem label="Level" endContent={(
@@ -143,6 +146,7 @@ export default function UnitCard({
                     isOwed={chosenSpells.length < knows} onOpen={() => setPicking("spells")} />
           )}
         </List>
+        )}
       </VStack>
 
       {hasOptions && (
