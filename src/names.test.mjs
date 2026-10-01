@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CULTURES, HOMELANDS, NAMES, cultureOf, rulerPool, rollKingdom } from "./names.mjs";
+import { CULTURES, HOMELANDS, NAMES, cultureOf, rulerPool, rollKingdom, rollPlace } from "./names.mjs";
 
 test("every homeland has a culture with rulers", () => {
   for (const [n, c] of HOMELANDS) assert.ok(CULTURES[c]?.rulers.length, `${n} → ${c}`);
@@ -48,4 +48,13 @@ test("plainly modern places take their older forms", () => {
   assert.equal(cultureOf("Mediolanum"), "italian");
   assert.equal(cultureOf("Azagouc"), "zazamanc");
   assert.equal(cultureOf("Patelamunt"), "zazamanc");
+});
+
+test("a region name comes from the kingdom's homelands, never one already taken", () => {
+  const cymric = HOMELANDS.filter(([, c]) => c === "cymric").map(([n]) => n);
+  for (let i = 0; i < 50; i++) {
+    const name = rollPlace("cymric", [cymric[0], cymric[1]]);
+    assert.ok(cymric.includes(name));
+    assert.ok(name !== cymric[0] && name !== cymric[1]);
+  }
 });

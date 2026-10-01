@@ -153,3 +153,13 @@ export function randomName(pool, avoid) {
   if (n === avoid) n = pool[(pool.indexOf(n) + 1) % pool.length];
   return n;
 }
+
+// A region's name comes from the kingdom's own homelands: the places its people
+// would name. Never one already taken by the kingdom or another region; a
+// culture with too few homelands of its own draws on everyone's.
+export function rollPlace(culture, taken = []) {
+  const used = new Set(taken.filter(Boolean).map((n) => n.toLowerCase()));
+  const free = (list) => list.filter((n) => !used.has(n.toLowerCase()));
+  const own = free(HOMELANDS.filter(([, c]) => c === culture).map(([n]) => n));
+  return randomName(own.length ? own : free(NAMES.kingdom));
+}

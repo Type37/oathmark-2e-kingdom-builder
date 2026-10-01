@@ -82,6 +82,8 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
       <VStack gap={3}>
         <HStack gap={2} vAlign="center">
           <StackItem size="fill"><RegionName region={r} value={value.regionNames?.[r]}
+                      culture={value.culture}
+                      taken={[value.name, ...Object.values(value.regionNames ?? {})]}
                       onChange={(name) => patch({ regionNames: { ...(value.regionNames ?? {}), [r]: name } })} /></StackItem>
           <HStack gap={2} vAlign="center">
             {r === openBorderRegion(value) && (
