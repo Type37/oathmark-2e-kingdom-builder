@@ -14,6 +14,8 @@ export default function OptionsDialog({ isOpen, onOpenChange, value = {}, onChan
           <LayoutContent>
             <VStack gap={6}>
               <FormLayout>
+                <Switch label="Detailed Region & City Lore" value={Boolean(value.flavor)}
+                        onChange={(flavor) => onChange({ ...value, flavor })} />
                 <Switch label="Muster from my collection" value={Boolean(value.useCollection)}
                         onChange={(useCollection) => onChange({ ...value, useCollection })} />
               </FormLayout>

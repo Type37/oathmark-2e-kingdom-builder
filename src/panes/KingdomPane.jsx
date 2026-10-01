@@ -3,6 +3,7 @@ import {
   Icon, Heading, Card, StackItem, VStack, HStack, Text, Button, List, ListItem, Token, Tooltip, Banner,
 } from "@astryxdesign/core";
 import Shell from "../Shell.jsx";
+import { withFlavor } from "../rules/flavor.mjs";
 import RegionMap from "../components/RegionMap.jsx";
 import FigureCard from "../components/FigureCard.jsx";
 import FigureAccess from "../components/FigureAccess.jsx";
@@ -55,6 +56,22 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
   }, [picking, capitalList]);
 
 
+  // Detailed Region & City Lore rolls whatever this kingdom lacks, once.
+  const lore = Boolean(settings?.flavor);
+  React.useEffect(() => {
+    if (!lore) return;
+    const next = withFlavor(value);
+    if (next !== value) onChange(next);
+  }, [lore, value]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Knave's words as tokens, marked as having no effect on the rules.
+  const flavorTokens = (words) => (
+    <Tooltip content="Flavor only.">
+      <HStack gap={1} vAlign="center" wrap="wrap">
+        {words.filter(Boolean).map((w) => <Token key={w} label={w} size="sm" />)}
+      </HStack>
+    </Tooltip>
+  );
+
   const [sealing, setSealing] = React.useState(false);
   const founded = Boolean(value.founded);
   const started = startComplete(value);
@@ -73,7 +90,8 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
                       culture={value.culture}
                       taken={[value.name, ...Object.values(value.regionNames ?? {})]}
                       onChange={(name) => patch({ regionNames: { ...(value.regionNames ?? {}), [r]: name } })} /></StackItem>
-          <HStack gap={2} vAlign="center">
+          <HStack gap={2} vAlign="center" wrap="wrap">
+            {lore && value.regionFlavor?.[r] && flavorTokens([value.regionFlavor[r].trait, value.regionFlavor[r].location])}
             {r === openBorderRegion(value) && (
               <Defined bare def={borderNote}><Token label="Open borders" size="sm" /></Defined>
             )}
@@ -101,12 +119,15 @@ export default function KingdomPane({ value, onChange, onEmblem, onMuster, setti
               key={`${p.name}-${i}`}
               label={p.name}
               description={
-                <HStack gap={1} wrap="wrap">
-                  {grantList(p.list, p.name, { asCapital: r === 1 }).map((g) => (
-                    <Button key={g.figureId} label={g.label} size="sm" variant="secondary"
-                            onClick={() => setOpenFigure(g.figureId)} />
-                  ))}
-                </HStack>
+                <VStack gap={2}>
+                  {lore && p.flavor && flavorTokens([p.flavor.theme, p.flavor.structure, p.flavor.street, p.flavor.building, p.flavor.faction])}
+                  <HStack gap={1} wrap="wrap">
+                    {grantList(p.list, p.name, { asCapital: r === 1 }).map((g) => (
+                      <Button key={g.figureId} label={g.label} size="sm" variant="secondary"
+                              onClick={() => setOpenFigure(g.figureId)} />
+                    ))}
+                  </HStack>
+                </VStack>
               }
               startContent={
                 <Defined bare def={rarityNote({ capitalList, list: p.list, name: p.name })}
