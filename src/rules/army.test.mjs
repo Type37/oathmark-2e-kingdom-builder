@@ -48,6 +48,29 @@ test("an over-full unit is reported", () => {
   assert.ok(r.errors.some((e) => /21 figures, max 20/.test(e)), r.errors.join("; "));
 });
 
+test("Wainwrights' two chariots are shared by units and mounted characters", () => {
+  const kingdom = {
+    level: "moderate", capitalList: "human",
+    territories: [
+      { region: 1, list: "human", name: "Human City" },
+      { region: 3, list: "human", name: "Human Wainwrights" },
+    ],
+  };
+  const army = (units) => validateArmy(kingdom, { points: 50000, units });
+  const mount = [{ name: "Chariot", base: "50 x 100" }];
+  const two = [
+    { uid: "u1", figureId: "human-chariot", count: 1 },
+    { uid: "u2", figureId: "human-chariot", count: 1 },
+  ];
+  assert.equal(army(two).errors.some((e) => /chariots/i.test(e)), false, army(two).errors.join("; "));
+  const three = [
+    { uid: "u1", figureId: "human-chariot", count: 1 },
+    { uid: "c1", figureId: "human-captain", count: 1, upgrades: mount },
+    { uid: "c2", figureId: "human-captain", count: 1, upgrades: mount },
+  ];
+  assert.ok(army(three).errors.some((e) => /Human chariots: 3 taken, 2 available/.test(e)), army(three).errors.join("; "));
+});
+
 test("a founded kingdom may grow into Regions 5 and 6, p37", async () => {
   const { canPlace, startComplete } = await import("./kingdom.mjs");
   const start = { capitalList: "elf", region: 5, list: "elf", name: "Hill Caves" };

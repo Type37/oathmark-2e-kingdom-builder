@@ -122,6 +122,27 @@ export function validateArmy(kingdom, army) {
       errors.push(`${figureById.get(u.figureId).name} needs ${race} Wainwrights`);
   }
 
+  // Wainwrights grant two chariots in total, taken as chariot units or as
+  // chariots mounted on characters, and multiple Wainwrights add together. The
+  // chariot unit's own pool maximum already holds that stacked total.
+  const chariotMax = new Map();
+  for (const [figureId, entry] of pool)
+    if (/-chariot$/.test(figureId))
+      chariotMax.set(figureById.get(figureId)?.list, entry.maxFigures ?? 0);
+  const chariotUse = new Map();
+  for (const u of units) {
+    const race = figureById.get(u.figureId)?.list;
+    if (!race) continue;
+    const isUnit = /-chariot$/.test(u.figureId);
+    const mounted = (u.upgrades ?? []).some((x) => /chariot/i.test(x.name ?? ""));
+    if (isUnit || mounted) chariotUse.set(race, (chariotUse.get(race) ?? 0) + 1);
+  }
+  for (const [race, used] of chariotUse) {
+    const max = chariotMax.get(race) ?? 0;
+    if (used > max)
+      errors.push(`${race[0].toUpperCase()}${race.slice(1)} chariots: ${used} taken, ${max} available`);
+  }
+
   // Magic items: characters only, one each per army.
   const itemCounts = new Map();
   for (const u of units) {
