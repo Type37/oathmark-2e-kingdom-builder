@@ -199,11 +199,15 @@ export function figurePool(k) {
       pool.set(g.figureId, cur);
     }
   }
-  // Unlimited grants resolve to a unit count: 4 if from the capital, else 2.
+  // A no-max figure gives up to four units from the capital city and two from
+  // any other territory, and multiple territories add together (p19). The
+  // army-wide limit of four units of one figure type caps the total.
   for (const e of pool.values()) {
     e.exclusiveWith = [...e.exclusiveWith];
-    if (e.unlimited) e.maxUnits = e.fromCapital ? 4 : 2;
-    else e.maxFigures = e.max;
+    if (e.unlimited) {
+      const units = e.sources.reduce((n, s) => n + (s.region === 1 ? 4 : 2), 0);
+      e.maxUnits = Math.min(4, units);
+    } else e.maxFigures = e.max;
   }
   return pool;
 }

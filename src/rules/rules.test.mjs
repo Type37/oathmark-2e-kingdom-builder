@@ -121,6 +121,19 @@ test("unlimited grants become 4 units from the capital, 2 from elsewhere", () =>
   assert.equal(pool.get("dwarf-warriors").maxUnits, 2);
 });
 
+test("unlimited grants stack per territory, capped at the army-wide four", () => {
+  const camps = (n) => ({
+    level: "moderate", capitalList: "goblin",
+    territories: [
+      { region: 1, list: "goblin", name: "Goblin City" },
+      ...Array.from({ length: n }, () => ({ region: 2, list: "goblin", name: "Slave Camps" })),
+    ],
+  });
+  assert.equal(figurePool(camps(1)).get("goblin-slaves").maxUnits, 2);
+  assert.equal(figurePool(camps(2)).get("goblin-slaves").maxUnits, 4);
+  assert.equal(figurePool(camps(3)).get("goblin-slaves").maxUnits, 4); // army cap
+});
+
 test("spellcaster levels widen with the right territory", () => {
   assert.deepEqual(figurePool(grundeland).get("dwarf-spellcaster").levels, [1, 2]);
   const withHermitages = {
