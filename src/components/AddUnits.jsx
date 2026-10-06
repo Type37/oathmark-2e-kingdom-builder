@@ -46,7 +46,10 @@ export default function AddUnits({ isOpen, onOpenChange, pool, units, collection
   const rows = (grouped[active] ?? []).map(({ entry, fig }) => {
     const v = fig.variants[0];
     const taken = units.filter((u) => u.figureId === fig.id).length;
-    const unitCap = entry.maxUnits ?? Math.min(4, entry.maxFigures ?? 4);
+    const unitCap = Math.min(
+      entry.armyMax ?? Infinity,
+      entry.maxUnits ?? Math.min(4, entry.maxFigures ?? 4),
+    );
     const have = owned(collection, fig.id);
     return {
       figureId: fig.id,
